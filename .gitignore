@@ -4,3 +4,7 @@ klippy/*/*.so
 .config
 .config.old
 klippy/chelper/Makefile
+klippy/extras/ens160.py
+klippy/extras/flashforge_loadcell.py
+klippy/extras/gcode_shell_command.py
+klippy/extras/zmod.py
