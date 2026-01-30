@@ -459,7 +459,7 @@ class GCodeIO:
         while pending_commands:
             self.pending_commands = []
             with self.gcode_mutex:
-                self.gcode._process_commands(pending_commands)
+                self.gcode._process_commands(pending_commands, need_ack=False)
             pending_commands = self.pending_commands
         self.is_processing_data = False
         if self.fd_handle is None:
