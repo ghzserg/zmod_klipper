@@ -22,7 +22,7 @@ Um das Repository für externe Plugins zu aktivieren, die nicht vom zMod-Autor e
 ## Plugin verwalten
 
 **Plugin aktivieren:**
-``gcode
+```gcode
 ENABLE_PLUGIN name=g28_tenz
 ```
 - wird das Plugin herunterladen und Klipper bei Erfolg neu starten.
@@ -105,7 +105,7 @@ Plugin-Beispiel: https://github.com/ghzserg/g28_tenz
 ### Hinzufügen eines Plugins
 
 In der Datei
-``mod_data/user.moonraker.conf``.
+```mod_data/user.moonraker.conf```.
 fügen Sie einen Abschnitt hinzu:
 
 ```ini

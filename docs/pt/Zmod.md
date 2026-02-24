@@ -26,7 +26,7 @@ Use uma implementação alternativa da câmera
 
 *Desative a câmera na tela da impressora e só então chame a macro.
 
-Para ligar a câmera, use ``CAMERA_ON VIDEO=video0`` ou ``CAMERA_ON VIDEO=video3`` ou ``CAMERA_ON VIDEO=video99``.
+Para ligar a câmera, use ```CAMERA_ON VIDEO=video0``` ou ```CAMERA_ON VIDEO=video3``` ou ```CAMERA_ON VIDEO=video99```.
 
 <img width="734" height="221" alt="{D2A001DD-7C89-4AB9-9CB9-741B7007B0B4}" src="https://github.com/user-attachments/assets/e8ddbbd3-ebbf-4b4e-86cc-2a62365a4a88" />
 
@@ -223,7 +223,7 @@ Ativar o redirecionamento de SSH
 - SSH_USER - nome de usuário no servidor remoto
 - VIDEO_PORT - porta no servidor remoto a ser usada para vídeo (8080)
 - MOON_PORT - porta do servidor remoto a ser usada para moonraker (7125)
-- REMOTE_RUN - comando a ser chamado no servidor remoto ("NONE") para reiniciar o bot de telegrama. Você pode usar o script [ff5m.sh](https://github.com/ghzserg/zmod_ff5m/blob/1.6/telegram/ff5m.sh) (ele está na impressora na pasta `mod/telegram/`), escrevendo-o assim `./ff5m.sh bot1`, onde bot1 é o diretório onde o bot está instalado.
+- REMOTE_RUN - comando a ser chamado no servidor remoto ("NONE") para reiniciar o bot de telegrama. Você pode usar o script [ff5m.sh](https://github.com/ghzserg/z_ff5m/blob/1.6/telegram/ff5m.sh) (ele está na impressora na pasta `mod/telegram/`), escrevendo-o assim `./ff5m.sh bot1`, onde bot1 é o diretório onde o bot está instalado.
 O script pode ser instalado da seguinte maneira (se você não instalou o bot com um único comando)
 ```
 su - tbot # altere o usuário para o usuário sob o qual o serviço do bot é executado.
@@ -288,9 +288,9 @@ Conecte-se à nuvem [zmod.link](https://zmod.link/link/)
 Como obter o login e a senha:
 
 1. Conecte-se ao bot [@zmod_help_bot](https://t.me/zmod_help_bot)
-2. Digite o comando ```cloud`` - se você já tiver se registrado antes, ele informará seu nome de usuário
-3. para registrar um usuário com o nome ``test``, digite: ``cloud register test``.
-4. Para redefinir a senha, digite: ``cloud reset_password``.
+2. Digite o comando ```cloud``` - se você já tiver se registrado antes, ele informará seu nome de usuário
+3. para registrar um usuário com o nome ```test```, digite: ```cloud register test```.
+4. Para redefinir a senha, digite: ```cloud reset_password```.
 
 Como se conectar à nuvem [zmod.link](https://zmod.link/link/):
 
@@ -302,7 +302,7 @@ Como se conectar à nuvem [zmod.link](https://zmod.link/link/):
    
    <img width="569" height="502" alt="image" src="https://github.com/user-attachments/assets/72346ee6-dde6-4736-80b1-2eb2927bf983" />
 
-3. abra a impressora na guia vizinha e, no console da impressora, digite o comando ```ZLINK``
+3. abra a impressora na guia vizinha e, no console da impressora, digite o comando ```ZLINK```
    
    <img width="1563" height="163" alt="{90DC4366-D258-4912-8028-22C589DF4E91}" src="https://github.com/user-attachments/assets/bee350ee-8d99-465c-9621-48788c6f7a9c" />
 
@@ -329,7 +329,7 @@ Como se conectar à nuvem [zmod.link](https://zmod.link/link/):
    
    A impressora poderá então se conectar à nuvem.
    
-   Para desativar a conexão, digite ```ZLINK_OFF``.
+   Para desativar a conexão, digite ```ZLINK_OFF```.
 
 7. Agora você pode se conectar ao Fluidd ou ao Mainsail pela Internet
    

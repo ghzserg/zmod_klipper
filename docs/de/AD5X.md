@@ -38,7 +38,7 @@ Unterschiede zum AD5M:
 * Keine `Entware`.
 * Anstelle des Makros `CLOSE_DILALOGS` (langsames Schließen), **immer** `FAST_CLOSE_DILAOGS` (schnelles Schließen) verwenden.
 * Das Makro `NEW_SAVE_CONFIG` funktioniert **nicht**.
-* Um die Kamera einzuschalten, müssen Sie ``CAMERA_ON VIDEO=video3`` oder ``CAMERA_ON VIDEO=video0`` oder ``CAMERA_ON VIDEO=video99`` verwenden.
+* Um die Kamera einzuschalten, müssen Sie ```CAMERA_ON VIDEO=video3``` oder ```CAMERA_ON VIDEO=video0``` oder ```CAMERA_ON VIDEO=video99``` verwenden.
 * Klipper kann abstürzen. Lösung `Process Profile` -> `Other` -> `Output G-cod` -> `Model Exclusion` das Häkchen ausschalten.
 
 ---
@@ -169,7 +169,7 @@ Mit dem Parameter [ALLOWED_TOOL_COUNT](/Global/#allowed_tool_count) kann die Anz
 
 [Siehe Vorverarbeitungseinstellung](https://wiki.zmod.link/de/Recomendations/#enable-md5-checksum-control)
 
-``gcode
+```gcode
 SAVE_ZMOD_DATA ALLOWED_TOOL_COUNT=16
 ```
 
@@ -198,7 +198,7 @@ SAVE_ZMOD_DATA AUTO_ASSIGN_COLORS=30
 
 Wenn der Farbwechselbefehl feststellt, dass die neue Farbe mit einer bereits geladenen Farbe übereinstimmt, wird der Wechselvorgang normalerweise als sinnlos übersprungen. Wenn Sie aus irgendeinem Grund wollen, dass der Farbwechselprozess immer vollständig durchgeführt wird, verwenden Sie den Parameter [ALWAYS_FULL_COLOR_CHANGE](/Global/#always_full_color_change).
 
-``gcode
+```gcode
 SAVE_ZMOD_DATA ALWAYS_FULL_COLOR_CHANGE=0
 ```
 
@@ -264,7 +264,10 @@ Damit diese Einstellungen funktionieren, müssen Sie den **eigenen Bildschirm de
 
 4.  **`nozzle_cleaning_length`** - Die Länge (in mm), die das Filament beim Reinigen der Düse aus dem Extruder gezogen wird, wenn die Spule nicht mehr in Gebrauch ist. **Voreinstellung: 60 mm.
 
-    ** Wenn Sie ein neueres 4-in-1-Modul haben, setzen Sie den Wert auf 70 oder höher.**
+5.  **`filament_unload_into_tube`** — Wie viel Filament aus dem 4-in-1-Modul entladen werden soll, wenn der Extruder nicht mehr verwendet wird. **Standard: 70 mm.**
+
+    *   Wenn Sie ein 4-in-1-Modul der neuen Version haben, erhöhen Sie `filament_unload_into_tube` oder im äußersten Fall erhöhen Sie `nozzle_cleaning_length`
+
 
 ---
 
@@ -272,17 +275,17 @@ Damit diese Einstellungen funktionieren, müssen Sie den **eigenen Bildschirm de
 
 Damit diese Einstellungen funktionieren, müssen Sie **den systemeigenen Bildschirm des Druckers** mit dem Makro `DISPLAY_OFF` deaktivieren.
 
-* ** **`filament_tube_length`** - Die volle Länge des Teflonschlauches vom IFS-Modul zum Extruder. Nützlich für nicht standardisierte Schläuche. **Voreinstellung: 1000 mm.
-**`Filament_unload_before_cutting`** - Wie viele Millimeter wird das Filament angehoben, **bevor** es geschnitten wird. **Standard: 0 mm.**
-** ** `filament_unload_after_cutting`** - Wie viele Millimeter wird der Faden **nach** dem Schneiden angehoben, bevor er in den Korb gelegt wird. **Standard: 5 mm.**
-* **`filament_unload_after_drop`** - Zieht das Filament nach dem Ablegen in den Korb vor dem Druck wieder nach oben. Wird benötigt, um ein Abtropfen der Düse zu verhindern. **Standard: 3mm.
-* **`filament_load_speed`** - Die Geschwindigkeit (in mm/m), mit der das Filament in den Extruder geladen wird. ** Voreinstellung: 300 mm/m (5 mm/sec).** ** ** **`filament_unload_speed`**
-* ** `filament_unload_speed`** - Die Geschwindigkeit (in mm/m), mit der das Filament aus dem Extruder gezogen wird. Das IFS-Modul ist doppelt so schnell. **Standard: 600 mm/m (10 mm/s).
-* ** **`filament_fan_speed`** - Die Gebläsegeschwindigkeit (0 bis 255) beim Ablassen in den Korb. Er bläst um die Düse herum, um den Unterlauf zu kühlen. **Standard: 102**.
-* ** **`Filament_autoinsert_empty_length`** - Wie viele Millimeter Filament werden beim automatischen Einsetzen gezogen, wenn der Extruder leer ist. **``Standard: 600 mm.
-* ** **`Filament_autoinsert_full_length`** - Wie viele Millimeter Filament werden beim automatischen Befüllen eingezogen, wenn sich bereits ein anderes Filament im Extruder befunden hat. **Voreinstellung: 550 mm.
-* ** `filament_autoinsert_ret_length`** - Wieviele Millimeter Filament werden zurückgezogen, wenn der Sensor im Extruder ausgelöst wird (nur wenn der Extruder leer ist). **Voreinstellung: 90 mm.
-* ** `filament_autoinsert_speed`** - Die Geschwindigkeit (in mm/m), mit der das Filament automatisch in den Extruder eingezogen wird. ** **Standard: 1200 mm/m (20 mm/s).**
+* **`filament_tube_length`** - Die volle Länge des Teflonschlauches vom IFS-Modul zum Extruder. Nützlich für nicht standardisierte Schläuche. **Voreinstellung: 1000 mm.**
+* **`Filament_unload_before_cutting`** - Wie viele Millimeter wird das Filament angehoben, **bevor** es geschnitten wird. **Standard: 0 mm.**
+* **`filament_unload_after_cutting`** - Wie viele Millimeter wird der Faden **nach** dem Schneiden angehoben, bevor er in den Korb gelegt wird. **Standard: 5 mm.**
+* **`filament_unload_after_drop`** - Zieht das Filament nach dem Ablegen in den Korb vor dem Druck wieder nach oben. Wird benötigt, um ein Abtropfen der Düse zu verhindern. **Standard: 3mm.**
+* **`filament_extruder_speed`** — Geschwindigkeit (in mm/min), mit der Filament in den Extruder geladen wird. **Standard: 300 mm/min (5 mm/s).**
+* **`filament_ifs_speed`** — Geschwindigkeit (in mm/min), mit der das IFS-Modul arbeitet. **Standard: 12000 mm/min (20 mm/s).**
+* **`filament_fan_speed`** - Die Gebläsegeschwindigkeit (0 bis 255) beim Ablassen in den Korb. Er bläst um die Düse herum, um den Unterlauf zu kühlen. **Standard: 102**.
+* **`Filament_autoinsert_empty_length`** - Wie viele Millimeter Filament werden beim automatischen Einsetzen gezogen, wenn der Extruder leer ist. **Standard: 600 mm.
+* **`Filament_autoinsert_full_length`** - Wie viele Millimeter Filament werden beim automatischen Befüllen eingezogen, wenn sich bereits ein anderes Filament im Extruder befunden hat. **Voreinstellung: 550 mm.**
+* **`filament_autoinsert_ret_length`** - Wieviele Millimeter Filament werden zurückgezogen, wenn der Sensor im Extruder ausgelöst wird (nur wenn der Extruder leer ist). **Voreinstellung: 90 mm.**
+* **`filament_autoinsert_speed`** - Die Geschwindigkeit (in mm/m), mit der das Filament automatisch in den Extruder eingezogen wird. **Standard: 1200 mm/m (20 mm/s).**
 
 **WARNUNG!** Das Ändern der Einstellungen im erweiterten Bereich kann zu fehlerhaftem Betrieb des Druckers, Filamentstaus oder Ausfällen führen. Ändern Sie die Einstellungen nur, wenn Sie genau wissen, wofür die einzelnen Parameter verantwortlich sind und welche Folgen sie haben können.
 
@@ -292,14 +295,14 @@ Damit diese Einstellungen funktionieren, müssen Sie **den systemeigenen Bildsch
 
 Damit diese Einstellungen funktionieren, müssen Sie **den systemeigenen Bildschirm des Druckers** mit dem Makro `DISPLAY_OFF` deaktivieren.
 
-Um einen neuen Filamenttyp hinzuzufügen, fügen Sie ```mod_data/user.cfg`` hinzu:
+Um einen neuen Filamenttyp hinzuzufügen, fügen Sie ```mod_data/user.cfg``` hinzu:
 ```
 [zmod_ifs].
 filament_NEWTYPE: 300
 ```
 Dabei wird NEWTYPE durch den gewünschten Filamenttyp (z.B. HIPS) ersetzt und die Zahl ist der Schmelzpunkt des Filaments.
 
-``IFS_PRINT_DEFAULTS`` - gibt die verfügbaren Filamenttypen und deren Schmelztemperaturen aus
+```IFS_PRINT_DEFAULTS``` - gibt die verfügbaren Filamenttypen und deren Schmelztemperaturen aus
 
 ---
 
@@ -307,11 +310,11 @@ Dabei wird NEWTYPE durch den gewünschten Filamenttyp (z.B. HIPS) ersetzt und di
 
 Damit diese Einstellungen funktionieren, müssen Sie **den druckereigenen Bildschirm** mit dem Makro `DISPLAY_OFF` deaktivieren.
 
-Um eine Farbe hinzuzufügen oder umzubenennen, öffnen Sie ``mod_data/colors/ru.cfg`` (verwenden Sie Ihre Sprache anstelle von ru):
+Um eine Farbe hinzuzufügen oder umzubenennen, öffnen Sie ```mod_data/colors/ru.cfg``` (verwenden Sie Ihre Sprache anstelle von ru):
 
-``und fügen Sie eine neue Farbe hinzu oder benennen Sie eine bestehende Farbe um.
+```und fügen Sie eine neue Farbe hinzu oder benennen Sie eine bestehende Farbe um.
 
-Um den Namen einer Farbe anzuzeigen, muss der Farbname mit einem Unterstrich ``_``` beginnen.
+Um den Namen einer Farbe anzuzeigen, muss der Farbname mit einem Unterstrich ```_``` beginnen.
 
 Beispiel:
 ```
@@ -344,7 +347,7 @@ Beispiel:
 }
 ```
 
-Die Aufschrift ```_transparent`` wird auf den Schaltflächen angezeigt
+Die Aufschrift ```_transparent``` wird auf den Schaltflächen angezeigt
 
 ---
 
@@ -365,7 +368,7 @@ Um dies zu beheben, müssen Sie:
 1. zMod aktualisieren.
 2. öffnen Sie die Datei `/rw/Adventurer5M.json`.
 3. finden Sie Zeilen wie:
-``json
+```json
 {
 	"CutXOffset" : 0.5,
 	"CutYOffset" : -0.20000001788139343,
@@ -394,7 +397,7 @@ Ersetze **nur** diese Werte:
 [Alternative Anweisungen](/de/Setup/#attention-ad5x)
 
 1. Geben Sie den Befehl `_GOTO_TRASH` ein - der Druckkopf fährt in den Papierkorb.
-2. Wenn sich der Mülleimer nicht schließt, bewegen Sie den Druckkopf vorsichtig, bis sich der Mülleimer schließt. Sie müssen den GCODE verwenden: ```G1 Y230.2``.
+2. Wenn sich der Mülleimer nicht schließt, bewegen Sie den Druckkopf vorsichtig, bis sich der Mülleimer schließt. Sie müssen den GCODE verwenden: ```G1 Y230.2```.
 3. Schauen Sie, welche **Y**-Koordinate Sie jetzt haben.
 4. 229 von dieser Zahl subtrahieren. Das Ergebnis ist Ihr "yOffset".
 
@@ -416,7 +419,7 @@ Schreiben Sie diese Zahl in die Datei `/rw/Adventurer5M.json`. Der Korb ist eing
 [Alternative Version der Anleitung](/de/Setup/#attention-ad5x)
 
 1. Geben Sie den Befehl `_CUT_PRUTOK` ein - der Kopf wird zum Messer fahren.
-2. Benutzen Sie den Bildschirm, um den Kopf zu bewegen, bis das Messer ausgelöst wird. Sie müssen GCODE verwenden: ```G1 Y-7.7`` ```G1 X-1.7``.
+2. Benutzen Sie den Bildschirm, um den Kopf zu bewegen, bis das Messer ausgelöst wird. Sie müssen GCODE verwenden: ```G1 Y-7.7``` ```G1 X-1.7```.
 3. Schau nach, wie deine X- und Y-Koordinaten lauten.
 4. Für **Y**:
 

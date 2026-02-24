@@ -46,7 +46,7 @@ Você só precisa chamar a macro [ZSSH_ON](/pt/Zmod/#zssh_on) passando os seguin
 
 A execução do ssh consome cerca de 300 kilobytes de memória.
 
-**Se a impressora e o servidor estiverem na mesma rede, não será necessário usar o SSH. Leia o arquivo de configuração [telegram.conf](https://github.com/ghzserg/zmod_ff5m/blob/1.6/telegram/telegram.conf)** [Sample-config](https://github.com/nlef/moonraker-telegram-bot/wiki/Sample-config).
+**Se a impressora e o servidor estiverem na mesma rede, não será necessário usar o SSH. Leia o arquivo de configuração [telegram.conf](https://github.com/ghzserg/z_ff5m/blob/1.6/telegram/telegram.conf)** [Sample-config](https://github.com/nlef/moonraker-telegram-bot/wiki/Sample-config).
 O arquivo de configuração pode ser baixado da impressora `mod/telegram/`.
 
 ---
@@ -69,7 +69,7 @@ Como registrar seu bot
 
 Se você só precisa de notificações do Telegram, então [use o plugin Notify](https://github.com/ghzserg/notify/blob/main/Readme_ru.md).
 
-Instale o bot do Telegram [com um comando](https://github.com/ghzserg/zmod_ff5m/blob/1.6/telegram/telegram.sh) no Debian:
+Instale o bot do Telegram [com um comando](https://github.com/ghzserg/z_ff5m/blob/1.6/telegram/telegram.sh) no Debian:
 
 Execute com o usuário `root
 ```
@@ -84,11 +84,11 @@ apt update && apt install wget -y
 Este script:
 
 1. Instalar o docker
-2. Faça o download de [docker-compose.yml](https://github.com/ghzserg/zmod_ff5m/blob/1.6/telegram/docker-compose.yml) e [telegram.conf](https://github.com/ghzserg/zmod_ff5m/blob/1.6/telegram/telegram.conf). [Sample-config](https://github.com/nlef/moonraker-telegram-bot/wiki/Sample-config)
+2. Faça o download de [docker-compose.yml](https://github.com/ghzserg/z_ff5m/blob/1.6/telegram/docker-compose.yml) e [telegram.conf](https://github.com/ghzserg/z_ff5m/blob/1.6/telegram/telegram.conf). [Sample-config](https://github.com/nlef/moonraker-telegram-bot/wiki/Sample-config)
 3. Crie o usuário tbot
 4. Escreverá instruções para registrar o bot do telegram e solicitar o `bot_token`.
 5. Escreverá instruções para obter o `chat_id` e solicitará o `chat_id`.
-6. Instalará o [ff5m.sh](https://github.com/ghzserg/zmod_ff5m/blob/1.6/telegram/ff5m.sh)
+6. Instalará o [ff5m.sh](https://github.com/ghzserg/z_ff5m/blob/1.6/telegram/ff5m.sh)
 
 Você precisará adicionar a chave ssh por conta própria
 
@@ -98,7 +98,7 @@ Você precisará adicionar a chave ssh por conta própria
 
 Se você só precisa de notificações no Telegram - então [use o plugin Notify](https://github.com/ghzserg/notify/blob/main/Readme_ru.md)
 
-Pegue o arquivo [docker-compose.yml](https://github.com/ghzserg/zmod_ff5m/blob/1.6/telegram/docker-compose.yml) de `mod/telegram/` c printer.
+Pegue o arquivo [docker-compose.yml](https://github.com/ghzserg/z_ff5m/blob/1.6/telegram/docker-compose.yml) de `mod/telegram/` c printer.
 
 Instale o docker e siga as instruções para o Debian
 ```
@@ -113,7 +113,7 @@ mkdir bot1
 cd bot1
 ```
 
-Coloque [docker-compose.yml](https://github.com/ghzserg/zmod_ff5m/blob/1.6/telegram/docker-compose.yml) lá.
+Coloque [docker-compose.yml](https://github.com/ghzserg/z_ff5m/blob/1.6/telegram/docker-compose.yml) lá.
 
 Crie subdiretórios
 ```
@@ -121,7 +121,7 @@ mkdir config log timelapse_finished timelapse
 chmod 777 config log timelapse_finished timelapse
 ```
 
-Coloque o [telegram.conf](https://github.com/ghzserg/zmod_ff5m/blob/1.6/telegram/telegram.conf) de [mod/telegram/](https://github.com/ghzserg/zmod_ff5m/blob/1.6/telegram/telegram.conf) no diretório config e modifique-o de acordo com suas necessidades.
+Coloque o [telegram.conf](https://github.com/ghzserg/z_ff5m/blob/1.6/telegram/telegram.conf) de [mod/telegram/](https://github.com/ghzserg/z_ff5m/blob/1.6/telegram/telegram.conf) no diretório config e modifique-o de acordo com suas necessidades.
 
 [Sample-config](https://github.com/nlef/moonraker-telegram-bot/wiki/Sample-config)
 
@@ -143,7 +143,7 @@ usermod -a -G docker tbot
 #### Adicionando chaves ssh
 
 1. Faça login como usuário `tbot`.
-   ``bash
+   ```bash
    su - tbot
    ```
 
@@ -153,7 +153,7 @@ usermod -a -G docker tbot
    cat >.ssh/authorised_keys
    ```
 
-   Digite a chave pública do arquivo ``mod_data/ssh.pub.txt``. Em seguida, ``Ctrl + d``
+   Digite a chave pública do arquivo ```mod_data/ssh.pub.txt```. Em seguida, ```Ctrl + d```
 
 ---
 
@@ -164,15 +164,15 @@ Depois de cada reinicialização, o ssh será iniciado automaticamente após 3 m
 
 #### TimeZone
 
-Edite o arquivo [docker-compose.yml](https://github.com/ghzserg/zmod_ff5m/blob/1.6/telegram/docker-compose.yml)
+Edite o arquivo [docker-compose.yml](https://github.com/ghzserg/z_ff5m/blob/1.6/telegram/docker-compose.yml)
 
-Especifique seu fuso horário. O arquivo de exemplo especifica ```TZ=Asia/Yekaterinburg``.
+Especifique seu fuso horário. O arquivo de exemplo especifica ```TZ=Asia/Yekaterinburg```.
 
-``` ``docker-compose down && docker-compose up -d```` ou ````docker compose down && docker compose up -d````
+``` ```docker-compose down && docker-compose up -d```` ou ````docker compose down && docker compose up -d````
 
 #### Spoolman
 
-Edite o arquivo [docker-compose.yml](https://github.com/ghzserg/zmod_ff5m/blob/1.6/telegram/docker-compose.yml)
+Edite o arquivo [docker-compose.yml](https://github.com/ghzserg/z_ff5m/blob/1.6/telegram/docker-compose.yml)
 
 Adicione:
 ```
@@ -198,9 +198,9 @@ chmod 777 spoolman
 ```
 
 Reinicie o docker:
-`````docker-compose down && docker-compose up -d```` ou ````docker compose down && docker compose up -d````
+``````docker-compose down && docker-compose up -d```` ou ````docker compose down && docker compose up -d````
 
-Na impressora, escreva em ``mod_data/user.moonraker.conf``
+Na impressora, escreva em ```mod_data/user.moonraker.conf```
 
 `external_IP` - o IP externo do servidor no qual o docker está sendo executado
 
@@ -263,7 +263,7 @@ cat >.ssh/authorised_keys
 Digite a chave pública do arquivo na raiz do sistema mod_data/ssh.pub.txt. Em seguida, pressione CTRL+D
 
 Reinicialize o sistema
-`````sudo reboot```
+``````sudo reboot```
 
 ---
 

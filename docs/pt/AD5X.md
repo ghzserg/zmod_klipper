@@ -38,7 +38,7 @@ Diferenças em relação ao AD5M:
 * Não há `Entware`.
 * Em vez da macro `CLOSE_DILALOGS` (fechamento lento), **sempre use** `FAST_CLOSE_DILAOGS` (fechamento rápido).
 * A macro `NEW_SAVE_CONFIG` **não funciona**.
-* Para ligar a câmera, é necessário usar ``CAMERA_ON VIDEO=video3`` ou ``CAMERA_ON VIDEO=video0`` ou ``CAMERA_ON VIDEO=video99``.
+* Para ligar a câmera, é necessário usar ```CAMERA_ON VIDEO=video3``` ou ```CAMERA_ON VIDEO=video0``` ou ```CAMERA_ON VIDEO=video99```.
 * O Klipper pode falhar. Solução: `Process Profile` -> `Other` -> `Output G-cod` -> `Model Exclusion` desative o tique.
 
 ---
@@ -255,16 +255,18 @@ Para que essas configurações funcionem, é necessário **desativar a tela nati
 2.  ** `filament_drop_length` - A temperatura à qual o bocal é aquecido para a troca de filamentos.
 
     * **Simples:** Quantos milímetros de plástico a impressora espremerá na lixeira para **limpar o bocal** da cor antiga.
-        ** **Dica:** Se as cores forem misturadas quando você trocar os carretéis, aumente esse número. Se você quiser menos desperdício, diminua-o.
+    * **Dica:** Se as cores forem misturadas quando você trocar os carretéis, aumente esse número. Se você quiser menos desperdício, diminua-o.
 
-3.  **`filament_drop_length_add` (Reinicialização opcional)**
+3.  **`filament_drop_length_add`** (Reinicialização opcional)
 
     * Simplificando: quanto plástico a mais a impressora jogará na lixeira se você mudar não apenas a cor, mas o **tipo de material** (por exemplo, de PLA para PETG).
-        * Por que é necessário:** Materiais diferentes não se misturam bem, portanto, você precisa limpar melhor o bocal.
+    * Por que é necessário: Materiais diferentes não se misturam bem, portanto, você precisa limpar melhor o bocal.
 
-4.  **`nozzle_cleaning_length`** - O comprimento (em mm) que o filamento é puxado para fora da extrusora ao limpar o bocal quando o carretel não está mais em uso. **Padrão: 60 mm.
+4.  **`nozzle_cleaning_length`** - O comprimento (em mm) que o filamento é puxado para fora da extrusora ao limpar o bocal quando o carretel não está mais em uso. **Padrão: 60 mm.**
 
-    ** Se você tiver um módulo 4 em 1 mais recente, defina o valor como 70 ou mais.
+5.  **`filament_unload_into_tube`** — Quanto filamento descarregar do módulo 4 em 1 quando o extrusor não estiver mais em uso. **Padrão: 70 mm.**
+
+    *   Se você tiver um módulo 4 em 1 de nova versão, aumente `filament_unload_into_tube` ou, em último caso, aumente `nozzle_cleaning_length`
 
 ---
 
@@ -272,17 +274,17 @@ Para que essas configurações funcionem, é necessário **desativar a tela nati
 
 Para que essas configurações funcionem, é necessário **desativar a tela nativa da impressora** usando a macro `DISPLAY_OFF`.
 
-* ** ** **`filament_tube_length`** - O comprimento total do tubo de Teflon do módulo IFS até a extrusora. Útil para tubos não padronizados. **Padrão: 1000 mm.
-**`filament_unload_before_cutting`** - Quantos milímetros levantar o filamento **antes** de cortá-lo. **Padrão: 0 mm. **Padrão: 0 mm.
+* **`filament_tube_length`** - O comprimento total do tubo de Teflon do módulo IFS até a extrusora. Útil para tubos não padronizados. **Padrão: 1000 mm.
+* **`filament_unload_before_cutting`** - Quantos milímetros levantar o filamento **antes** de cortá-lo. **Padrão: 0 mm. **Padrão: 0 mm.
 * ** `filament_unload_after_cutting`** - Quantos milímetros levantar o filamento **após** o corte, antes de começar a passar para a cesta. **Padrão: 5 mm.
-**`filament_unload_after_drop`** - Retrai (puxa) o filamento de volta para cima depois de deixá-lo cair no cesto antes da impressão. Necessário para evitar o gotejamento do bico. **Padrão: 3 mm.
-**`filament_load_speed`** - A velocidade (em mm/m) na qual o filamento é carregado na extrusora. ** Padrão: 300 mm/m (5 mm/seg.). ** ** ** **`filament_unload_speed`**
-* ** `filament_unload_speed`** - A velocidade (em mm/m) na qual o filamento é puxado para fora da extrusora. O módulo IFS é duas vezes mais rápido. **Padrão: 600 mm/m (10 mm/s).
-* ** ** **`filament_fan_speed`** - A velocidade do ventilador (0 a 255) ao despejar no cesto. Ele sopra ao redor do bocal para resfriar o fluxo inferior. **Padrão: 102.
-* ** ** **`filament_autoinsert_empty_length`** - Quantos milímetros de filamento são puxados durante a inserção automática se a extrusora estiver vazia. **``Padrão: 600 mm.
-** ** **`filament_autoinsert_full_length`** - Quantos milímetros de filamento são puxados durante o preenchimento automático se já houver outro filamento na extrusora. **Padrão: 550 mm.
-* ** `filament_autoinsert_ret_length`** - Quantos milímetros de filamento são retraídos se o sensor na extrusora for acionado (somente quando a extrusora estiver vazia). **Padrão: 90 mm.
-* ** `filament_autoinsert_speed`** - A velocidade (em mm/m) na qual o filamento é alimentado automaticamente na extrusora. ** **Padrão: 1200 mm/m (20 mm/s).
+* **`filament_unload_after_drop`** - Retrai (puxa) o filamento de volta para cima depois de deixá-lo cair no cesto antes da impressão. Necessário para evitar o gotejamento do bico. **Padrão: 3 mm.
+* **`filament_extruder_speed`** — Velocidade (em mm/min) na qual o filamento é carregado no extrusor. **Padrão: 300 mm/min (5 mm/s).**
+* **`filament_ifs_speed`** — Velocidade (em mm/min) na qual o módulo IFS opera. **Padrão: 12000 mm/min (20 mm/s).**
+* **`filament_fan_speed`** - A velocidade do ventilador (0 a 255) ao despejar no cesto. Ele sopra ao redor do bocal para resfriar o fluxo inferior. **Padrão: 102.
+* **`filament_autoinsert_empty_length`** - Quantos milímetros de filamento são puxados durante a inserção automática se a extrusora estiver vazia. **```Padrão: 600 mm.```**
+* **`filament_autoinsert_full_length`** - Quantos milímetros de filamento são puxados durante o preenchimento automático se já houver outro filamento na extrusora. **Padrão: 550 mm.**
+* ** `filament_autoinsert_ret_length`** - Quantos milímetros de filamento são retraídos se o sensor na extrusora for acionado (somente quando a extrusora estiver vazia). **Padrão: 90 mm.**
+* ** `filament_autoinsert_speed`** - A velocidade (em mm/m) na qual o filamento é alimentado automaticamente na extrusora. ** **Padrão: 1200 mm/m (20 mm/s).**
 
 **Alterar as configurações na seção avançada pode resultar em operação incorreta da impressora, atolamentos de filamentos ou falhas. Altere-as somente se você entender completamente o que cada parâmetro é responsável e quais podem ser as consequências.
 
@@ -299,7 +301,7 @@ filament_NEWTYPE: 300
 ```
 Em que NEWTYPE é substituído pelo tipo de filamento que você deseja (por exemplo, HIPS) e o número é o ponto de fusão desse filamento.
 
-```IFS_PRINT_DEFAULTS`` - exibirá os tipos de filamentos disponíveis e suas temperaturas de fusão
+```IFS_PRINT_DEFAULTS``` - exibirá os tipos de filamentos disponíveis e suas temperaturas de fusão
 
 ---
 
@@ -307,11 +309,11 @@ Em que NEWTYPE é substituído pelo tipo de filamento que você deseja (por exem
 
 Para que essas configurações funcionem, você deve **desabilitar a tela nativa da impressora** usando a macro `DISPLAY_OFF`.
 
-Para adicionar ou renomear uma cor, abra ``mod_data/colors/ru.cfg`` (use seu idioma em vez de ru):
+Para adicionar ou renomear uma cor, abra ```mod_data/colors/ru.cfg``` (use seu idioma em vez de ru):
 
-``e adicione uma nova cor ou renomeie uma cor existente.
+```e adicione uma nova cor ou renomeie uma cor existente.
 
-Para exibir o nome de uma cor, o nome da cor deve começar com um sublinhado ``_``.
+Para exibir o nome de uma cor, o nome da cor deve começar com um sublinhado ```_```.
 
 Exemplo:
 ```
@@ -344,7 +346,7 @@ Exemplo:
 }
 ```
 
-A inscrição ```_transparent`` será exibida nos botões
+A inscrição ```_transparent``` será exibida nos botões
 
 ---
 
@@ -365,7 +367,7 @@ Para corrigir isso, você precisa:
 1. atualizar o zMod.
 2. abrir o arquivo `/rw/Adventurer5M.json`.
 3. encontrar linhas como
-``json
+```json
 {
 	"CutXOffset" : 0.5,
 	"CutYOffset" : -0.20000001788139343,
@@ -394,7 +396,7 @@ Substitua **apenas** esses valores:
 [Instruções alternativas](/pt/Setup/#attention-ad5x)
 
 1. Digite o comando `_GOTO_TRASH` - o cabeçote da impressora será direcionado para a lixeira.
-2. Se o compartimento não fechar, mova cuidadosamente o cabeçote até que o compartimento feche. Você deve usar o GCODE: ```G1 Y230.2``.
+2. Se o compartimento não fechar, mova cuidadosamente o cabeçote até que o compartimento feche. Você deve usar o GCODE: ```G1 Y230.2```.
 3. Veja qual é a coordenada **Y** que você tem agora.
 4. subtraia 229 desse número. O resultado será seu `yOffset`.
 
@@ -416,7 +418,7 @@ Escreva esse número no arquivo `/rw/Adventurer5M.json`. A cesta está configura
 [Versão alternativa das instruções](/pt/Setup/#attention-ad5x)
 
 1. Digite o comando `_CUT_PRUTOK` - o cabeçote irá para a faca.
-2. Use a tela para mover o cabeçote até que a faca seja acionada. Você precisa usar o GCODE: ```G1 Y-7.7`` ```G1 X-1.7``.
+2. Use a tela para mover o cabeçote até que a faca seja acionada. Você precisa usar o GCODE: ```G1 Y-7.7``` ```G1 X-1.7```.
 3. Veja quais são suas coordenadas X e Y.
 4. Para **Y**:
 

@@ -26,7 +26,7 @@ Eine alternative Implementierung der Kamera verwenden
 
 *Deaktivieren Sie die Kamera auf dem Druckerbildschirm und rufen Sie erst dann das Makro auf.
 
-Um die Kamera einzuschalten, verwenden Sie ``CAMERA_ON VIDEO=video0`` oder ``CAMERA_ON VIDEO=video3`` oder ``CAMERA_ON VIDEO=video99``.
+Um die Kamera einzuschalten, verwenden Sie ```CAMERA_ON VIDEO=video0``` oder ```CAMERA_ON VIDEO=video3``` oder ```CAMERA_ON VIDEO=video99```.
 
 <img width="734" height="221" alt="{D2A001DD-7C89-4AB9-9CB9-741B7007B0B4}" src="https://github.com/user-attachments/assets/e8ddbbd3-ebbf-4b4e-86cc-2a62365a4a88" />
 
@@ -223,7 +223,7 @@ SSH-Umleitung einschalten
 - SSH_USER - Benutzername auf dem entfernten Server
 - VIDEO_PORT - Port des entfernten Servers, der für Video verwendet werden soll (8080)
 - MOON_PORT - Port des entfernten Servers, der für Moonraker verwendet werden soll (7125)
-- REMOTE_RUN - Befehl, der auf dem Remote-Server aufgerufen werden soll ("NONE"), um den Telegrammbot neu zu starten. Sie können das Skript [ff5m.sh](https://github.com/ghzserg/zmod_ff5m/blob/1.6/telegram/ff5m.sh) verwenden (es befindet sich auf dem Drucker im Ordner `mod/telegram/`), indem Sie es wie folgt schreiben: `./ff5m.sh bot1`, wobei bot1 das Verzeichnis ist, in dem der Bot installiert ist.
+- REMOTE_RUN - Befehl, der auf dem Remote-Server aufgerufen werden soll ("NONE"), um den Telegrammbot neu zu starten. Sie können das Skript [ff5m.sh](https://github.com/ghzserg/z_ff5m/blob/1.6/telegram/ff5m.sh) verwenden (es befindet sich auf dem Drucker im Ordner `mod/telegram/`), indem Sie es wie folgt schreiben: `./ff5m.sh bot1`, wobei bot1 das Verzeichnis ist, in dem der Bot installiert ist.
 Das Skript kann auf folgende Weise installiert werden (wenn Sie den Bot nicht mit einem einzigen Befehl installiert haben)
 ```
 su - tbot # Ändern Sie den Benutzer in den Benutzer, unter dem der Bot-Dienst ausgeführt wird.
@@ -288,9 +288,9 @@ Verbindung zur Wolke [zmod.link](https://zmod.link/link/)
 So erhalten Sie das Login und das Passwort:
 
 1. Verbinden Sie sich mit dem Bot [@zmod_help_bot](https://t.me/zmod_help_bot)
-2. Geben Sie den Befehl ```cloud`` ein - wenn Sie sich bereits registriert haben, wird Ihnen Ihr Benutzername angezeigt
-3. um einen Benutzer mit dem Namen ``test`` zu registrieren, geben Sie ein: ``cloud register test``.
-4. Um das Passwort zurückzusetzen, geben Sie ein: ``cloud reset_password``.
+2. Geben Sie den Befehl ```cloud``` ein - wenn Sie sich bereits registriert haben, wird Ihnen Ihr Benutzername angezeigt
+3. um einen Benutzer mit dem Namen ```test``` zu registrieren, geben Sie ein: ```cloud register test```.
+4. Um das Passwort zurückzusetzen, geben Sie ein: ```cloud reset_password```.
 
 Wie man sich mit der Cloud verbindet [zmod.link](https://zmod.link/link/):
 
@@ -325,11 +325,11 @@ Wie man sich mit der Cloud verbindet [zmod.link](https://zmod.link/link/):
    
    In dem Beispiel ````zlink p=testprinter u=test m=10006 c=30006```.
 
-   Klicken Sie auf ```Ich habe die Zeile bereits in den Drucker eingefügt``
+   Klicken Sie auf ```Ich habe die Zeile bereits in den Drucker eingefügt```
    
    Der Drucker kann sich dann mit der Cloud verbinden.
    
-   Um die Verbindung zu deaktivieren, geben Sie ```ZLINK_OFF`` ein.
+   Um die Verbindung zu deaktivieren, geben Sie ```ZLINK_OFF``` ein.
 
 7. Sie können nun eine Verbindung zu Fluidd oder Mainsail über das Internet herstellen
    
