@@ -38,7 +38,7 @@ class QueryADC:
         gcmd.respond_info(msg)
     def _get_status(self, eventtime):
         timestamp, value = self.adc["temperature_sensor filamentValue"].get_last_value()
-        timestamp1, value = self.adc["temperature_sensor cutValue"].get_last_value()
+        timestamp1, value1 = self.adc["temperature_sensor cutValue"].get_last_value()
         return {'value': value,'cut': value1}
     cmd_GET_FILAMENT_VALUE_help = "get extruder filament sensor value"
     def cmd_GET_FILAMENT_VALUE(self, gcmd):
