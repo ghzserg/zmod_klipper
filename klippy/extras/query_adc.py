@@ -37,17 +37,17 @@ class QueryADC:
             msg += "\n resistance %.3f (with %.0f pullup)" % (r, pullup)
         gcmd.respond_info(msg)
     def _get_status(self, eventtime):
-        value, timestamp = self.adc["temperature_sensor filamentValue"].get_last_value()
-        value1, timestamp1 = self.adc["temperature_sensor cutValue"].get_last_value()
+        timestamp, value = self.adc["temperature_sensor filamentValue"].get_last_value()
+        timestamp1, value = self.adc["temperature_sensor cutValue"].get_last_value()
         return {'value': value,'cut': value1}
     cmd_GET_FILAMENT_VALUE_help = "get extruder filament sensor value"
     def cmd_GET_FILAMENT_VALUE(self, gcmd):
-        value, timestamp = self.adc["temperature_sensor filamentValue"].get_last_value()
+        timestamp, value = self.adc["temperature_sensor filamentValue"].get_last_value()
         msg = "value:%.5f" % (value)
         gcmd.respond_info(msg)
     cmd_GET_CUT_VALUE_help = "get extruder filament sensor value"
     def cmd_GET_CUT_VALUE(self, gcmd):
-        value, timestamp = self.adc["temperature_sensor cutValue"].get_last_value()
+        timestamp, value = self.adc["temperature_sensor cutValue"].get_last_value()
         msg = "value:%.5f" % (value)
         gcmd.respond_info(msg)
 
