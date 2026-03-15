@@ -16,6 +16,8 @@ Congratulations on your FlashForge printer purchase! The stock firmware is great
 ### What is ZMOD?
 ZMOD is a custom firmware modification installed *on top of* the stock software. It does **not** replace the original firmware — instead, it extends it, adding a vast number of features familiar from advanced printers, all while preserving the benefits and ease of use of the native interface.
 
+> **Why "zMod"?** The author has been known by the nickname [zserg](https://zserg.ru/) for over 20 years. When it came time to name the mod, the answer was obvious: take the first letter of the nickname and add "mod". No hidden meaning, no symbolism — it really is exactly as simple as it looks.
+
 ### Key Advantages of ZMOD vs. Stock Firmware
 Here’s what you gain by installing ZMOD:
 
@@ -70,6 +72,7 @@ Here’s what you gain by installing ZMOD:
 
 - **Stock LCD Disable**: Frees up RAM (critical on AD5M with only 128 MB).
 - **GuppyScreen**: Enhanced replacement UI for the printer’s display.
+- **HelixScreen**: Enhanced replacement UI for the printer’s display.
 - **Log Viewing**: Full system logs for diagnostics.
 - **Firmware Retraction**: Adjust retraction parameters on-the-fly, no reslicing needed.
 - **Full ROOT Access**: Full system control always available.
@@ -138,6 +141,15 @@ Native firmware files are located [here](/Native_FW/).
 ## Plugins
 
 zMod support [Plugins](/Plugin/)
+
+## Credits
+
+- Root access based on [@darksimpson](https://t.me/darksimpson)'s work. Login and password: root. [Link](https://t.me/c/2000598629/12695/186253)
+- Beeper based on [@drmax_gc](https://t.me/drmax_gc)'s work. M300. M356 Für Elise. [Link](https://t.me/FF_5M_5M_Pro/1/333800)
+- MD5 verification by Igor Polunovskiy. [Link](https://t.me/FF_5M_5M_Pro/12695/272417)
+- [GuppyScreen](https://github.com/ballaswag/guppyscreen)
+
+The mod uses the developments of [KlipperMod](https://github.com/xblax/flashforge_ad5m_klipper_mod/), but is not its development or continuation, and is not compatible with it either in macro syntax or binary.
 
 ## Support Development
 

@@ -16,6 +16,8 @@ Gratulujeme k nákupu tiskárny FlashForge! Tovární firmware je skvělý pro z
 ### Co je ZMOD?
 ZMOD je vlastní modifikace firmwaru instalovaná *na* tovární software. **Nenahrazuje** původní firmware — místo toho ho rozšiřuje a přidává obrovské množství funkcí známých z pokročilých tiskáren, přičemž zachovává výhody a snadnost použití nativního rozhraní.
 
+> **Proč „zMod"?** Autor je přes 20 let znám pod přezdívkou [zserg](https://zserg.ru/). Když přišel čas pojmenovat mod, odpověď byla zřejmá: první písmeno přezdívky plus „mod". Žádný skrytý význam, žádná symbolika — je to opravdu přesně tak jednoduché, jak to vypadá.
+
 ### Klíčové výhody ZMOD oproti továrnímu firmwaru
 Zde je, co získáte instalací ZMOD:
 
@@ -70,6 +72,7 @@ Zde je, co získáte instalací ZMOD:
 
 - **Vypnutí továrního LCD**: Uvolňuje RAM (kritické na AD5M s pouze 128 MB).
 - **GuppyScreen**: Vylepšené náhradní UI pro displej tiskárny.
+- **HelixScreen**: Vylepšené náhradní UI pro displej tiskárny.
 - **Prohlížení logů**: Plné systémové logy pro diagnostiku.
 - **Firmwarová retrakce**: Upravujte parametry retrakce za chodu, není třeba znovu slicovat.
 - **Plný ROOT přístup**: Vždy je k dispozici plná kontrola nad systémem.
@@ -92,7 +95,7 @@ Zde je, co získáte instalací ZMOD:
 
 ZMOD *nenahrazuje* tovární firmware — vylepšuje ho a dává vám na **výběr**: zůstat u známého dotykového UI, nebo využít moderní nástroje pro 3D tisk a získat z vaší FlashForge absolutní maximum. Je to logický další krok pro každého majitele FlashForge, který chce maximalizovat schopnosti své tiskárny.
 
-!!! Pozor
+!!! danger
     *Pokud chcete nainstalovat tento mod na svůj AD5M (Pro) / [AD5X](AD5X.md), mějte na paměti, že riskujete ztrátu záruky nebo poškození tiskárny. Pokud chcete tento mod vyzkoušet, postupujte na vlastní nebezpečí!*
     
     Pokud nevíte, co to je, nerozumíte, proč je potřeba webové rozhraní Klipper, nebo jste prostě spokojeni s továrním firmwarem, NENAINSTALUJTE tuto modifikaci. Pro všechny ostatní – **prosím, pečlivě si přečtěte celé pokyny!**
@@ -138,6 +141,15 @@ Soubory nativního firmwaru se nacházejí [zde](Native_FW.md).
 ## Pluginy
 
 zMod podporuje [Pluginy](Plugin.md)
+
+## Použité doplňky
+
+- Root je založen na implementaci [@darksimpson](https://t.me/darksimpson). Přihlašovací jméno a heslo: root. [Odkaz](https://t.me/c/2000598629/12695/186253)
+- Beeper je založen na implementaci [@drmax_gc](https://t.me/drmax_gc). M300. M356 Für Elise. [Odkaz](https://t.me/FF_5M_5M_Pro/1/333800)
+- Kontrola MD5 od Igora Polunovského. [Odkaz](https://t.me/FF_5M_5M_Pro/12695/272417)
+- [GuppyScreen](https://github.com/ballaswag/guppyscreen)
+
+Mod využívá poznatky z [KlipperMod](https://github.com/xblax/flashforge_ad5m_klipper_mod/), ale není jeho vývojem ani pokračováním a není s ním kompatibilní ani syntaxí maker, ani binárně.
 
 ## Podpořte vývoj
 

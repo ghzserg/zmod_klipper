@@ -126,6 +126,7 @@ primary_branch: main
 ### Installation Script
 
 After calling `ENABLE_PLUGIN`, the file `install.sh` will be executed automatically.
+
 After calling `DISABLE_PLUGIN`, the file `uninstall.sh` will be executed automatically.
 
 ### Single-language Plugin
@@ -156,7 +157,7 @@ RESPOND PREFIX="info" MSG="===Cutting the filament==="
 Translations are stored in the `translate/` directory in files like `de.csv`:
 
 ```csv
-Cutting the filament;Filament schneiden
+Cutting the filament;Schneiden des Filaments
 ```
 
 Format:
