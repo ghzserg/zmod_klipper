@@ -1,6 +1,7 @@
 # Changelog
 
 - [Versionsgeschichte](#version-history)
+    - [Version 1.7.0](#version-170)
     - [Version 1.6.6](#version-166)
       - [Version 1.6.5](#version-165)
       - [Version 1.6.4](#version-164)
@@ -42,6 +43,14 @@
       - [Version 0.0.9](#version-009)
 
 ## Versionsgeschichte
+
+### Version 1.7.0
+15.03.2026
+
+* Fluidd/Mainsail/Klipper aktualisiert
+* [NoPoop 2](https://wiki.zmod.link/AD5X/#slicer-controlled-purge) von @ninjamida
+* HelixScreen - alternativer Bildschirm. (`ENABLE_EXTRA_PLUGINS`, `DISPLAY_OFF HELIX=1`)
+* Großer Dank für die Unterstützung bei dieser Version geht an @xyzroe
 
 ### Version 1.6.6
 27.01.2026
@@ -178,7 +187,7 @@ Dank an [@minicx](https://github.com/loss-and-quick/) für die Zehnerunterstütz
 17.04.2025
 Unterstützung für Interface-Sprachen:
 
-- ZMOD - Englisch, Deutsch, Französisch, Italienisch, Spanisch, Chinesisch, Japanisch, Japanisch, Koreanisch
+- Z-Mod - Englisch, Deutsch, Französisch, Italienisch, Spanisch, Chinesisch, Japanisch, Japanisch, Koreanisch
 - GuppyScreen - Englisch, Deutsch, Französisch, Italienisch, Spanisch
 
 ### Version 1.4.3
@@ -210,7 +219,7 @@ Unterstützung für Interface-Sprachen:
 ### Version 1.4.1
 09.03.2025
 
-- MD5-Summe der entpackten Dateien wird bei der Installation von zMod überprüft. Drucker beschädigt periodisch Dateien beim Kopieren von Dateien von einem Flash-Laufwerk in das Dateisystem.
+- MD5-Summe der entpackten Dateien wird bei der Installation von Z-Mod überprüft. Drucker beschädigt periodisch Dateien beim Kopieren von Dateien von einem Flash-Laufwerk in das Dateisystem.
 - Das CHECK_SYSTEM-Makro hat eine Selbstüberprüfung des Systems eingeführt
 - Die Schaltfläche zum Herunterfahren funktioniert in der Pro-Version
 - Möglichkeit, nicht MJPEG-Kameras zu installieren
@@ -338,7 +347,7 @@ Unterstützung für Interface-Sprachen:
 - [Auto-clean](https://github.com/ghzserg/zmod_ff5m/blob/1.4/telegram/docker-compose.yml) - Videos, die älter als 10 Tage sind, im Bot löschen.
 - Setze [gewünschte Zeitzone](https://github.com/ghzserg/zmod_ff5m/blob/1.4/telegram/docker-compose.yml) im Bot
 - Automatischer Wechsel von KAMP [LINE_PURGE](/de/Global/#clear) zu _CLEAR2 wenn keine Objekte gefunden
-- Korrigierte [SKIP_ZMOD](/de/Macros/#skip_zmod) Operation
+- Korrigierte [SKIP_Z-Mod](/de/Macros/#skip_zmod) Operation
 - Die Aktualisierung von fluidd/mainsail erfordert jetzt keinen Neustart mehr
 - Der Wechsel von fluidd zu mainsail erfordert jetzt keinen Neustart mehr
 - Zmod meldet Dateien, wenn darin Bögen verwendet werden
@@ -355,7 +364,7 @@ Unterstützung für Interface-Sprachen:
 ### Version 0.2.4
 21.12.2024
 
-- ZMOD schreibt automatisch, ob von einem Flash-Laufwerk aktualisiert werden soll - jetzt in roter Farbe
+- Z-Mod schreibt automatisch, ob von einem Flash-Laufwerk aktualisiert werden soll - jetzt in roter Farbe
 - Wenn die native Entfernung der Bildschirmtabelle verwendet wird (PRINT_LEVELING=1), werden die Parameter FORCE_LEVELING, FORCE_KAMP, SKIP_LEVELING, MESH in START_PRINT ignoriert
 - Pause, auch beim Drucken vom Bildschirm in der äußersten rechten Ecke
 - PRRECLEAR-Parameter, funktioniert jetzt auch beim Drucken mit Kartenaufbau vom Bildschirm aus
@@ -364,7 +373,7 @@ Unterstützung für Interface-Sprachen:
 ### Version 0.2.3
 19.12.2024
 
-- ZMOD schreibt automatisch, wenn ein Update von einem USB-Stick notwendig ist.
+- Z-Mod schreibt automatisch, wenn ein Update von einem USB-Stick notwendig ist.
 - Verbessertes Makro [M600](/de/Macros/#m600) - ersetzt Filament durch eine Pause während des Druckens.
 - Verbesserte MD5-Kontrolle - zeigt jetzt eine Meldung an, wenn MD5 nicht gefunden wird
 
@@ -374,7 +383,7 @@ Unterstützung für Interface-Sprachen:
 - Neues Makro [FAST_CLOSE_DIALOGS](/de/Macros/#fast_close_dialogs) - Bewirkt das schnelle Schließen von Dialogen auf dem ursprünglichen Bildschirm. Wird verwendet, um ein Fenster zu schließen, wenn der Druckvorgang beendet ist oder abgebrochen wird. *Damit das schnelle Schließen von Dialogen funktioniert, müssen Sie auf der Registerkarte Einstellungen -> WiFi-Symbol -> Netzwerkmodus -> den Schieberegler "Nur lokale Netzwerke" aktivieren *Implementierung über das Druckerbildschirmmenü: @darksimpson
 - Neues Makro [LEVELING_PRINT_FILE](/de/Macros/#leveling_print_file) - Druckt eine Datei mit Table-Map-Plotting vom nativen Bildschirm. *Für LEVELING_PRINT_FILE ist es notwendig, über das Menü des Druckerbildschirms auf die Registerkarte "Einstellungen" -> "WiFi-Symbol" -> "Netzwerkmodus" -> den Schieberegler "Nur lokale Netzwerke "* einzuschalten.
 - Neues Makro [COLDPULL](/de/Filament/#coldpull) Coldpull (Düsenreinigung) ohne Gewalt. Implementierung von [dieser Algorithmus](https://t.me/FF_5M_5M_Pro/2836/447172)
-- Neue Parameter [SAVE_ZMOD_DATA](/de/Global/#save_zmod_data):
+- Neue Parameter [SAVE_Z-Mod_DATA](/de/Global/#save_zmod_data):
     - [PRINT_LEVELING](/de/Global/#save_zmod_data) - Build Table Map mit nativem Bildschirm bedeutet 0-Nein, 1-Ja (0) bei jedem Druck. *Um die Desktop-Karte vom nativen Bildschirm zu entfernen, gehen Sie auf die Registerkarte "Einstellungen" -> "WiFi-Symbol" -> "Netzwerkmodus" -> schalten Sie den Schieberegler "Nur lokale Netzwerke" über das Menü des Druckerbildschirms ein.
       - USE_KAMP](/de/Global/#save_zmod_data) - ermöglicht die Verwendung der adaptiven Desktopkarte (KAMP) anstelle der vollständigen Desktopkarte 0-nein, 1-ja (0). *Ermöglicht die Verwendung von KAMP, wenn eine Tabellenkarte über das Netzwerk vom nativen Bildschirm übernommen wird.
       - CLOSE_DIALOGS](/de/Global/#save_zmod_data) - schließt Dialoge automatisch, wenn sie fertig sind und wenn der Druck abgebrochen wird 0-nein, 1-ja langsam, 2-ja schnell. *Damit das schnelle Schließen von Dialogen funktioniert, gehen Sie auf die Registerkarte "Einstellungen" -> "WiFi-Symbol" -> "Netzwerkmodus" -> aktivieren Sie den Schieberegler "Nur lokale Netzwerke "* (0) über das Druckerbildschirmmenü.
@@ -408,9 +417,9 @@ Unterstützung für Interface-Sprachen:
 - Große Überarbeitung des Makros [START_PRINT](/de/Main/#start_print)
 - Makro [NEW_SAVE_CONFIG](/de/Macros/#new_save_config) - speichert Änderungen/lädt den Clipper ohne Einfrieren des Bildschirms. @darksimpson's Implementierung
 - Makro [CLOSE_DIALOGS](/de/Macros/#close_dialogs) - schließt Fenster, wenn der Druck beendet ist und wenn der Druck abgebrochen wird. Implementierung durch @darksimpson
-- Makro [STOP_ZMOD](/de/Macros/#stop_zmod) - Moonraker abschalten
-- Makro [START_ZMOD](/de/Macros/#start_zmod) - Moonraker einschalten
-- Makro [SAVE_ZMOD_DATA](/de/Global/#save_zmod_data) - ZMOD-Parameter speichern.
+- Makro [STOP_Z-Mod](/de/Macros/#stop_zmod) - Moonraker abschalten
+- Makro [START_Z-Mod](/de/Macros/#start_zmod) - Moonraker einschalten
+- Makro [SAVE_Z-Mod_DATA](/de/Global/#save_zmod_data) - Z-Mod-Parameter speichern.
     - CLOSE_DIALOGS - Dialoge automatisch schließen, wenn der Druckvorgang beendet ist und abgebrochen wird 0-nein, 1-ja (0)
         - NEW_SAVE_CONFIG - verwendet die Alternative NEW_SAVE_CONFIG bei der PID-Kalibrierung 0-nein, 1-ja (0)
         - LED - LED-Helligkeit beim Einschalten (50)
@@ -430,7 +439,7 @@ Unterstützung für Interface-Sprachen:
 03.12.2024
 
 - Viele Makrokorrekturen
-- Makro [STOP_ZMOD](/de/Makros/#stop_zmod) - deaktiviert vorübergehend fluidd/mainstaill und moonraker
+- Makro [STOP_Z-Mod](/de/Makros/#stop_zmod) - deaktiviert vorübergehend fluidd/mainstaill und moonraker
 
 ### Version 0.1.6
 02.12.2024
@@ -469,7 +478,7 @@ Unterstützung für Interface-Sprachen:
 
 - MIDI-Wiedergabe hinzugefügt. Dateien werden in mod_data/midi gespeichert - Zugriff über die Konfigurationsregisterkarte. Dank an [@drmax_gc](https://t.me/drmax_gc)
 - Makros [PLAY_MIDI](/de/Makros/#play_midi). Spielt die Melodie PLAY_MIDI FILE=Schmerz-Halt-deinen-Mund.mid
-- Makro [SOFT_REMOVE](/de/Makros/#soft_remove). Entfernt nur zMod, lässt audio, md5, root
+- Makro [SOFT_REMOVE](/de/Makros/#soft_remove). Entfernt nur Z-Mod, lässt audio, md5, root
 - Nach dem Update bleiben die Moonraker-Einstellungen erhalten
 - Die Benutzereinstellungen für klipper werden nach mod_data/user.cfg verschoben.
 - Benutzereinstellungen für moonraker werden nach mod_data/user.moonraker.conf verschoben
@@ -500,6 +509,6 @@ Unterstützung für Interface-Sprachen:
 - Druckabbruch implementiert, wird über den nativen Bildschirm gehandhabt
 - REBOOT](/de/Macros/#reboot) - Makro startet den Drucker neu
 - SHUTDOWN](/de/Macros/#shutdown) - Makro zum Ausschalten des Druckers
-- SKIP_ZMOD](/de/Macros/#skip_zmod) - Makro zum Neustart ohne Moonraker und Fluidd zu starten
-- REMOVE_ZMOD](/de/Macros/#remove_zmod) - Makro zum Entfernen von Mods
+- SKIP_Z-Mod](/de/Macros/#skip_zmod) - Makro zum Neustart ohne Moonraker und Fluidd zu starten
+- REMOVE_Z-Mod](/de/Macros/#remove_zmod) - Makro zum Entfernen von Mods
 - Fehler behoben: "Nach einer Pause aufgrund der Aktivierung des Filament-Bewegungssensors wird der Druckvorgang wieder aufgenommen, aber der Druck erfolgt in der Luft etwa 3 Zentimeter über der Stelle, an der er sein sollte".
