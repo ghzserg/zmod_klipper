@@ -34,7 +34,7 @@ class FlashforgeTVOC:
         self.gcode = self.printer.lookup_object('gcode')
         self.name = config.get_name().split()[-1]
         self.mcu = mcu.get_printer_mcu(self.printer, config.get('mcu'))
-        self.mcu.register_response(self._handle_tvoc_response, MCU_TVOC_RESPONSE)
+        self.mcu.register_serial_response(self._handle_tvoc_response, MCU_TVOC_RESPONSE)
         self.logger = logging.getLogger('klippy')
 
         self.last_tvoc_value = 0
