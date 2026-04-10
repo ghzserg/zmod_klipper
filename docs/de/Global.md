@@ -87,7 +87,7 @@ Es wird empfohlen, den Drucker nach dem Ändern von Parametern neu zu starten
 
 Speichert globale Z-Mod-Parameter/Flags, die bei jedem Druck angewendet werden.
 
-Dieses Makro muss nicht in die Start-, Endcode- oder Gcode-Datei eingefügt werden. Das Makro wird über die Konsole fluidd/mainsail aufgerufen. Nach dem Ausschalten des Druckers werden die Parameter im Druckerspeicher in der Datei `mod_data/variables.cfg` gespeichert (**die Datei nicht von Hand editieren - Sie bringen den Clipper oder Mod** durcheinander) und müssen nicht jedes Mal neu eingegeben werden.
+Dieses Makro muss nicht in die Start-, Endcode- oder Gcode-Datei eingefügt werden. Das Makro wird über die Konsole fluidd/mainsail aufgerufen. Nach dem Ausschalten des Druckers werden die Parameter im Druckerspeicher in der Datei `mod_data/variables.cfg` gespeichert (**die Datei nicht von Hand editieren - Sie bringen den Klipper oder Mod** durcheinander) und müssen nicht jedes Mal neu eingegeben werden.
 
 **Um den gewünschten Parameter zu bearbeiten, gehe zu `Fluidd` -> `Makros` -> `System` -> `SAVE Z-Mod PARAMETERS`**, wähle den Parameter aus, den du ändern willst, trage ihn ein und drücke `SEND`. Sehen Sie, was in der Fluidd-Konsole angezeigt wird.
 
@@ -109,7 +109,7 @@ Wenn Z-Mod die Datei erfolgreich nach verwendeten Instrumenten durchsucht, wird 
 
 Diese Einstellung kann nicht verwendet werden, wenn der native Bildschirm aktiviert ist.
 
-[Siehe Einstellung für die Vorverarbeitung](https://wiki.zmod.link/de/Recomendations/#enable-md5-checksum-control)
+[Siehe Einstellung für die Vorverarbeitung](/de/Recomendations/#enable-md5-checksum-control)
 
 Beispiel: `SAVE_ZMOD_DATA ALLOWED_TOOL_COUNT=4`.
 
@@ -117,7 +117,7 @@ Beispiel: `SAVE_ZMOD_DATA ALLOWED_TOOL_COUNT=4`.
 
 Ermöglicht das Scannen von Gcode-Dateien, um die verwendeten Werkzeugwechselbefehle (T0, T1 usw.) und die ihnen im Slicer zugewiesenen Farben und Materialien zu ermitteln: 0 (aus), 1 (an), 2 (schaltet das vollständige Scannen aus, sucht aber nach vom Slicer-Skript vorbereiteten Daten).
 
-[Siehe Einstellung für die Vorverarbeitung](https://wiki.zmod.link/de/Recomendations/#enable-md5-checksum-control)
+[Siehe Einstellung für die Vorverarbeitung](/de/Recomendations/#enable-md5-checksum-control)
 
 Beispiel: `SAVE_ZMOD_DATA SCAN_FILE_COLORS=0`.
 
@@ -140,7 +140,7 @@ Um benutzerdefinierte Werte für Fehlerbedingungen im stillen Modus einzustellen
 * 8 (Mindestens eine Farbe stimmt nicht gut überein)
 * 16 (Dieselbe physische Spule wurde mehr als einem Werkzeugindex in der Datei zugewiesen)
 
-[Siehe Vorverarbeitungseinstellung](https://wiki.zmod.link/de/Recomendations/#enable-md5-checksum-control)
+[Siehe Vorverarbeitungseinstellung](/de/Recomendations/#enable-md5-checksum-control)
 
 Beispiel: `SAVE_ZMOD_DATA AUTO_ASSIGN_COLORS=0`.
 
@@ -566,7 +566,7 @@ So beheben Sie den Fehler manuell auf dem Lager:
 
 Behebt den Fehler E0017, wenn Sie den Parameter ändern, wird der Drucker neu gestartet. 0-Nein, 1-Ja (1)
 
-In der Datei `/opt/klipper/klippy/toolhead.py` steht im Stack der Parameter `LOOKAHEAD_FLUSH_TIME = 0.5`, im Original-Clipper `LOOKAHEAD_FLUSH_TIME = 0.250`, unser Wunder funktioniert gut mit `LOOKAHEAD_FLUSH_TIME = 0.150`.
+In der Datei `/opt/klipper/klippy/toolhead.py` steht im Stack der Parameter `LOOKAHEAD_FLUSH_TIME = 0.5`, im Original-Klipper `LOOKAHEAD_FLUSH_TIME = 0.250`, unser Wunder funktioniert gut mit `LOOKAHEAD_FLUSH_TIME = 0.150`.
 
 - 0 setzt den Parameter auf Lager
 - 1 setzt den Parameter auf 0.150

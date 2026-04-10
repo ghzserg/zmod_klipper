@@ -2,8 +2,8 @@
 
 Öffnen Sie den Telegrammbot [@zmod_help_bot](http://t.me/zmod_help_bot) und stellen Sie ihm Ihre Frage, er kennt die gesamte Dokumentation.
 
-1. [Aktualisieren Sie Z-Mod und alle Plugins auf die neueste Version](/de/Setup/#update-mod)
-2. Übersetze den Mod ins Russische ```LANG LANG=ru```.
+1. [Aktualisieren Sie Z-Mod und alle Plugins auf die neueste Version](/de/Setup/#aktualisieren-sie-die-mod)
+2. Übersetze den Mod ins Russische ```LANG LANG=de```.
 3. Beschreibe das Problem deutlich. Bildschirme, Fotos, Textbeschreibung.
 4. Rufe [CLEAR_EMMC](/de/System/#clear_emmc) auf, um die Logs zu löschen
 5. **Der Drucker muss ausgeschaltet werden**
@@ -13,8 +13,9 @@
 9. Poste eine Nachricht mit Beschreibung und `config-1.6.28-15.tar.gz`-Datei.
 10. [Fehlermeldung hinzufügen](https://github.com/ghzserg/zmod/issues)
 
-Falls `TAR_CONFIG` nicht ausgeführt werden kann:  
-- Laden Sie [flashforge_init.s](https://github.com/ghzserg/zmod/tree/main/Native_firmware/log/flashforge_init.sh) auf einen USB-Stick herunter. [Anleitung](https://github.com/ghzserg/zmod/tree/main/Native_firmware/log)
+Falls `TAR_CONFIG` nicht ausgeführt werden kann:
+
+- Laden Sie [log](/de/Native_FW/#log)
 - Kopieren Sie `config-1.6.6-28.tar.gz` vom USB-Stick, wobei 1.6.6-28 die aktuelle Version des Mods ist
 
 Oder verbinden Sie sich per SSH mit dem Drucker:
@@ -33,7 +34,7 @@ chroot /usr/data/.mod/.zmod/
 /opt/konfig/mod/.shell/tar_config.sh
 ```
 
-## Warum ich nach Tickets frage - eine "Token"-Erklärung
+## Warum ich Sie bitte, Tickets zu erstellen – einfach erklärt
 
 Stellen Sie sich vor, Ihr Drucker ist eine Maschine.
 Und ich bin ein Mechaniker in einer großen Werkstatt, in der ich Hunderte verschiedener Autos gleichzeitig repariere.
@@ -60,7 +61,7 @@ Unsere "Flotte" hat **über 100 verschiedene Konfigurationen**. Nur die Grundlag
 
   ARM und MIPS
 
-- **Salon-Optionen**:
+- **Anzeigeoptionen („Innenausstattung“)**:
 
     - mit nativem Bildschirm
 
@@ -72,11 +73,11 @@ Unsere "Flotte" hat **über 100 verschiedene Konfigurationen**. Nur die Grundlag
 
 - **Zwei Hauptsteuerungsschnittstellen**:
 
-  Fluidd und Großsegel
+  Fluidd und Mainsail
 
-- **Unterschiedliche Möglichkeiten, Aufgaben zum Drucken zu senden**:
+- **Unterschiedliche Möglichkeiten, Aufgaben zum Drucker zu senden**:
 
-  über den eigenen Bildschirm, Guppy, OrcaSlicer (FF-Protokoll, Klipper-Protokoll, usw.)
+  über den eigenen Bildschirm, Guppy, Helixscreen, OrcaSlicer (FF-Protokoll, Klipper-Protokoll, usw.)
 
 - **Zusätzliche "Optionen" (Plugins)**:
 
@@ -84,13 +85,13 @@ Unsere "Flotte" hat **über 100 verschiedene Konfigurationen**. Nur die Grundlag
 
 - **Sensoren und Peripheriegeräte**:
 
-  Fadensensor, Bewegungssensor, IFS, usw.
+  Filamentsensor, Bewegungssensor, IFS, usw.
 
-Und es gibt auch Fälle, in denen der Besitzer **etwas unter der Haube neu gelötet**, mit "unbekanntem Kraftstoff" (alte Firmware, Mods von Drittanbietern) gefüllt oder Ratschläge von AI gelesen hat, **nie seinen speziellen Drucker gesehen**.
+Darüber hinaus kommt es vor, dass einige Benutzer **selbst Hardware modifizieren**, veraltete Firmware installieren oder Ratschläge aus Foren oder von KI-Modellen befolgen, die **ihren spezifischen Drucker noch nie gesehen haben**.
 
 #### Unterm Strich.
 
-Wenn Sie nur **"funktioniert nicht "** schreiben, verbringe ich **Stunden** damit, es herauszufinden:
+Wenn Sie nur **"funktioniert nicht"** schreiben, verbringe ich **Stunden** damit, es herauszufinden:
 
 - Welches Modell haben Sie?
 - Welche Firmware/Version von Klipper?
@@ -102,18 +103,18 @@ Das ist **ineffizient**, **verlangsamt die Hilfe** und **verärgert alle**.
 
 ---
 
-## Wie man sein Auto richtig zum Service bringt - Anleitung zum Erstellen eines Tickets
+## ✅ Wie man sein Auto richtig zum Service bringt - Anleitung zum Erstellen eines Tickets
 
 Damit ich **nicht raten, sondern Ihnen gleich helfen kann**, machen Sie alles nach der Checkliste:
 
 ### 1. **Aktualisieren Sie auf die neueste Version**
-> Folgen Sie den [offiziellen Upgrade-Anweisungen](/de/Setup/#upgrade-mod).
+> Folgen Sie den [offiziellen Upgrade-Anweisungen](/de/Setup/#aktualisieren-sie-die-mod).
 
-### 2. **Russische Sprache installieren**
+### 2. **Deutsche Sprache installieren**
 > Starten Sie in der Konsole:
 
 > ```bash
-> LANG LANG=ru
+> LANG LANG=de
 > ```
 
 ### 3. **Beschreiben Sie das Problem klar und deutlich**
@@ -121,27 +122,28 @@ Damit ich **nicht raten, sondern Ihnen gleich helfen kann**, machen Sie alles na
 
 > ✅ Gut:
 
-> _"Nach der Aktualisierung von Z-Mod auf Version X.Y.Z beim Drücken von "Drucken" auf dem ursprünglichen Bildschirm:
+> - "Nach der Aktualisierung von Z-Mod auf Version X.Y.Z beim Drücken von "Drucken" auf dem ursprünglichen Bildschirm:
 
-> > - heizt sich der Tisch auf,
+> - heizt sich der Tisch auf,
 
 > - der Extruder heizt NICHT auf,
 
 > - die Bildschirmtemperatur beträgt 0°C,
 
-> - der Druck wird nach 2 Minuten einfach abgebrochen."_
+> - der Druck wird nach 2 Minuten einfach abgebrochen."
 
 > 🔹 Bitte **Screenshots der Fehler**, **Fotos** anhängen,
 
-> 🔹 Beschreiben Sie die **Abfolge der Maßnahmen**,
+> 🔹 Beschreiben Sie die genauen **Schritte**, die zu dem **Problem** geführt haben,
 
 > 🔹 Fügen Sie die **Datei, die Sie ausdrucken**, bei (es könnte ein Problem im G-Code geben!).
 
 ### 4. **Durchführen eines vollständigen Diagnosetests**
-> Führen Sie ihn streng nacheinander durch:
-> 1. CLEAR_EMMC" - alte Protokolle löschen
+> Führen Sie diese Schritte in strikter Reihenfolge aus.:
 
-> 2. **Den Drucker vollständig ausstecken** → 10 Sekunden warten.
+> 1. [CLEAR_EMMC](/de/System/?h=clea#clear_emmc) - alte Protokolle löschen
+
+> 2. **Den Drucker vollständig ausschalten** → 10 Sekunden warten.
 
 > 3. Schalten Sie den Drucker ein
 
@@ -154,11 +156,11 @@ Damit ich **nicht raten, sondern Ihnen gleich helfen kann**, machen Sie alles na
 
 > - Erstellen Sie **eine** Nachricht
 
-> - Darin:
+> - Enthalten:
 
-> - Eine verständliche Beschreibung (Punkt 3),
+> - Eine verständliche Beschreibung [Schritt 3](#3-beschreiben-sie-das-problem-klar-und-deutlich),
 
-> - **muss `config.tar.gz`** anhängen,
+> - **anhängen der `config.tar.gz`**,
 
 > - **G-Code** anhängen, wenn das Problem beim Drucken einer bestimmten Datei auftritt.
 
@@ -182,6 +184,7 @@ Und dann kann ich anfangen **zu reparieren - sofort, nicht raten**.
 
 ---
 
-Danke für Ihr Verständnis und dafür, dass Sie die Zeit anderer Leute respektieren.
+!!! tip
+    Danke für Ihr Verständnis und dafür, dass Sie die Zeit anderer Leute respektieren.
 
-Das ist keine Bürokratie - es ist der einzige Weg, die Unterstützung **schnell und effizient** zu gestalten.
+    Das ist keine Bürokratie - es ist der einzige Weg, die Unterstützung **schnell und effizient** zu gestalten.

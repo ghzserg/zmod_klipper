@@ -2,7 +2,7 @@
 
 Open the Telegram bot [@zmod_help_bot](http://t.me/zmod_help_bot) and ask it your question. It knows all the documentation.
 
-1. [Update Z-Mod and all plugins to the latest version](/ru/Setup/#updating-the-mod)
+1. [Update Z-Mod and all plugins to the latest version](/Setup/#updating-the-mod)
 2. Clearly describe the issue: provide screenshots, photos, and a detailed textual explanation.
 3. Run [CLEAR_EMMC](/System/#clear_emmc) to clear previous logs.
 4. **Power off the printer completely.**
@@ -12,8 +12,9 @@ Open the Telegram bot [@zmod_help_bot](http://t.me/zmod_help_bot) and ask it you
 8. Submit **one** post with your description and the generated `config-1.6.6-28.tar.gz` file. 1.6.6-28 - current version mod.
 9. [Open the issue here](https://github.com/ghzserg/zmod/issues).
 
-If it is impossible to execute `TAR_CONFIG`:  
-- Download [flashforge_init.s](https://github.com/ghzserg/zmod/tree/main/Native_firmware/log/flashforge_init.sh) to a USB flash drive. [Instructions](https://github.com/ghzserg/zmod/tree/main/Native_firmware/log)
+If it is impossible to execute `TAR_CONFIG`:
+
+- Download [log](/Native_FW/#log)
 - Copy `config-1.6.6-28.tar.gz` from the USB flash drive, where 1.6.6-28 is the current version of the mod
 
 Or connect to the printer via SSH:
@@ -111,14 +112,14 @@ That’s **inefficient**, **delays help**, and **frustrates everyone**.
 To help me **skip the guessing and start fixing**, please follow this checklist:
 
 ### 1. **Update to the latest version**
-> Follow the [official update guide](/ru/Setup/#updating-the-mod).
+> Follow the [official update guide](/Setup/#updating-the-mod).
 
 ### 2. **Describe the issue clearly and concretely**
 > ❌ Bad: _“It doesn’t work.”_
 
 > ✅ Good:
 
-> _“After updating Z-Mod to v.X.Y.Z, when starting a print from the stock screen:
+> - “After updating Z-Mod to v.X.Y.Z, when starting a print from the stock screen:
 
 > — the bed heats up,
 
@@ -134,6 +135,7 @@ To help me **skip the guessing and start fixing**, please follow this checklist:
 
 ### 3. **Run full diagnostics**
 > Do these steps **in strict order**:
+
 > 1. `CLEAR_EMMC` — clear old logs
 
 > 2. **Unplug the printer from mains** → Wait 10 seconds

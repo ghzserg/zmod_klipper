@@ -55,6 +55,26 @@ ast_close_dialogs)).
 
 ---
 
+### What's the difference between using the screen and without the native screen?
+
+The printer can operate in two modes:
+
+- With the native screen - in this case, almost all operating logic is controlled by the native screen, and many features cannot be changed.
+- Without the native screen - in this case, all features are controlled by Z-Mod.
+This doesn't mean you need to turn off the screen or replace it with a different one.
+In the mode without the native screen, you can use the alternative software screen GuppyScreen/HelixScreen or turn off the screen completely, so it will turn off.
+
+!!! warning
+    Do not disable the screen unless you fully understand bed leveling, z-offset, and START_PRINT/END_PRINT macros
+
+**Disabling the screen saves RAM but changes print management (start/pause/resume/cancel/recovery). Modify start/end G-code accordingly.** *elk*
+
+Without the screen, Z-offset from the screen isn't applied. Use [START_PRINT](/Main/#start_print) parameters or global settings. [Details](/FAQ/#how-does-z-offset-work)
+
+Read [features of screenless operation](#screenless-version-notes).
+
+---
+
 ### How is Z-Mod different from KlipperMod/native firmware?
 
 Differences between KlipperMod and Z-Mod:
@@ -85,14 +105,14 @@ Z-Mod is NOT based on KlipperMod and is NOT its evolution. However, Z-Mod uses s
 
 #### What's in Z-Mod but not in KlipperMod:
 
-*   [AD5X](/ru/AD5X/) support
+*   [AD5X](/AD5X/) support
 *   Support for [the following languages](/Global/#lang): English, German, French, Italian, Spanish, Chinese, Japanese, Korean, Portugal, Russsian
 *   Native screen support
 *   [Print recovery after power loss](/Zmod/#zrestore)
-*   [Shaper calibration with graphs](/Calibrations/#zshaper) considering [SCV](/Global/#fix_scv) ([square_corner_velocity](https://www.klipper3d.org/Config_Reference.html#printer))
+*   [Shaper calibration with graphs](de/Calibrations/#zshaper) considering [SCV](/Global/#fix_scv) ([square_corner_velocity](https://www.klipper3d.org/Config_Reference.html#printer))
 *   [File/permission/symlink check and repair for the native filesystem](/System/#check_system)
 *   Automatic updates for `Fluidd`/`Mainsail`/`Moonraker` and Z-Mod over the network
-*   [Entware](/FAQ/#entware-in-zmod-how-to-use-it)
+*   [Entware](/FAQ/#entware-in-z-mod-how-to-use-it)
 *   Fixed [E0017 error](/Global/#fix_e0017)
 *   Additionally, GuppyScreen/HelixScreen supports: PID calibration, damper control, firmware rollback, nozzle cleaning, strain gauge reset, screw adjustment, ColdPull, enhanced bed leveling
 *   Fixed driver cooling fans operation. They automatically turn on when motors are running. On native firmware - only during printing.
@@ -124,9 +144,9 @@ It can be called:
 
 ---
 
-### I'm using the screen version. I send a file to print, but the screen shows temperature 0 0 and printing doesn't start.
+### I'm using the screen version. I send a file to print, but the screen displays a temperature of 0°C and the printing process doesn't start.
 
-Add these two lines at the very beginning of the start code:
+Add these two lines to the very beginning of the start code in the printer settings under Machine G-Code:
 ```
 M190 S[bed_temperature_initial_layer_single]
 M104 S[nozzle_temperature_initial_layer]
@@ -137,11 +157,19 @@ Without these lines, the printer screen doesn't know the target temperatures for
 
 ---
 
+### After installing Z-Mod, my screen is dead and not responding to touches.
+
+- Install the latest native [firmware and Z-Mod updates](/Recomendations/#install-latest-native-firmware-and-zmod-updates)
+- Read [known peculiarities](#known-peculiarities) *bison*
+- You might have disabled the screen. Enable it with the [DISPLAY_ON](/System/#display_on) macro
+
+---
+
 ### Do I need to change anything in the start code?
 
 If using the native screen, no changes are needed.
 
-For operation without the native screen/Guppy (also recommended with the screen), replace the entire start code with:
+For operation without the native screen/Guppy (Helixscreen) (also recommended with the screen), replace the entire start code with:
 ```
 START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single]
 M190 S[bed_temperature_initial_layer_single]
@@ -180,6 +208,8 @@ SET_RETRACTION RETRACT_LENGTH=[filament_retraction_length]
 
 ### How does Z-Offset work?
 
+Read the article: [How Z-Offset Works on Your Printer](/SetupCalibrations/#how-z-offset-works-on-your-printer)
+
 When using the screen, the mod doesn't interfere with z-offset. The z-offset saved on the screen is used.
 
 The offset for native and non-native screens is not the same, and each has its own unique behavior and is configured separately.
@@ -193,6 +223,8 @@ Any `SET_GCODE_OFFSET` call (automatically triggered when adjusting Z-offset fro
 Z-offset can also be set via [START_PRINT](/Main/#start_print) parameters:
 
 - Z_OFFSET - Set Z offset (0.0)
+
+---
 
 ### What options are available for bed leveling?
 
@@ -208,45 +240,124 @@ The native screen always uses:
 
 Without the native screen, the `auto` mesh is auto-loaded on startup.
 
-To use another mesh, disable auto-leveling (`SAVE_ZMOD_DATA PRINT_LEVELING=0`):
+If you want to use a different card for printing (e.g., `PETG_75`), then:
+
+- Disable automatic calibration in the global parameters.
+
+```SAVE_ZMOD_DATA PRINT_LEVELING=0```
 
 - Specify via the `MESH` parameter in [START_PRINT](/Main/#start_print). E.g., `START_PRINT MESH=my_80_degree_mesh`
 - Load via `BED_MESH_PROFILE LOAD=my_80_degree_mesh` in filament profile. Ensure consistency between profile and `START_PRINT`, or disable nozzle cleaning in `START_PRINT`.
 - Pre-level using [AUTO_FULL_BED_LEVEL](/Calibrations/#auto_full_bed_level). E.g., `AUTO_FULL_BED_LEVEL EXTRUDER_TEMP=230 BED_TEMP=80 PROFILE=my_80_degree_mesh`
 
 #### Via global parameters
-Use `PRINT_LEVELING` and `USE_KAMP` parameters. Enable with:
-```
-SAVE_ZMOD_DATA PRINT_LEVELING=1
-SAVE_ZMOD_DATA USE_KAMP=1
-```
+
+I recommend using global parameters that are configured once and used for every print job. In this case, it is not necessary to change the start and end G-code.
+
+Parameter `PRINT_LEVELING`:
+
+- Removes the bed mesh map on every print job
+- When working with the screen, the bed mesh map is removed from the native screen, as if you had selected a file on the screen and checked the `LEVELING` checkbox.
+- If the parameter is set to `SAVE_ZMOD_DATA PRINT_LEVELING=1`, when sending files via Orca/Fluidd/Mainsail, the printer assumes you have selected the file to be printed on the original screen and checked the "Orientation" checkbox. In this case, the bed mesh is captured every time you print.
+- When working in non-native screen mode and using the macro [START_PRINT](/Main/#start_print) in the initial G-code, the bed mesh is also cleared on every print job.
+
+To activate this function, you must first enter the macro [SAVE_ZMOD_DATA](/Global/#save_zmod_data) and the parameter [PRINT_LEVELING](/Global/#print_leveling)
+
+```SAVE_ZMOD_DATA PRINT_LEVELING=1``` *(**must be entered in the Fluidd/Mainsail console**)*. In this case, the bed mesh will be removed with every print.
+
+- To remove the bed mesh map from the native screen, go to ```Settings``` -> ```Wi-Fi icon``` -> ```Network mode``` -> enable the slider for ````Local networks only```` via the printer screen menu.
+
+- When this option is enabled, all START_PRINT parameters related to creating/using a bed mesh map (FORCE_LEVELING, FORCE_KAMP, SKIP_LEVELING, MESH) will be ignored.
+
+Parameter `USE_KAMP`:
+
+- Klipper Adaptive Meshing and Purging (KAMP) can be enabled. This means that only the parts containing printable models are removed from the entire bed mesh.
+
+**Automatic table map skimming is not triggered!** This parameter specifies that KAMP should be executed instead of table map skimming.
+
+To enable this feature, you must configure the macro [SAVE_ZMOD_DATA](/Global/#save_zmod_data) once, parameter [USE_KAMP](/Global/#use_kamp)
+
+```SAVE_ZMOD_DATA USE_KAMP=1``` *(**must be entered in the Fluidd/Mainsail console**)*. In this case, the adaptive bed mesh map is used wherever possible, even if the bed mesh map is captured over the network using the native screen.
 
 ---
 
 #### By modifying the start code and START_PRINT macro
+
+If you do not want to use the global parameters *(SAVE_ZMOD_DATA PRINT_LEVELING=0)*, the following parameters of the macro [START_PRINT](/de/Main/#start_print), which is written in the start G-code, are available.
+
+- FORCE_LEVELING - forces the creation of a table map; True - create, False - do not create.
+- FORCE_KAMP - starts the creation of the adaptive table map; True - yes, False - no.
+- SKIP_LEVELING - never create the table map. Stronger than FORCE_KAMP and FORCE_LEVELING.
+- MESH - name of the table map to load; if not specified, nothing is loaded; if it does not exist, it is created.
+
 Examples:
 
-!!! warning
-    The parameter FORCE_LEVELING or FORCE_KAMP is not a separate macro, but a parameter of the Start Print Macro.
+Removing the entire Bedmesh:
+```
+START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single] FORCE_LEVELING=True
+M190 S[bed_temperature_initial_layer_single]
+M104 S[nozzle_temperature_initial_layer]
+```
 
-- Full leveling:
-  ```
-  START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single] FORCE_LEVELING=True
-  ```
+Removing the adaptive Bedmesh:
+```
+START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single] FORCE_KAMP=True
+M190 S[bed_temperature_initial_layer_single]
+M104 S[nozzle_temperature_initial_layer]
+```
 
-- Adaptive leveling:
-  ```
-  START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single] FORCE_KAMP=True
-  ```
+Algorithm for removing the bed net map in the macro [START_PRINT](/Main/#start_print):
+
+1. If MESH is not empty, the map with the name specified in the MESH parameter is loaded.
+2. If `SKIP_LEVELING=True`, the bed net map is never removed.
+3. Otherwise, if `FORCE_CAMP=True` is set, KAMP is removed.
+4. Otherwise, if the bed net map is not loaded (the native header always loads the `MESH_DATA` map) or if `FORCE_LEVELING=True`, the bed net map is built, but it is not saved.
 
 ---
 
 #### Via macros and buttons in Fluidd
-Use:
 
-- [AUTO_FULL_BED_LEVEL](/Calibrations/#auto_full_bed_level) (Fluidd button `BED LEVELING`)
-- [KAMP](/Calibrations/#kamp)
+If you don't want to use the START_PRINT macro and global parameters, the following macros are available:
+
+- [AUTO_FULL_BED_LEVEL](/Calibrations/#auto_full_bed_level) (Fluidd button `BED LEVELING`) - removes the bed map and cleans the nozzle at a specified bed and extruder temperature. Turns off heating after removing the bed map.
+
+- This same macro can be called using the Fluidd/Mainsail button; it's called `BED CALIBRATION`. After removing the bed map at a specified temperature, you can click the `Save Parameters` button, and the bed map will be saved to the `printer.cfg` file.
+
+It can also be written into the startup G-code:
+```
+AUTO_FULL_BED_LEVEL EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single]
+M190 S[bed_temperature_initial_layer_single]
+M104 S[nozzle_temperature_initial_layer]
+```
+
+- [KAMP](/Calibrations/#kamp) - Adaptive bed calibration with nozzle cleaning
+  ```
+  EXTRUDER_TEMP=[nozzle_temperature_initial_layer]
+  BED_TEMP=[bed_temperature_initial_layer_single]
+  ```
+
+- BED_MESH_CALIBRATE - Mesh removal using the standard clipper macro.
+  **Not recommended**, as it does not clean the nozzle, resulting in incorrect results. **Orca's adaptive bed map is not recommended** at all, as it lacks randomization of point measurements, meaning that when printing identical models, the nozzle will consistently take measurements at the same points, resulting in micro-holes and, consequently, an incorrect bed map.
+
 - Standard Klipper macros (**not recommended**)
+
+---
+
+#### Using Standard Klipper Commands
+
+To work with MESH, there are standard KLIPPER macros:
+
+- [BED_MESH_CALIBRATE](https://www.klipper3d.org/G-Codes.html#bed_mesh_calibrate) - Remove bed mesh map
+- [BED_MESH_OUTPUT](https://www.klipper3d.org/G-Codes.html#bed_mesh_output) - Output bed mesh map
+- [BED_MESH_PROFILE](https://www.klipper3d.org/G-Codes.html#bed_mesh_profile) - Load, delete, and save bed mesh maps
+
+When loading a print bed map using KLIPPER commands in the filament profile, ensure you use the same print bed map in both START_PRINT and the filament profile. Alternatively, you can disable nozzle cleaning in START_PRINT and perform it separately in the filament profile.
+
+It is strongly recommended that you review the nozzle cleaning options:
+
+- [CLEAR_NOZZLE](Main/#clear_nozzle) – Nozzle cleaning as in the native firmware.
+- [PRECLEAR](/Global/#preclear) – Additional nozzle cleaning when removing the print bed map.
+- [CLEAR](/Global/#clear) – Four algorithms (you can add your own) for cleaning the nozzle line before printing.
 
 ---
 
@@ -258,27 +369,14 @@ Documentation is often unread, though 90% of questions are answered here. To ver
 - [Recommendations](/Recomendations/)
 - [Setup/Update/Uninstall](/Setup/)
 - [Macros](/Macros/)
+- [Configuration Storage](/FAQ/#configuration-storage)
 - [Known Issues](#known-peculiarities)
 
 ---
 
-### What's the difference between using the screen and without the native screen?
+### I want to remove Z-Mod - I have to recalib?
 
-The printer can operate in two modes:
-
-- With the native screen - in this case, almost all operating logic is controlled by the native screen, and many features cannot be changed.
-- Without the native screen - in this case, all features are controlled by Z-Mod.
-This doesn't mean you need to turn off the screen or replace it with a different one.
-In the mode without the native screen, you can use the alternative software screen GuppyScreen/HelixScreen or turn off the screen completely, so it will turn off.
-
-!!! warning
-    Do not disable the screen unless you fully understand bed leveling, z-offset, and START_PRINT/END_PRINT macros
-
-**Disabling the screen saves RAM but changes print management (start/pause/resume/cancel/recovery). Modify start/end G-code accordingly.** *elk*
-
-Without the screen, Z-offset from the screen isn't applied. Use [START_PRINT](/Main/#start_print) parameters or global settings. [Details](/FAQ/#how-does-z-offset-work)
-
-Read [features of screenless operation](#screenless-version-notes).
+No - all settings are saved
 
 ---
 
@@ -487,14 +585,6 @@ Use `GET_RETRACTION` to view current settings.
 
 ---
 
-### After installing Z-Mod, my screen is dead and not responding to touches.
-
-- [Install the latest native firmware and Z-Mod updates](/Recomendations/#install-latest-native-firmware-and-zmod-updates)
-- Read [known peculiarities](#known-peculiarities) *bison*
-- You might have disabled the screen. Enable it with the [DISPLAY_ON](/System/#display_on) macro
-
----
-
 ### I have installed the latest version, and the developer says you need to update.
 
 - Make sure you put the latest version from a flash drive
@@ -511,15 +601,9 @@ Settings-> Software updates-> Press Check for update
 
 ---
 
-### I want to remove Z-Mod - I have to recalib?
-
-No - all settings are saved
-
----
-
 ### Entware in Z-Mod: How to Use It
 
-**Warning! There is no Entware in [AD5X](/ru/AD5X/)**
+**Warning! There is no Entware in [AD5X](/AD5X/)**
 
 1. SSH into the printer (`root`:`root`, port `22`).
 2. Run:
@@ -546,7 +630,7 @@ No - all settings are saved
 
 #### AD5X
 
-[AD5X](/ru/AD5X/)
+[AD5X](/AD5X/)
 
 ---
 
@@ -610,8 +694,7 @@ WeightValue is the value on the load cells in grams. It is displayed in degrees,
 
 What is this sensor for?
 
- It can be used to measure zoffset via the [g28_tenz](https://github.com/ghzserg/g28_tenz) plugin
-
+- It can be used to measure zoffset via the [g28_tenz](https://github.com/ghzserg/g28_tenz) plugin
 - You can stop printing if the nozzle hits the part or the part is torn off. [NOZZLE_CONTROL](/ru/Global/#nozzle_control)
 - Without resetting it, the table map will be measured incorrectly.
 
@@ -624,7 +707,7 @@ Here are some errors that depend on the MCU:
 - MCU Protocol error
 - Unknown temperature sensor flashforge_loadcell
 - Required MCU command
-- flashforge_loadcell: Required MCU command 'flashforge_loadcell_h1' is not available
+- flashforge_loadcell: Required MCU command `flashforge_loadcell_h1` is not available
 
 The essence of all these errors is that the Klipper version does not match the MCU version.
 
@@ -640,6 +723,8 @@ Or vice versa. You're running native Klipper, but you've loaded an MCU for Klipp
 
 If your MCU version starts with ```?-20230317_182329-ubuntu20-virtual-machine```, then you've loaded an MCU for Klipper 12 (AD5X) or Klipper 11 (Ad5M/Ad5mPro).
 
+[Switch to Native Klipper](/Native_FW/#fix_klipper)
+
 Accordingly, Z-Mod needs to load native Klipper.
 
 - Go to ```mod_data/variables.cfg``` and delete the line ```klipper13 = 1```.
@@ -652,7 +737,7 @@ If this isn't the case and Klipper is working, run ```UPDATE_MCU FORCE=13``` - t
 
 If all else fails and **Klipper isn't working**:
 
-- Switch to the native Klipper as described above.
+- [Switch to Native Klipper](/Native_FW/#fix_klipper)
 - [Install the native Factory firmware](/Native_FW/#how-to-install-native-firmware), which will install the native MCU.
 
 ---

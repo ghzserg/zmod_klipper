@@ -29,7 +29,7 @@ Pause und Filament ersetzen
 
 ---
 
-### FARBE
+### COLOR
 
 * * nur AD5X * *
 
@@ -48,7 +48,7 @@ Pause/Aufrufmakro auf der nächsten Ebene setzen
 
 ---
 
-### SET_PAUSE_AM_LAYER
+### SET_PAUSE_AT_LAYER
 
 Aktivieren/Deaktivieren der Pause bei einer bestimmten Ebenennummer
 
