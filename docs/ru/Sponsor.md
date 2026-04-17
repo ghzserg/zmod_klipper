@@ -2,9 +2,10 @@
 
 Поскольку люди просили, я принимаю пожертвования, но, пожалуйста, помните, что я работаю над Z-Mod ради удовольствия, а не ради денег. Я не буду принимать пожертвования для работы над конкретными ошибками или функциями.
 
-| <a href="https://pay.cloudtips.ru/p/3cbf9e9f">На развитие zmod: СБП, Банковская карта, T-pay</a> | Support Mod Development: BTC `17wXTd9BqYp1K3zCLTxVyGLEXUDjf7XNLL` |
+| <a href="https://pay.cloudtips.ru/p/3cbf9e9f">На развитие zmod: СБП, Банковская карта, T-pay</a> | <img width="262" height="262" alt="CloudTips" src="https://github.com/user-attachments/assets/e7c1ebf3-3a54-4b46-b071-06656ac06ae1" /> |
 | :----: | :----: |
-| <img width="262" height="262" alt="CloudTips" src="https://github.com/user-attachments/assets/e7c1ebf3-3a54-4b46-b071-06656ac06ae1" /> | <img width="262" height="262" alt="BTC" src="https://github.com/user-attachments/assets/da12b899-b5ea-4276-8661-83a348d151df" /> |
+| <a href="https://boosty.to/ghzserg">Поддержать через Boosty (Visa/Mastercard из любых стран)</a> | <img width="150" height="150" alt="ghzserg-donate" src="https://github.com/user-attachments/assets/86e7fe3a-327b-4a0e-b8c4-ee74078167c0" /> |
+| Support Mod Development: BTC `17wXTd9BqYp1K3zCLTxVyGLEXUDjf7XNLL` | <img width="262" height="262" alt="BTC" src="https://github.com/user-attachments/assets/da12b899-b5ea-4276-8661-83a348d151df" /> |
 
 Огромное спасибо сообществу [FF_5M_5M_Pro](https://t.me/FF_5M_5M_Pro) за приобретение [AD5X](/ru/AD5X/) для разработки в лице
 
@@ -24,3 +25,8 @@
 - [@cackmobile](https://github.com/cackmobile)
 - [@ck0neGit](https://github.com/ck0neGit)
 - [@xyzroe](https://github.com/xyzroe)
+
+[Boosty sponsor](https://github.com/ghzserg/zmod/discussions/554):
+
+- [@Wideopentuning](https://github.com/Wideopentuning)
+- [@edzeg](https://github.com/edzeg)
