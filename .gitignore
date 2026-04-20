@@ -15,3 +15,4 @@ klippy/extras/zmod_ifs.py
 klippy/extras/zmod_tenz.py
 klippy/extras/virtual_sdcard.py
 klippy/extras/led_effect.py
+klippy/extras/ifs_jacker*.py
