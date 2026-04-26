@@ -190,6 +190,15 @@ class FlashforgeLoadCell:
             message = f"{self.name}: Сброс тензодачиков..."
         gcmd.respond_info(message)
         deadline = self.reactor.monotonic() + self.tare_timeout
+        try:
+            response = self._send_and_wait(MCU_CMD_FLASHFORGE_H7)
+        except self.printer.command_error as e:
+            if self.language != 'ru':
+                error_msg = f"Start weight error: {e}"
+            else:
+                error_msg = f"Начальный вес не получен: {e}"
+            raise gcmd.error(error_msg)
+        start_weight = abs(response.value)
         while self.reactor.monotonic() < deadline:
             try:
                 self._send_and_wait(MCU_CMD_FLASHFORGE_H1)
@@ -200,11 +209,11 @@ class FlashforgeLoadCell:
                 else:
                     error_msg = f"Шаг тарирования не удался: {e}"
                 raise gcmd.error(error_msg)
-            if abs(response.value) <= self.tare_threshold:
+            if abs(response.value) <= self.tare_threshold and (start_weight == 0 or start_weight != abs(response.value)):
                 if self.language != 'ru':
-                    success_msg = f"Tare successful. Final weight: {response.value}g"
+                    success_msg = f"Tare successful. Weight: {start_weight}->{response.value}g"
                 else:
-                    success_msg = f"Сброс тензодачиков завершен. Вес: {response.value}г"
+                    success_msg = f"Сброс тензодачиков завершен. Вес: {start_weight}->{response.value}г"
                 gcmd.respond_info(success_msg)
                 return
             if self.language != 'ru':
