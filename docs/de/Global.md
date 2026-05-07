@@ -7,7 +7,7 @@ Es kann aufgerufen werden durch:
 - Aus der GCODE-Datei
 - Von der Fluidd/Mainsail-Konsole (drücken Sie den englischen Buchstaben "C" in Fluidd)
 
-!!! Hinweis
+!!! info "Hinweis"
     *Der Wert in Klammern ist der Standardwert.
 
 ---
@@ -16,7 +16,7 @@ Es kann aufgerufen werden durch:
 
 Legt Sie die Sprache fest, die Z-Mod verwenden soll.
 
-- LANG - Sprache: `en - Englisch`, `ru - Russisch`, `de - Deutsch`, `fr - Französisch`, `it - Italienisch`, `es - Spanisch`, `zh - Chinesisch`, `ja - Japanisch`, `ko - Koreanisch, `pt - Portugiesisch`, `cs - Tschechisch`, `tr - Türkisch`
+- LANG - Sprache: `en - Englisch`, `ru - Russisch`, `de - Deutsch`, `fr - Französisch`, `it - Italienisch`, `es - Spanisch`, `zh - Chinesisch`, `ja - Japanisch`, `ko - Koreanisch`, `pt - Portugiesisch`, `cs - Tschechisch`, `tr - Türkisch`
 
 Beispiel:
 ```
@@ -80,9 +80,11 @@ Liefert die Werte der globalen Z-Mod-Parameter/Flags.
 Nach der Ausführung des Makros zeigt die Konsole die Daten an, die zuvor gespeichert und zum aktuellen Zeitpunkt angewendet wurden.
 
 ??? note "FLUIDD"
+
     `Fluidd` -> `Makros` -> `Haupt` -> `Z-Mod-PARAMETER`.
 
 ??? note "MAINSAIL"
+
     `Mainsail` -> `Dashboard` -> `System` -> `GET ZMOD DATA`
 
 ---
@@ -110,9 +112,11 @@ Nach dem Ausschalten des Druckers werden die Parameter im Druckerspeicher in der
 **Um den gewünschten Parameter zu bearbeiten:**
 
 ??? note "FLUIDD"
+
     `Fluidd` -> `Makros` -> `System` -> `SAVE Z-Mod PARAMETERS`
 
 ??? note "MAINSAIL"
+
     `Mainsail` -> `Dashboard` -> `System` -> `SAVE ZMOD DATA`
     
 wähle den Parameter aus, den Sie ändern wollen, trage ihn ein und drücken `SENDEN`. Sehen Sie, was in der Konsole angezeigt wird.
@@ -135,7 +139,7 @@ Wenn Z-Mod die Datei erfolgreich nach verwendeten Instrumenten durchsucht, wird 
 
 Diese Einstellung kann nicht verwendet werden, wenn der native Bildschirm aktiviert ist.
 
-[Siehe Einstellung für die Vorverarbeitung](/de/Recomendations/#aktivieren-sie-die-md5-kontrolle)
+[Siehe Einstellung für die Vorverarbeitung](/de/Recommendations/#aktivieren-sie-die-md5-kontrolle)
 
 Beispiel: `SAVE_ZMOD_DATA ALLOWED_TOOL_COUNT=4`.
 
@@ -143,7 +147,7 @@ Beispiel: `SAVE_ZMOD_DATA ALLOWED_TOOL_COUNT=4`.
 
 Ermöglicht das Scannen von Gcode-Dateien, um die verwendeten Werkzeugwechselbefehle (T0, T1 usw.) und die ihnen im Slicer zugewiesenen Farben und Materialien zu ermitteln: 0 (aus), 1 (an), 2 (schaltet das vollständige Scannen aus, sucht aber nach vom Slicer-Skript vorbereiteten Daten).
 
-[Siehe Einstellung für die Vorverarbeitung](/de/Recomendations/#aktivieren-sie-die-md5-kontrolle)
+[Siehe Einstellung für die Vorverarbeitung](/de/Recommendations/#aktivieren-sie-die-md5-kontrolle)
 
 Beispiel: `SAVE_ZMOD_DATA SCAN_FILE_COLORS=0`.
 
@@ -155,34 +159,40 @@ Beispiel: `SAVE_ZMOD_DATA COLOUR_MENU_1_BASED=1`.
 
 ##### AUTO_ASSIGN_COLORS
 
-Legt fest, ob versucht werden soll, Werkzeugwechselbefehle (T0, T1 usw.) automatisch dem physischen Filament zuzuordnen, das in Ihrem IFS geladen ist, wenn Sie den Druckvorgang starten. Wenn Sie den stillen Modus nicht aktiviert haben, wird das Farbauswahlmenü trotzdem angezeigt; diese Einstellung wirkt sich nur auf die Standardauswahl aus: 0 (aus), 1 (ein).
+Legt fest, ob beim Druckstart die automatische Zuordnung von Werkzeugwechselbefehlen (T0, T1 usw.) zum im IFS geladenen Filament versucht werden soll. Sofern der Silent-Modus nicht aktiviert ist, wird das Farbauswahlmenü weiterhin angezeigt. Diese Einstellung betrifft nur die Standardauswahl: 
 
-Diese Einstellung gilt auch für Aufträge, die im stillen Modus ausgeführt werden. Sie können einstellen, dass der Druck unterbrochen wird, wenn bestimmte automatische Zuordnungsfehler auftreten: 2 (Unterbrechung, wenn ein Material nicht übereinstimmt, aber Farbabweichungen zulassen), 30 (Unterbrechung bei allen Problemen).
+- 0 (deaktivieren), 
+- 1 (aktivieren).
 
-Um benutzerdefinierte Werte für Fehlerbedingungen im stillen Modus einzustellen, addieren Sie die folgenden Werte, um die gewünschte Einstellung zu erhalten:
+Diese Einstellung gilt auch für Drucke, die im Silent-Modus gestartet werden. Sie können die automatische Materialzuordnung so konfigurieren, dass der Druckvorgang bei bestimmten Fehlern abgebrochen wird: 
 
-* 2 (Mindestens ein Material stimmt nicht überein, z. B. wenn in der Gcode-Datei ABS angegeben ist, Sie aber nur PLA geladen haben, oder die Materialdaten nicht geladen werden konnten)
-* 4 (Mindestens eine Farbe stimmt überhaupt nicht überein, in der Regel weil die Scandateien deaktiviert oder fehlerhaft sind)
-* 8 (Mindestens eine Farbe stimmt nicht gut überein)
-* 16 (Dieselbe physische Spule wurde mehr als einem Werkzeugindex in der Datei zugewiesen)
+- 2 (Abbruch, wenn Materialien nicht zugeordnet werden können; Farbabweichungen sind zulässig), 
+- 30 (Abbruch bei allen Problemen).
 
-[Siehe Vorverarbeitungseinstellung](/de/Recomendations/#aktivieren-sie-die-md5-kontrolle)
+Für benutzerdefinierte Werte bei Fehlerbedingungen im stillen Modus addieren Sie die folgenden Werte, um die richtige Einstellung zu ermitteln:
+
+- 2 (Mindestens ein Material kann nicht zugeordnet werden; z. B. ist in der G-Code-Datei ABS angegeben, aber nur PLA geladen; oder die Materialdaten konnten nicht geladen werden).
+- 4 (Mindestens eine Farbe kann nicht zugeordnet werden, üblicherweise aufgrund eines deaktivierten oder fehlgeschlagenen Dateiscans).
+- 8 (Mindestens eine Farbe stimmt möglicherweise nicht überein).
+- 16 (Mindestens eine physische Spule wurde in der Datei mehreren Werkzeugindizes zugeordnet).
+
+[Siehe Vorverarbeitungseinstellung](/de/Recommendations/#aktivieren-sie-die-md5-kontrolle)
 
 Beispiel: `SAVE_ZMOD_DATA AUTO_ASSIGN_COLORS=0`.
 
-### Parameter für den Start des Drucks, Aufbau der Tabellenkarte [START_PRINT]:
+### Parameter für den Start des Druckvorgangs und die Erstellung einer Bettkarte [START_PRINT]:
 
 ##### MIDI_START
 
 MIDI abspielen bei Druckbeginn (""), 0 zum Ausschalten
 
-Beispiel: `SAVE_ZMOD_DATA MIDI_START=Schmerz-Halt-deinen-Mund.mid`.
+Beispiel: `SAVE_ZMOD_DATA MIDI_START=Pain-Shut-your-mouth.mid`.
 
 ---
 
 ##### PRECLEAR
 
-Düsenvorreinigung in CLEAR_NOZZLE verwenden 0-nein, 1-ja (0)
+Düsenvorreinigung in CLEAR_NOZZLE verwenden 0-(nein), 1-(ja)
 
 Beispiel: `SAVE_ZMOD_DATA PRECLEAR=0`.
 
@@ -190,7 +200,12 @@ Beispiel: `SAVE_ZMOD_DATA PRECLEAR=0`.
 
 ##### PRINT_LEVELING
 
-Erstellen Sie bei jedem Druck eine Tischkarte (über den nativen Bildschirm, wenn dieser aktiviert ist) 0-nein, 1-ja (0). *Um die Desktop-Karte vom nativen Bildschirm zu entfernen, gehen Sie zu "Einstellungen" -> "WiFi-Symbol" -> "Netzwerkmodus" -> **aktivieren Sie den Schieberegler** "Nur lokale Netzwerke "* über das Menü des Druckerbildschirms.
+Erstellen Sie bei jedem Druck ein Bettnetz (über den nativen Bildschirm, wenn dieser aktiviert ist) 
+
+- 0-(nein), 
+- 1-(ja) . 
+
+*Um die Bettnetz-Karte vom nativen Bildschirm zu entfernen, gehen Sie zu `Einstellungen` :arrow_right: `WiFi-Symbol` :arrow_right: `Netzwerkmodus` :arrow_right: **aktivieren Sie den Schieberegler** `Nur lokale Netzwerke `* über das Menü des Druckerbildschirms.
 
 Beispiel: `SAVE_ZMOD_DATA PRINT_LEVELING=1`.
 
@@ -198,11 +213,14 @@ Beispiel: `SAVE_ZMOD_DATA PRINT_LEVELING=1`.
 
 ##### USE_KAMP
 
-Wenn es möglich ist, eine adaptive Tabellenkarte (KAMP) anstelle einer vollständigen Tabellenkarte zu verwenden 0-nein, 1-ja (0).
+Verwenden Sie nach Möglichkeit adaptives Mesh (KAMP) anstelle von vollständigem Bett-Mesh: 
 
-Es wird auch empfohlen, `SAVE_ZMOD_DATA CLEAR=LINE_PURGE` zu setzen, was es ermöglicht, den Bereinigungsraum zu verwenden, in dem die Tabellenkarte entfernt wird.
+- 0-(nein), 
+- 1-(ja) .
 
-*Ermöglicht die Verwendung von KAMP beim Leveln vom nativen Bildschirm über das Netzwerk.
+Es wird empfohlen, `SAVE_ZMOD_DATA CLEAR=LINE_PURGE` zu setzen, um die Spülposition mit dem KAMP-Mesh abzustimmen.
+
+*Ermöglicht die Verwendung von KAMP beim Leveln vom nativen Bildschirm über das Netzwerk*.
 
 Beispiel: `SAVE_ZMOD_DATA USE_KAMP=1`.
 
@@ -210,56 +228,63 @@ Beispiel: `SAVE_ZMOD_DATA USE_KAMP=1`.
 
 ##### MESH_TEST
 
-Testen Sie die Tabellenkarte vor dem Drucken:
+Testen Sie das Bettnetz vor dem Drucken.:
 
 - 0 - keine
 - 1 - Test OHNE automatische Z-Offset-Auswahl (standardmäßig)
 - 2 - Test OHNE automatische Z-Offset-Auswahl, bei falscher Zuordnung KAMP starten
 - 3 - Test mit AUTO Z-Offset-Auswahl, mit Düsenreinigung
-- 4 - Test mit AUTO Z-Offset-Auswahl, mit Düsenreinigung, bei Kennfeldfehlern, KAMP starten
+- 4 - Testen Sie mit automatischer Z-Offset-Anpassung und Düsenreinigung. Falls das Bettnetz nicht übereinstimmt, führen Sie KAMP aus.
 
 **Automatische Auswahl des Z-Offsets**
 
-Algorithmus zur automatischen Kalibrierung des Z-Achsen-Offsets (Z-Offset):
+Algorithmus zur automatischen Z-Offset-Kalibrierung:
 
-1.  **Quelldaten:** Im Druckerspeicher ist die Tabellenkarte (in der Regel 25 Punkte) des letzten Ausrichtungsvorgangs gespeichert.
-2.  **Vorbereitung:**
+1. **Quelldaten:** Der Druckerspeicher speichert ein Bettnetz (typischerweise 25 Punkte), das beim letzten Nivellierungsvorgang erstellt wurde.
 
-    * Düse auf Betriebstemperatur erwärmt, gegen den Tisch gereinigt und auf 151°C abgekühlt.
+2. **Vorbereitung:**
 
-3.  **Wählen Sie den Messpunkt:**
+	* Die Düse wird auf Betriebstemperatur erhitzt, über das Druckbett geführt und auf 151 °C abgekühlt.
 
-    * Der **mittlere** Punkt der Karte wird verwendet.
+3. **Messpunktauswahl:**
 
-4.  **Messung und Vergleich:**
+	* Der **Mittelpunkt** des Netzes wird verwendet.
 
-    * Eine neue Sondenmessung (PROBE) wird an dem ausgewählten Punkt durchgeführt.
-        * Der erhaltene Wert wird mit dem in der Tabellenkarte gespeicherten Wert verglichen.
+4. **Messung und Vergleich:**
 
-5.  **Anpassung des Offsets:**
+	* Am ausgewählten Punkt wird eine neue Messung durchgeführt.
 
-    * Ist die Differenz **kleiner als 0,3 mm**, wird die Differenz zum aktuellen Z-Offset-Wert addiert.
-        * Ist die Differenz **größer oder gleich 0,3 mm**, betrachtet das System die gespeicherte Karte als irrelevant und startet bei aktivierten Einstellungen automatisch das Verfahren zur Neuausrichtung der Tabelle (KAMP).
+		* Der ermittelte Wert wird mit dem im Bettnetz gespeicherten Wert verglichen.
+
+5. **Offset-Korrektur:**
+
+	* Beträgt die Abweichung **weniger als 0,3 mm**, wird die Differenz zum aktuellen Z-Offset-Wert addiert.
+
+		* Beträgt die Abweichung **größer oder gleich 0,3 mm**, betrachtet das System das gespeicherte Netz als veraltet und leitet, sofern die Einstellungen dies zulassen, automatisch eine Bettnivellierung (KAMP) ein.
 
 **Kein automatischer Z-Offset**
 
-Algorithmus für die Überprüfung der Tabellenkarte:
+Algorithmus zur Validierung des Druckbettnetzes:
 
-1.  **Messung:** Eine Standard-Sondenmessung (PROBE) wird am aktuellen Punkt durchgeführt.
-2.  **Validierung:** Der resultierende Z-Wert wird mit der geladenen Karte verglichen.
-3.  **Kriterium:** Der Wert muss zwischen (Karte Minimum - 0,21 mm) und (Karte Maximum + 0,21 mm) liegen.
-4.  **Ergebnis:**
+1. **Messung:** An der aktuellen Position wird eine Standard-Sondenmessung durchgeführt.
 
-    **Erfolg:** Die Karte wird als korrekt angesehen, der Druck wird fortgesetzt.
-        * Fehler:** ** Es wird eine Warnung angezeigt und der Druckvorgang wird gestoppt oder, falls die Einstellungen aktiviert sind, wird automatisch das Verfahren zur Neuausrichtung der Tabelle (KAMP) gestartet.
+2. **Validierung:** Der ermittelte Z-Wert wird auf Übereinstimmung mit dem geladenen Netz geprüft.
+
+3. **Kriterium:** Der Wert muss im Bereich von (Netzminimum - 0,21 mm) bis (Netzmaximum + 0,21 mm) liegen.
+
+4. **Ergebnis:**
+	* **Erfolg:** Das Netz wird als korrekt betrachtet, der Druckvorgang wird fortgesetzt.
+
+		* **Fehler:** Es wird eine Warnung ausgegeben und der Druckvorgang wird gestoppt oder, falls die Einstellungen dies zulassen, automatisch eine Bettnivellierung (KAMP) eingeleitet.
 
 **Hinweise:**
 
-* Die Prüfung ist eine grobe Schätzung. Sie ist dazu gedacht, kritische Fehler zu erkennen, z.B. wenn eine Karte, die für dickes Glas genommen wurde, für eine PEI-Platte geladen wird und umgekehrt.
-* ** ** Verlassen Sie sich nicht auf diese Prüfung als absolute Sicherheit.
-* Bei Verwendung der intelligenten Reinigung (KAMP) befindet sich die Wärmewarte in der Nähe des Reinigungsbereichs und nicht in der Ecke des Tisches.
+* Diese Prüfung ist eine grobe Schätzung. Sie dient dazu, kritische Fehler zu erkennen, z. B. wenn ein für eine PEI-Folie erstelltes Netz für dickes Glas geladen wird und umgekehrt.
 
-Beispiel: `SAVE_ZMOD_DATA MESH_TEST=0`.
+* **Diese Prüfung bietet keinen absoluten Schutz.**
+* Bei Verwendung der intelligenten Reinigung (KAMP) erfolgt die Heizwartezeit in der Nähe des Reinigungsbereichs, nicht in einer Ecke des Bettes.
+
+Beispiel: `SAVE_ZMOD_DATA MESH_TEST=0`
 
 ---
 
@@ -267,28 +292,51 @@ Beispiel: `SAVE_ZMOD_DATA MESH_TEST=0`.
 
 Igor Polunovskiy
 
-Überprüft die MD5-Summe der Datei, löscht die Datei im Falle eines Fehlers. 0-nicht prüfen, 1-prüfen (1)
+Überprüft die MD5-Summe der Datei, löscht die Datei im Falle eines Fehlers.
 
-1. Sie müssen eine Datei für Ihre Architektur und Ihr Betriebssystem auswählen und auf Ihren Computer herunterladen:
+- 0-nicht prüfen,
+- 1-prüfen 
 
-- [zmod_preprocess-windows-amd64.exe](https://github.com/ghzserg/zmod_preprocess/releases/latest/download/zmod_preprocess-windows-amd64.exe) - Windows
-- [zmod_preprocess-linux-amd64](https://github.com/ghzserg/zmod_preprocess/releases/latest/download/zmod_preprocess-linux-amd64) - Linux. Vergessen Sie nicht, ```chmod +x zmod_preprocess-linux-amd64`'' auszuführen.
-- [zmod_preprocess-darwin-arm64](https://github.com/ghzserg/zmod_preprocess/releases/latest/download/zmod_preprocess-darwin-arm64) - macOS Intel. Vergessen Sie nicht, ```chmod +x zmod_preprocess-darwin-arm64``` auszuführen
-- [zmod_preprocess-darwin-amd64](https://github.com/ghzserg/zmod_preprocess/releases/latest/download/zmod_preprocess-darwin-amd64) - macOS Silicon. Vergessen Sie nicht, ```chmod +x zmod_preprocess-darwin-amd64``` auszuführen
-- [zmod-preprocess.py](https://github.com/ghzserg/zmod_preprocess/releases/latest/download/zmod-preprocess.py) - Universal Python. Vergessen Sie nicht, ```chmod +x zmod-preprocess.py``` auszuführen.
-- [zmod-preprocess.sh](https://github.com/ghzserg/zmod_preprocess/releases/latest/download/zmod-preprocess.sh) - Linux/MacOS Bash. Vergessen Sie nicht, ```chmod +x zmod-preprocess.sh``` auszuführen.
+??? info "Download: Wählen Sie die passende Datei für Ihr System"
 
-2. In Orca muessen Sie schreiben. ```Prozessprofil``` -> ```Andere``` -> ```Nachverarbeitungsskripte```.
+    1. Sie müssen eine Datei für Ihre Architektur und Ihr Betriebssystem auswählen und auf Ihren Computer herunterladen:
+        * [zmod_preprocess-windows-amd64.exe](https://github.com/ghzserg/zmod_preprocess/releases/latest/download/zmod_preprocess-windows-amd64.exe) - **Windows**
+        * [zmod_preprocess-linux-amd64](https://github.com/ghzserg/zmod_preprocess/releases/latest/download/zmod_preprocess-linux-amd64) - **Linux** Vergessen Sie nicht, `chmod +x                           zmod_preprocess-linux-amd64` auszuführen.
+        * [zmod_preprocess-darwin-arm64](https://github.com/ghzserg/zmod_preprocess/releases/latest/download/zmod_preprocess-darwin-arm64) - **macOS Intel** Vergessen Sie nicht, `chmod +x                  zmod_preprocess-darwin-arm64` auszuführen.
+        * [zmod_preprocess-darwin-amd64](https://github.com/ghzserg/zmod_preprocess/releases/latest/download/zmod_preprocess-darwin-amd64) - **macOS Silicon** Vergessen Sie nicht, `chmod +x                zmod_preprocess-darwin-amd64` auszuführen.
+        * [zmod-preprocess.py](https://github.com/ghzserg/zmod_preprocess/releases/latest/download/zmod-preprocess.py) - **Universal Python** Vergessen Sie nicht, `chmod +x zmod-preprocess.py`             auszuführen.
+        * [zmod-preprocess.sh](https://github.com/ghzserg/zmod_preprocess/releases/latest/download/zmod-preprocess.sh) - **Linux/MacOS Bash** Vergessen Sie nicht, `chmod +x zmod-preprocess.sh`             auszuführen.
+     
+??? tip "2. Konfiguration in Orca"
+    In Orca müssen Sie den Pfad zum Skript an folgender Stelle angeben:
+    `Prozessprofil` :arrow_right: `Andere` :arrow_right: `Nachverarbeitungsskripte`.
 
-Hier sind die Optionen, die Sie hinzufügen müssen:
+    **Hier sind die Optionen, die Sie hinzufügen müssen (je nach System):**
 
-- ```"C:\path_to_file\zmod_preprocess-windows-amd64.exe";```
-- ```"C:\python_ordner\python.exe" "C:\Scripts\zmod-preprocess.py";```
-- ````"/usr/bin/python3" "/home/user/zmod-preprocess.py";````
-- ````"/home/benutzer/zmod-preprocess.py";````
-- ````"/home/benutzer/zmod_preprocess-darwin-amd64";````
-- ````"/home/benutzer/zmod_preprocess-darwin-arm64";````
-- ````"/home/benutzer/zmod_preprocess-linux-amd64";````
+    * **Windows (Executable):**
+        ```text
+        "C:\path_to_file\zmod_preprocess-windows-amd64.exe";
+        ```
+
+    * **Windows (Python Skript):**
+        ```text
+        "C:\python_ordner\python.exe" "C:\Scripts\zmod-preprocess.py";
+        ```
+
+    * **Linux/macOS (Python):**
+        ```text
+        "/usr/bin/python3" "/home/user/zmod-preprocess.py";
+        ```
+
+    * **Linux/macOS (Direkter Pfad):**
+        ```text
+        "/home/benutzer/zmod-preprocess.py";
+        ```
+
+    * **Binärdateien (Linux/macOS):**
+        * `/home/benutzer/zmod_preprocess-darwin-amd64`;
+        * `/home/benutzer/zmod_preprocess-darwin-arm64`;
+        * `/home/benutzer/zmod_preprocess-linux-amd64`;
 
 Beispiel: `SAVE_ZMOD_DATA FORCE_MD5=1`.
 
@@ -296,7 +344,8 @@ Beispiel: `SAVE_ZMOD_DATA FORCE_MD5=1`.
 
 ##### DISABLE_SKEW
 
-1 - SKEW-Korrektur deaktivieren, 0 - Profil `skew_profile` laden (das Makro `SKEW_PROFILE LOAD=skew_profile` wird aufgerufen) (1)
+- 1 - SKEW-Korrektur deaktivieren, 
+- 0 - Profil `skew_profile` laden (das Makro `SKEW_PROFILE LOAD=skew_profile` wird aufgerufen)
 
 [Mehr lesen](https://www.klipper3d.org/Skew_Correction.html)
 
@@ -306,9 +355,12 @@ Beispiel: `SAVE_ZMOD_DATA DISABLE_SKEW=1`.
 
 ##### LOAD_ZOFFSET
 
-Laden des Z-Offsets aus den zuvor über SET_GCODE_OFFSET gespeicherten globalen Parametern. 1 - ja, 0 - nein (1)
+Laden des Z-Offsets aus den zuvor über SET_GCODE_OFFSET gespeicherten globalen Parametern.
 
-[Wie funktioniert Z-Offset](/de/FAQ/#wie-z-offset-arbeitet)
+- 1 - ja,
+- 0 - nein
+
+[Wie funktioniert der Z-Offset](/de/FAQ/#so-funktioniert-der-z-offset)
 
 Beispiel: `SAVE_ZMOD_DATA LOAD_ZOFFSET=0`.
 
@@ -316,7 +368,10 @@ Beispiel: `SAVE_ZMOD_DATA LOAD_ZOFFSET=0`.
 
 ##### DISABLE_PRIMING
 
-Deaktivieren der Düsenreinigung durch Zusammendrücken 0-no, 1-yes (0)
+Düsenreinigung über Extrusion deaktivieren:
+
+- 0-nein,
+- 1-ja
 
 Beispiel: `SAVE_ZMOD_DATA DISABLE_PRIMING=0`.
 
@@ -326,23 +381,24 @@ Beispiel: `SAVE_ZMOD_DATA DISABLE_PRIMING=0`.
 
 Auswahl des Algorithmus zur Reinigung der Düsenextrusion (LINE_PURGE)
 
-- _CLEAR1 - wie in Orca
-- CLEAR2 - aus FF-Gruppe
-- CLEAR3 - aus der FF-Gruppe Variante 2
-- CLEAR4 - Schrader-Reinigungscode von rechts oben nach unten
-- CLEAR_TRAP - wenn es eine rechte Seitenbürste von oben nach unten gibt
-- LINE_PURGE - Reinigung KAMP
+- _CLEAR1 – Orca-Stil (kann das Druckbett mit KAMP beschädigen)
+- _CLEAR2 – FF-Gruppenstil (kann das Druckbett mit KAMP beschädigen)
+- _CLEAR3 – Alternative zur FF-Gruppe (kann das Druckbett mit KAMP beschädigen)
+- _CLEAR4 – Shreider-Code (von oben rechts nach unten rechts)
+- _CLEAR_TRAP – Für Pinsel (von oben rechts nach unten rechts)
+- LINE_PURGE – KAMP-Reinigung
 
 Wenn Sie `KAMP` verwenden, wird die Reinigung zwangsweise auf `LINE_PURGE` gesetzt (anstelle von _CLEAR1, _CLEAR2, _CLEAR3, _CLEAR4).
 
 Wenn Sie `LINE_PURGE` verwenden, aber die Objektpartitionierung in Orca nicht aktiviert haben, dann wird `_CLEAR2` erzwungen
 
-Du kannst dein Aufräum-Makro zu 'mod_data/user.cfg' hinzufügen und es mit diesem Parameter benennen
-*behemoth
+Du kannst dein Aufräum-Makro zu `mod_data/user.cfg` hinzufügen und es mit diesem Parameter benennen.
+
+*behemoth*
 
 Beispiel: `SAVE_ZMOD_DATA CLEAR=LINE_PURGE`.
 
-*5M/5MPro: Dies ist kein Ersatz für das native clean(CLEAR_NOZZLE), bei dem die Düse in der Mitte von oben in den Tisch stößt und dann das Plastik gegen den Tisch schabt. Dies ist eine Reinigung der Düse kurz vor dem Druck.
+*5M/5MPro: Dies ist kein Ersatz für das native clean(CLEAR_NOZZLE), bei dem die Düse in der Mitte von oben in ddas Bett stößt und dann das Plastik gegen das Bett schabt. Dies ist eine Reinigung der Düse kurz vor dem Druck.*
 
 ---
 
@@ -352,15 +408,19 @@ Beispiel: `SAVE_ZMOD_DATA CLEAR=LINE_PURGE`.
 
 MIDI am Ende des Drucks abspielen (""), 0 für deaktivieren
 
-Beispiel: `SAVE_ZMOD_DATA MIDI_END=Schmerz-Halt-deinen-Mund.mid`.
+Beispiel: `SAVE_ZMOD_DATA MIDI_END=Pain-Shut-your-mouth.mid`.
 
 ---
 
 ##### CLOSE_DIALOGS
 
-Dialoge automatisch schließen, wenn der Druckvorgang beendet ist und abgebrochen wird 0-nein, 1-ja langsam, 2-ja schnell
+Dialoge automatisch schließen, wenn der Druckvorgang beendet ist und abgebrochen wird 
 
-*Um Dialoge schnell zu schließen, gehen Sie im Menü des Druckerbildschirms zu "Einstellungen" -> "WiFi-Symbol" -> "Netzwerkmodus" -> **Schalten Sie den Schieberegler** "Nur lokales Netzwerk "* (0) ein.
+- 0 - nein,
+- 1 - ja langsam,
+- 2 - ja schnell
+
+*Um Dialoge schnell zu schließen,  gehen Sie im Menü des Druckerbildschirms zu `Einstellungen` :arrow_right: `WiFi-Symbol` :arrow_right: `Netzwerkmodus` :arrow_right: **aktivieren Sie den Schieberegler** `Nur lokale Netzwerke `* über das Menü des Druckerbildschirms.
 
 Beispiel: `SAVE_ZMOD_DATA CLOSE_DIALOGS=2`.
 
@@ -368,7 +428,10 @@ Beispiel: `SAVE_ZMOD_DATA CLOSE_DIALOGS=2`.
 
 ##### STOP_MOTOR
 
-Automatisches Abschalten der Motoren nach dem Drucken/Abbrechen nach 25 Sekunden 0-nein, 1-ja (1)
+Automatisches Abschalten der Motoren nach dem Drucken/Abbrechen nach 25 Sekunden 
+
+- 0-nein,
+- 1-ja 
 
 Beispiel: `SAVE_ZMOD_DATA STOP_MOTOR=1`.
 
@@ -390,14 +453,14 @@ Beispiel: `SAVE_ZMOD_DATA AUTO_REBOOT=0`.
 
 ##### MOTION_SENSOR
 
-Verwendung anstelle des Glühfadensensors, [Glühfaden-Bewegungssensor](https://aliexpress.ru/item/1005007480443587.html) (0)
+Verwenden Sie einen [Filamentbewegungssensor](https://de.aliexpress.com/item/1005006119360974.html) anstelle des Filamentpräsenzsensors.
 
 - 0 - nein
 - 1 - ja
 
 Wenn Sie den Filament-Bewegungssensor verwenden, deaktivieren Sie ihn auf dem systemeigenen Bildschirm, da sonst der Druckvorgang abgebrochen wird.
 
-Wenn der Filamentsensor im nicht-nativen Bildschirmmodus verwendet wird, wird der folgende Satz angezeigt, wenn er ausgelöst wird: "Out of filament. Es wird in 30 Sekunden eine Pause eingelegt".
+Wenn der Filamentsensor im nicht-nativen Bildschirmmodus verwendet wird, wird der folgende Satz angezeigt, wenn er ausgelöst wird: `Out of filament`. Es wird in 30 Sekunden eine Pause eingelegt".
 
 Beispiel: `SAVE_ZMOD_DATA MOTION_SENSOR=1`.
 
@@ -421,10 +484,10 @@ Beispiel: `SAVE_ZMOD_DATA SILENT=0`
 
 Nur AD5X.
 
-Balken automatisch laden
+Filament automatisch laden
 
-- 0 - Balken nicht automatisch laden
-- 1 - Balken automatisch laden (Standard)
+- 0 - Filament nicht automatisch laden
+- 1 - Filament automatisch laden (Standard)
 
 Beispiel: `SAVE_ZMOD_DATA AUTOINSERT=0`
 
@@ -449,7 +512,7 @@ Nur AD5X
 
 Nur bei Betrieb im nicht-nativen Bildschirmmodus
 
-Bei Farbwechsel während des Drucks Bin-Reset verwenden
+Verwenden Sie beim Drucken den Mülleimer für den Farbwechsel.
 
 - 0 - kein Auswurf im Abwurfschacht
 - 1 - Auswurf im Abwurfschacht (Standard)
@@ -465,7 +528,7 @@ Nur AD5X.
 
 Nur bei Betrieb im nicht-nativen Bildschirmmodus
 
-Entfernen Sie den Balken nach Abschluss des Druckvorgangs
+Entfernen Sie das Filament nach Abschluss des Druckvorgangs
 
 - 0 - nicht auswerfen (Standard)
 - 1 - auswerfen
@@ -476,8 +539,7 @@ Beispiel: `SAVE_ZMOD_DATA REMOVE_FILAMENT=1`
 
 ##### FIX_SCV
 
-Behebt falsche SCV ([square_corner_velocity](https://www.klipper3d.org/Config_Reference.html#printer)) beim Rendern von Beschleunigungsgraphen und bei der Berechnung von Shapern.
- Shaper.
+Korrigiert den fehlerhaften SCV-Wert ([square_corner_velocity](https://www.klipper3d.org/Config_Reference.html#printer)) beim Rendern von Beschleunigungsgraphen und Berechnen von Input Shapers.
 
 - 0 belässt den Parameter wie in Stock 5
 - 1 verwendet `quare_corner_velocity` aus `mod_data/user.cfg` oder `printer.base.cfg`
@@ -499,129 +561,171 @@ square_corner_velocity: 9
 
 Dies reduziert die Geschwindigkeit in den Ecken und verbessert generell die Druckqualität, allerdings auf Kosten einer geringfügigen Geschwindigkeitsreduzierung.
 
+!!! tip "Empfohlens Plugin aktivieren"
+	
+	Oder das Plugin [Recommend](/de/Plugin/#plugins-in-z-mod) aktivieren.
+
 ---
 
 ##### WIFI
 
-Bei einigen Firmwares startet das Wi-Fi gelegentlich nicht.
+Bei einigen Firmware-Versionen kann es gelegentlich vorkommen, dass WLAN nicht startet.
 
-Um dies zu beheben. Sie müssen eine Verbindung zum Wi-Fi-Netzwerk über den nativen Bildschirm herstellen.
+Um dies zu beheben, verbinden Sie sich über den nativen Bildschirm mit einem WLAN-Netzwerk.
 
-Rufen Sie `SAVE_ZMOD_DATA WIFI=1` auf.
+1. `SAVE_ZMOD_DATA WIFI=1` aufrufen
+2. Den Drucker ausschalten
+3. Den Drucker einschalten
 
-Deaktivieren des WLANs auf dem nativen Bildschirm
-
-- 0 WiFi über den nativen Bildschirm verwenden
-- 1 WiFi über Z-Mod verwenden
+- 0 – WLAN über den nativen Bildschirm verwenden
+- 1 – WLAN über Z-Mod verwenden
 
 ---
 
 ##### FIX_E0011
 
-Die Ursachen des Fehlers E0011 sind global (Timer zu nah):
+Häufige Ursachen für den Fehler E0011 (Timer zu kurz):
 
-- Host hat nicht in der vorgesehenen Zeit geantwortet (0,025 sec)
-- MCU hat nicht innerhalb der vorgesehenen Zeit (0,025 sec) geantwortet
+- Der Host hat nicht innerhalb der vorgegebenen Zeit (0,025 Sek.) reagiert.
 
-Private Ursachen:
+- Die MCU hat nicht innerhalb der vorgegebenen Zeit (0,025 Sek.) reagiert.
 
-- Nationen MCU-Hauptplatine oder E-Platine hängt. Kommunikation mit MCU 'mcu' verloren. Lösung: Neustart. Ersetzen Sie die Hauptplatine (`mcu`) oder die Extruderplatine ('eboard').
-- Host-Prozessor ist überlastet (Shaper-Berechnung/Plotting)
-- EMMC ist überlastet (Arbeit mit Git, Backups, Laden großer Dateien während des Druckens, usw.)
-- RAM-Knappheit. Lösung: den Prozessor neu anlöten und den Speicher auf 256 Megabyte aufstocken
-- Gebrochenes Kabel zum Extruder. Lösung: Ersetzen/Korrigieren des Kabels
-- Der Kabelstecker hat keinen Kontakt mit der Extruderkopf-Platine. Lösung: Ersetzen Sie die Extruderplatine
-- Herunterladen von Daten aus dem SWAP (SWAP befindet sich auf EMMC, das mit 10 MB/s läuft, die Datenmenge im SWAP beträgt bis zu 25 Megabyte, wenn Shaper gebaut werden). Lösung: SWAP deaktivieren, wenn Sie 256 MB RAM haben `SAVE_ZMOD_DATA USE_SWAP=0`.
-- MCU-Firmware-Fehler. Lösung: MCU neu flashen [über Reset](/de/Setup/#return-printer-to-factory-settings-needed-for-mod installation). MCU neu flashen von mod [UPDATE_MCU](/de/System/#update_mcu)
+Spezifische Ursachen:
 
-Behebt den Fehler E0011 sowie `Communication timeout during homing`, eine Änderung des Parameters führt zu einem Neustart des Druckers. 0-Nein, 1-Ja (0)
+- Eingefrorenes Nations-MCU-Mainboard oder -eboard. „Kommunikationsverlust mit MCU 'mcu'“. Lösung: Neustart. Mainboard (`mcu`) oder Extruderplatine (`eboard`) austauschen.
 
-- 0 belässt den Parameter auf dem Standardwert 0,025
-- 1 setzt den Parameter auf 0,1
+- Überlastung der Host-CPU (Shaper-Berechnungen/Grafikdarstellung).
 
-Beispiel: `SAVE_ZMOD_DATA FIX_E0011=1`.
+- Überlastung des EMMC (Git-Operationen, Backups, Uploads großer Dateien während des Druckvorgangs usw.).
 
-Der Fehler kann auch auftreten:
+- Unzureichender Arbeitsspeicher. Lösung: CPU nachlöten und auf 256 MB Arbeitsspeicher aufrüsten.
 
-- Große Anzahl von Modellausschlüssen: Lösung `Prozessprofil` -> `Andere` -> `Output G-cod` -> `Model Exclusion` das Häkchen ausschalten.
-- Wenn Sie Swap auf FF5M/FF5MPro deaktiviert haben.
-  
-  Führen Sie das Makro `MEM` aus und sehen Sie nach, ob ein Swap vorhanden ist und wie groß er ist.
-  
-  Aktivieren Sie SWAP, wenn es deaktiviert ist ```SAVE_ZMOD_DATA USE_SWAP=1```.
+- Beschädigtes Extruderkabel. Lösung: Kabel austauschen/reparieren.
 
-- Wenn Sie FF5M/FF5MPro verwenden, machen Sie einen vollständigen Test. Nämlich die PID-Kalibrierung, das Entfernen der Table Map und das Entfernen des Shapers zur gleichen Zeit.
-  
-  Alle Kalibrierungen werden am besten [nach diesen Anweisungen] durchgeführt (/de/SetupCalibrations/#calibrate-printer-for-beginners)
+- Lose Kabelverbindung der Extruderplatine. Lösung: Extruderplatine austauschen.
 
-Der Fehler "Kommunikations-Timeout während der Referenzfahrt" kann aufgrund einer hohen Kommunikationslatenz zwischen dem Host-Computer und den Mikrocontrollern auftreten. Normalerweise sollte die Fahrzeit konstant unter 10 ms liegen. Eine auch nur kurzzeitig hohe Verzögerung kann zu Fehlfunktionen bei der Einrichtung führen.
+- Laden von SWAP-Daten (SWAP befindet sich auf dem EMMC-Speicher, der mit 10 MB/s arbeitet; die SWAP-Daten können während der Shaper-Berechnungen bis zu 25 MB groß sein). Lösung: Deaktivieren Sie SWAP, wenn Sie über 256 MB RAM verfügen, mit `SAVE_ZMOD_DATA USE_SWAP=0`.
 
-TRSYNC_TIMEOUT" ist ein Parameter in Klipper, der standardmäßig auf 0,025 Sekunden eingestellt ist. Er ermöglicht es Ihnen, Verzögerungen im Systembetrieb auszugleichen.
+- Absturz der MCU-Firmware. Lösung: Flashen Sie die MCU neu, indem Sie sie auf Werkseinstellungen zurücksetzen (z. B. über [Werkseinstellungen](/de/Setup/#drucker-auf-werkseinstellungen-zurücksetzen-erforderlich-für-die-installation-des-mods)) oder das Modul [UPDATE_MCU](/de/System/#update_mcu) verwenden.
 
-Die Datei `/opt/klipper/klippy/mcu.py` hat `TRSYNC_TIMEOUT = 0.025` in der Standarddatei, der Patch ändert den Wert auf `TRSYNC_TIMEOUT = 0.1`.
+Beheben Sie die Fehler E0011 und `Kommunikations-Timeout während des Homing`. Durch Ändern dieses Parameters wird der Drucker neu gestartet. 0 – Nein, 1 – Ja (0):
 
-Wie man das in der Bestandsdatei korrigiert:
+– 0 – Standardparameter (0,025) beibehalten
+– 1 – Parameter auf 0,1 setzen
 
-- Formatieren Sie den USB-Stick auf FAT32
-- Speichern Sie die Datei `flashforge_init.sh` auf dem USB-Flash:
-    - [Um den Adventurer5M-Parameter zu reparieren](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-e0011-on.tgz)
-      - Wiederherstellen der Adventurer5M-Lagerparameter](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-e0011-off.tgz)
-      - Um Adventurer5MPro zu reparieren](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-e0011-on.tgz)
-      - So stellen Sie die Adventurer5MPro-Lagerparameter wieder her](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-e0011-off.tgz)
+Beispiel: `SAVE_ZMOD_DATA FIX_E0011=1`
 
-- Schalten Sie den Drucker aus
-- Stecken Sie den USB-Flash in den Drucker
-- Schalten Sie den Drucker ein
-- Der Drucker gibt einen lauten Piepton ab.
+Dieser Fehler kann auch auftreten:
+
+– Große Anzahl ausgeschlossener Modelle: Lösung `Prozessprofil` :arrow_right: `Sonstige` :arrow_right: `Ausgabe-G-Code` :arrow_right `Modelle ausschließen` deaktivieren.
+
+– Wenn Sie den Swap-Speicher in FF5M/FF5MPro deaktiviert haben.
+
+Führen Sie das Makro `MEM` aus und prüfen Sie, ob Swap-Speicher vorhanden ist und wie groß dieser ist.
+
+Aktivieren Sie den Swap-Speicher, falls er deaktiviert ist: ```SAVE_ZMOD_DATA USE_SWAP=1```
+
+– Wenn Sie FF5M/FF5MPro verwenden, führen Sie einen vollständigen Test durch. Dieser umfasst die PID-Kalibrierung, das Entfernen der Tabellenzuordnung und das gleichzeitige Entfernen der Shaper.
+
+Es empfiehlt sich, alle Kalibrierungen [hier gemäß dieser Anleitung](/de/SetupCalibrations/#drucker-kalibrierung-für-einsteiger) durchzuführen.
+
+Der Fehler `Kommunikations-Timeout beim Homing` kann aufgrund einer hohen Kommunikationslatenz zwischen Host und Mikrocontrollern auftreten. Die Round-Trip-Zeit sollte konstant unter 10 ms liegen. Kurzzeitige Latenzspitzen können zu Homing-Fehlern führen.
+
+`TRSYNC_TIMEOUT` ist ein Klipper-Parameter (Standardwert: 0,025 s), der Systemverzögerungen kompensiert.
+
+Die Standarddatei `/opt/klipper/klipper/mcu.py` setzt `TRSYNC_TIMEOUT = 0,025`. Der Patch ändert diesen Wert auf `TRSYNC_TIMEOUT = 0,1`.
+
+**So beheben Sie das Problem mit der Standard-Firmware:**
+
+- Formatieren Sie einen USB-Stick als FAT32.
+
+- Speichern Sie die Datei `flashforge_init.sh` auf dem USB-Stick:
+
+- [Parameter Adventurer5M korrigieren](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-e0011-on.tgz)
+
+- [Standardparameter Adventurer5M wiederherstellen](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-e0011-on.tgz)
+
+- [Parameter Adventurer5MPro korrigieren](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-e0011-on.tgz)
+
+- [Standardparameter Adventurer5MPro wiederherstellen](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-e0011-on.tgz)
+
+- Schalten Sie den Drucker aus.
+- Stecken Sie den USB-Stick in den Drucker.
+
+- Schalten Sie den Drucker ein (er piept laut).
+
 - Warten Sie, bis er neu gestartet ist.
-- Entfernen Sie den USB-Flash
-- Drucken Sie die problematische Datei erneut, der Fehler E0011 sollte Sie nicht mehr stören.
 
-So beheben Sie den Fehler manuell auf dem Lager:
+- Entfernen Sie den USB-Stick.
 
-- Installieren Sie [root](https://github.com/ghzserg/zmod/tree/main/Native_firmware/root)
-- Gehe zu [winscp](https://winscp.net/eng/download.php) über ssh und editiere die Datei `/opt/klipper/klippy/mcu.py`.
-- Suchen Sie die Zeile `TRSYNC_TIMEOUT = 0.025` in der Datei.
-- Ersetzen Sie sie durch `TRSYNC_TIMEOUT = 0.1`.
-- Speichern Sie die Datei auf dem Drucker.
-- Starten Sie den Drucker neu
+- Drucken Sie die problematische Datei erneut; der Fehler E0011 sollte nun nicht mehr auftreten.
+
+**Manuelle Behebung mit der Standard-Firmware:**
+
+- Installieren Sie [root](/de/Native_FW/#root).
+
+- Stellen Sie mit [WinSCP](https://winscp.net/eng/download.php) eine SSH-Verbindung zum Drucker her.
+
+- Bearbeiten Sie die Datei `/opt/klipper/klipper/mcu.py`.
+
+- Suchen Sie nach `TRSYNC_TIMEOUT = 0.025` und ändern Sie den Wert in `TRSYNC_TIMEOUT = 0.1`.
+
+- Speichern Sie die Datei und starten Sie den Drucker neu.
+
+!!! tip "Empfohlens Plugin aktivieren"
+	
+	Oder das Plugin [Recommend](/de/Plugin/#plugins-in-z-mod) aktivieren.
 
 ---
 
 ##### FIX_E0017
 
-Behebt den Fehler E0017, wenn Sie den Parameter ändern, wird der Drucker neu gestartet. 0-Nein, 1-Ja (1)
+E0017-Fehler beheben. Durch Ändern dieses Parameters wird der Drucker neu gestartet. 0 - Nein, 1 - Ja (1):
 
-In der Datei `/opt/klipper/klippy/toolhead.py` steht im Stack der Parameter `LOOKAHEAD_FLUSH_TIME = 0.5`, im Original-Klipper `LOOKAHEAD_FLUSH_TIME = 0.250`, unser Wunder funktioniert gut mit `LOOKAHEAD_FLUSH_TIME = 0.150`.
+In der Originaldatei `/opt/klipper/klipper/toolhead.py` ist `LOOKAHEAD_FLUSH_TIME = 0.5` gesetzt. Der Original-Klipper verwendet `LOOKAHEAD_FLUSH_TIME = 0.250`. Unsere Modifikation funktioniert am besten mit `LOOKAHEAD_FLUSH_TIME = 0.150`.
 
-- 0 setzt den Parameter auf Lager
-- 1 setzt den Parameter auf 0.150
+- 0 - Originalwert
+- 1 - 0.150
 
-Beispiel: `SAVE_ZMOD_DATA FIX_E0017=1`.
+Beispiel: `SAVE_ZMOD_DATA FIX_E0017=1`
 
-Wie auf dem Lager zu beheben:
+**So beheben Sie den Fehler mit der Original-Firmware:**
 
-- Formatieren Sie den USB-Stick auf FAT32
-- Speichern Sie in der USB-Flash-Datei:
-    - [Adventurer5M-e0017-4.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-e0017-4.tgz) für FlashForge 5M
-      - [Adventurer5MPro-e0017-4.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-e0017-4.tgz) für FlashForge 5M Pro
+- Formatieren Sie einen USB-Stick als FAT32.
 
-- Schalten Sie den Drucker aus
-- Stecken Sie den USB-Flash in den Drucker
-- Schalten Sie den Drucker ein
-- Der Drucker gibt einen lauten Piepton von sich.
+- Speichern Sie die entsprechende Datei auf dem USB-Stick:
+
+- [Adventurer5M-e0017-4.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-e0017-4.tgz) für FlashForge 5M
+
+- [Adventurer5MPro-e0017-4.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-e0017-4.tgz) für FlashForge 5M Pro
+
+- Schalten Sie den Drucker aus.
+
+- Stecken Sie den USB-Stick in den Drucker.
+
+- Schalten Sie den Drucker ein (er piept laut).
+
 - Warten Sie, bis er neu gestartet ist.
-- Entfernen Sie den USB-Flash
-- Drucken Sie die problematische Datei erneut, der Fehler E0017 sollte Sie nicht mehr stören.
 
-So beheben Sie den Fehler manuell auf dem Gerät:
+- Entfernen Sie den USB-Stick.
 
-- Installieren Sie [root](https://github.com/ghzserg/zmod/tree/main/Native_firmware/root)
-- Melden Sie sich über [winscp](https://winscp.net/eng/download.php) per ssh an und bearbeiten Sie die Datei `/opt/klipper/klippy/toolhead.py`.
-- Suchen Sie die Zeile `LOOKAHEAD_FLUSH_TIME = 0.5` in der Datei.
-- Ersetzen Sie sie durch `LOOKAHEAD_FLUSH_TIME = 0.150`.
-- Speichern Sie die Datei auf dem Drucker.
-- Starten Sie den Drucker neu
+- Drucken Sie die problematische Datei erneut; der Fehler E0017 sollte nun nicht mehr auftreten.
+
+**Manuelle Reparatur der Standard-Firmware:**
+
+- Installieren Sie [root](/de/Native_FW/#root).
+
+- Stellen Sie mit [WinSCP](https://winscp.net/eng/download.php) eine SSH-Verbindung zum Drucker her.
+
+- Bearbeiten Sie die Datei `/opt/klipper/klipper/toolhead.py`.
+
+- Suchen Sie nach `LOOKAHEAD_FLUSH_TIME = 0.5` und ändern Sie den Wert in `LOOKAHEAD_FLUSH_TIME = 0.150`.
+
+- Speichern Sie die Datei und starten Sie den Drucker neu.
+
+!!! tip "Empfohlens Plugin aktivieren"
+	
+	Oder das Plugin [Recommend](/de/Plugin/#plugins-in-z-mod) aktivieren.
 
 ---
 
@@ -637,7 +741,7 @@ Beispiel: `SAVE_ZMOD_DATA LED=50`
 
 Spielt MIDI, wenn es eingeschaltet ist (""), 0 zum Ausschalten
 
-Beispiel: `SAVE_ZMOD_DATA MIDI_ON=Schmerz-Halt-deinen-Mund.mid`.
+Beispiel: `SAVE_ZMOD_DATA MIDI_ON=Pain-Shut-your-mouth.mid`.
 
 ---
 
@@ -651,11 +755,11 @@ Beispiel: `SAVE_ZMOD_DATA NEW_SAVE_CONFIG=0`.
 
 ##### USE_SWAP
 
-SWAP verwenden (1)
+SWAP aktivieren (1):
 
-- 0 - nein *Nur für aufgelöste Prozessoren mit 256 MB Speicher*
-- 1 - ja, auf EMMC
-- 2 - ja, wenn möglich auf USB FLASH
+- 0 – Nein (*Nur für aufgerüsteten 256-MB-RAM*)
+- 1 – Ja, auf EMMC
+- 2 – Ja, USB-Flash bevorzugen
 
 Beispiel: `SAVE_ZMOD_DATA USE_SWAP=1`.
 
@@ -667,22 +771,22 @@ Chinesische Wolken einschalten 0 - nein, 1 - ja (1)
 
 Beispiel: `SAVE_ZMOD_DATA CHINA_CLOUD=0`.
 
-[Chinesische Wolken deaktivieren](/de/Recomendations/#disable-china-clouds)
+[Chinesische Cloud-Dienste deaktivieren](/de/Recommendations/#chinesische-cloud-dienste-deaktivieren)
 
-Auch wenn Sie alles auf dem Bildschirm ausgeschaltet haben. Der Drucker versucht immer noch, Foto- und Videotelemetrie an chinesische Server zu senden.
+Selbst wenn alle Cloud-Optionen über den Bildschirm deaktiviert sind, versucht der Drucker weiterhin, Fotos, Videos und Telemetriedaten an chinesische Server zu senden.
 
-Wenn Sie diesen Parameter auf 0 setzen, werden solche nützlichen Funktionen für den Hersteller teilweise deaktiviert.
+Durch Setzen dieses Parameters auf 0 werden diese Funktionen teilweise deaktiviert.
 
-**Wenn chinesische Wolken deaktiviert sind, sucht der Drucker nicht nach nativen Firmware-Updates.**
+**Wenn chinesische Cloud-Dienste deaktiviert sind, sucht der Drucker nicht nach Firmware-Updates.**
+
+Um die Firmware zu aktualisieren, aktivieren Sie die chinesischen Cloud-Dienste über `SAVE_ZMOD_DATA CHINA_CLOUD=1`, starten Sie den Drucker neu und führen Sie das Update durch.
 
 Stattdessen können Sie verwenden:
 
 - [zmod.link](/de/Zmod/#zlink) - Cloud, für die Verwaltung von Druckern über Fluidd/Mainsail.
-- [Telegram bot](/de/Macros/).
+- [Telegram bot](/de/Telegram/#telegram-bot).
 
-Wenn Sie die native Firmware aktualisieren möchten, müssen Sie die chinesische Cloud aktivieren, `SAVE_ZMOD_DATA CHINA_CLOUD=1`, neu starten und die native Firmware aktualisieren.
-
-So **deaktivieren** Sie chinesische Wolken auf der nativen Firmware:
+So **deaktivieren** Sie chinesische Cloud-Dienste auf der Standard-Firmware:
 
 - Formatieren Sie das Flash-Laufwerk auf FAT32
 - Legen Sie die Datei [flashforge_init.sh](https://github.com/ghzserg/zmod/blob/main/Native_firmware/cloud/rem/flashforge_init.sh) auf diesem Flash-Laufwerk ab.
@@ -692,7 +796,7 @@ So **deaktivieren** Sie chinesische Wolken auf der nativen Firmware:
 - Der Drucker wird 1 Mal neu gestartet
 - Entfernen Sie den USB-Stick und verwenden Sie die Standard-Firmware
 
-So **aktivieren** Sie chinesische Wolken mit der Standard-Firmware:
+So **aktivieren** Sie chinesische Cloud-Dienste auf der Standard-Firmware:
 
 - Formatieren Sie das Flash-Laufwerk auf FAT32
 - Legen Sie die Datei [flashforge_init.sh](https://github.com/ghzserg/zmod/blob/main/Native_firmware/cloud/orig/flashforge_init.sh) auf dem Flash-Laufwerk ab.
@@ -706,14 +810,17 @@ So **aktivieren** Sie chinesische Wolken mit der Standard-Firmware:
 
 ##### NICE
 
-Legen Sie die Priorität des Klipper-Prozesses fest. 1 ist die niedrigste Priorität, 40 ist die höchste Priorität (20).
+Legen Sie die Priorität des Klipper-Prozesses fest.
+
+- 1 ist die niedrigste Priorität,
+- 40 ist die höchste Priorität (20).
 
 Beispiel: `SAVE_ZMOD_DATA NICE=20`.
 
 Je höher die Priorität von Klipper, desto mehr Ressourcen hat er, aber desto häufiger stürzen Moonraker und Kamera ab.
 
 Für diejenigen, die Linux kennen:
-```
+```bash
 NICE=20
 grep -q "^nice = " /opt/config/mod_data/variables.cfg && NICE=$(grep "^nice = " /opt/config/mod_data/variables.cfg | cut -d "=" -f2| awk '{print $1}')
 NICE=$((20-$NICE))
@@ -726,19 +833,19 @@ renice $NICE $(ps |grep klippy.py| grep -v grep| awk '{print $1}')
 
 ##### DISPLAY_OFF_TIMEOUT
 
-Legt die Zeit in Sekunden fest, nach der der native Bildschirm ausgeschaltet wird, wenn er im nicht-nativen Bildschirmmodus betrieben wird. (180)
+Legen Sie die Timeout-Dauer (in Sekunden) fest, nach der sich der Bildschirm bei Nichtgebrauch automatisch ausschaltet. Standardwert: 180.
 
-Beachten Sie, dass der native Bildschirm Zeit haben muss, um WiFi zu konfigurieren; die Mindestzeit beträgt 5 Sekunden.
+Hinweis: Der Bildschirm benötigt mindestens 5 Sekunden, um WLAN zu konfigurieren.
 
-Beispiel: `SAVE_ZMOD_DATA DISPLAY_OFF_TIMEOUT=120`.
+Beispiel: `SAVE_ZMOD_DATA DISPLAY_OFF_TIMEOUT=120`
 
 ---
 
 ##### PRO_POWEROFF_TIMEOUT
 
-Legt die Zeit in Minuten fest, nach der der FF5m Pro abgeschaltet wird. (0)
+Legen Sie die Zeit (in Minuten) fest, nach der sich FF5M(AD5X) Pro automatisch ausschaltet. Standardwert: 0 (deaktiviert).
 
-Beispiel: `SAVE_ZMOD_DATA PRO_POWEROFF_TIMEOUT=10`.
+Beispiel: `SAVE_ZMOD_DATA PRO_POWEROFF_TIMEOUT=10`
 
 ---
 

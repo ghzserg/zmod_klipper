@@ -1,4 +1,4 @@
-# Recomendations
+# Recommendations
 ## Рекомендации по повышению стабильности работы принтера
 
 Рекомендации подходят как к родной прошивке так и к Z-Mod
@@ -170,7 +170,7 @@ Igor Polunovskiy
 
 Включается макросом [NOZZLE_CONTROL](/ru/Global/#nozzle_control)
 
-`NOZZLE_CONTROL WEIGHT=0`
+`NOZZLE_CONTROL WEIGHT=1500`
 
 Контроль, выключит Klipper, в случае если сопло начнет царапать пластину или оторвётся деталь от стола.
 

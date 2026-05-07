@@ -24,8 +24,9 @@
 ### [Pluginy](https://github.com/ghzserg/g28_tenz/blob/main/Plugin_en.md)
 
 - [**bambufy**](https://github.com/function3d/bambufy) - Kompatibilita s Bambu Studio, lepší čistící věže, přesné odhady, snížení odpadu
+- [**lessWaste**](https://github.com/Hrybmo/lessWaste/) - Fork doplňku Bambufy
 - [**nopoop**](https://github.com/ghzserg/nopoop) - Maximální snížení odpadu od ninjamida
-- [lessWaste](https://github.com/Hrybmo/lessWaste/) - fork bambufy
+- [**IFS Jacker**](https://github.com/ninjamida/ifs_jacker_plugin) – Doplněk pro podporu [hardwarového modu IFS Jacker](https://github.com/ninjamida/ifs_jacker)
 
 ---
 
@@ -43,7 +44,7 @@ Rozdíly oproti AD5M:
 
 ## **2. Jak připravit soubor v Orca**
 
-[Odeslat soubory přes "Octo/Klipper" pro tisk](Recomendations.md#send-files-via-octoklipper-for-printing)
+[Odeslat soubory přes "Octo/Klipper" pro tisk](Recommendations.md#send-files-via-octoklipper-for-printing)
 
 **Musíte odstranit nepoužívané cívky ze seznamu v Orce.**
 
@@ -172,7 +173,7 @@ SAVE_ZMOD_DATA REMOVE_FILAMENT=1
 
 Chcete-li nastavit, kolik nástrojů se zobrazí v okně pro výběr barvy (pokud soubor nelze pro tuto informaci prohledat), použijte parametr [ALLOWED_TOOL_COUNT](Global.md#allowed_tool_count).
 
-[Viz předzpracování](/Recomendations/#enable-md5-checksum-control)
+[Viz předzpracování](/Recommendations/#enable-md5-checksum-control)
 
 ```gcode
 SAVE_ZMOD_DATA ALLOWED_TOOL_COUNT=16
@@ -180,7 +181,7 @@ SAVE_ZMOD_DATA ALLOWED_TOOL_COUNT=16
 
 Chcete-li povolit prohledávání gcode souborů pro informace o nástroji, barvě a materiálu, použijte parametr [SCAN_FILE_COLORS](Global.md#scan_file_colors). Můžete jej také nastavit na 2 pro kontrolu dat připravených skriptem sliceru, ale nepokoušejte se prohledávat celé soubory.
 
-[Viz předzpracování](/Recomendations/#enable-md5-checksum-control)
+[Viz předzpracování](/Recommendations/#enable-md5-checksum-control)
 
 ```gcode
 SAVE_ZMOD_DATA SCAN_FILE_COLORS=1
@@ -195,7 +196,7 @@ Můžete vytvořit vlastní hodnoty pro přerušení v tichém režimu sečtení
 * 8 (Alespoň jedna barva je potenciálně špatně spárována)
 * 16 (Alespoň jedna fyzická cívka byla přiřazena k více než jednomu indexu nástroje v souboru)
 
-[Viz předzpracování](/Recomendations/#enable-md5-checksum-control)
+[Viz předzpracování](/Recommendations/#enable-md5-checksum-control)
 
 ```gcode
 SAVE_ZMOD_DATA AUTO_ASSIGN_COLORS=30
@@ -537,11 +538,11 @@ Aby tato nastavení fungovala, musíte **vypnout nativní displej tiskárny** po
 - `IFS_F11` - Odebrat filament
 - `IFS_F13` - Stav IFS
 - `IFS_F15` - Resetovat ovladač
-- `F18` - Čištění filamentu všude
-- `F23` - Označit filament jako vložený
-- `F24` - Svorka filamentu
-- `F39` - Čištění filamentu
-- `F112` - Zastavit podávání filamentu
+- `IFS_F18` - Čištění filamentu všude
+- `IFS_F23` - Označit filament jako vložený
+- `IFS_F24` - Svorka filamentu
+- `IFS_F39` - Čištění filamentu
+- `IFS_F112` - Zastavit podávání filamentu
 - `PURGE_PRUTOK_IFS` - Čištění filamentu z IFS do extruderu
 - `REMOVE_PRUTOK_IFS` - Odebere filament podle čísla filamentu
 - `INSERT_PRUTOK_IFS` - Vloží filament do IFS podle čísla filamentu

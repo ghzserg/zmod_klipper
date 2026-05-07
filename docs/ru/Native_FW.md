@@ -13,6 +13,8 @@
 
 ## AD5X родная прошивка
 
+Это Facrory (фактори) родная прошивка для AD5X
+
 - [1.0.2](https://github.com/ghzserg/FF/releases/download/R/AD5X-1.0.2-1.0.2-20250120-Factory.tgz)
 - [1.0.7](https://github.com/ghzserg/FF/releases/download/R/AD5X-1.0.7-1.0.3-20250408-Factory.tgz)
 - [1.0.8](https://github.com/ghzserg/FF/releases/download/R/AD5X-1.0.8-1.0.5-20250418-Factory.tgz)
@@ -24,8 +26,11 @@
 - [1.2.2](https://github.com/ghzserg/FF/releases/download/R/AD5X-1.2.2-1.1.1-3.0.7-20260205.tgz)
 - [1.2.3](https://github.com/ghzserg/FF/releases/download/R/AD5X-1.2.3-1.1.1-3.0.7-20260205-Factory.tgz)
 - [3.0.3](https://github.com/ghzserg/FF/releases/download/R/AD5X-3.0.3-1.1.1-3.0.7-20260119.tgz)
+- [3.0.9](https://github.com/ghzserg/FF/releases/download/R/AD5X-3.0.9-1.1.1-3.0.7-20260417.tgz)
 
 ## AD5M родная прошивка
+
+Это Facrory (фактори) родная прошивка для AD5M
 
 - [3.1.3](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-3.1.3-2.2.3-20250107-Factory.tgz)
 - [3.1.9](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz)
@@ -37,6 +42,8 @@
 
 ## AD5MPro родная прошивка
 
+Это Facrory (фактори) родная прошивка для AD5MPro
+
 - [3.1.3](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.1.3-2.2.3-20250107-Factory.tgz)
 - [3.2.3](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.2.3-2.2.3-20251017-Factory.tgz)
 - [3.2.4](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.2.4-2.2.3-20251114-Factory.tgz)
@@ -46,7 +53,7 @@
 
 ## Установка полной прошивки на AD5X
 
-**Это не родная прошивка, а раскирпичиватель принтера.** Ее нужно ставить только в случае если принтер вообще не запускается.
+**Это НЕ Facrory (фактори) родная прошивка, а раскирпичиватель принтера.** Ее нужно ставить только в случае если принтер вообще не запускается.
 
 Установка занимает много времени до часа.
 
@@ -58,7 +65,7 @@
 
 ## Установка полной прошивки на FF5M
 
-**Это не родная прошивка, а раскирпичиватель принтера.** Ее нужно ставить только в случае если принтер вообще не запускается.
+**Это НЕ Facrory (фактори) родная прошивка, а раскирпичиватель принтера.** Ее нужно ставить только в случае если принтер вообще не запускается.
 
 Установка занимает много времени до часа.
 
@@ -70,6 +77,8 @@
 - После обновления, если вам надо перешить MCU установите [Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz)
 
 ## AD5X-ENABLE-zmod.tgz
+
+Это активатор Z-Mod
 
 Включение zmod на AD5X после  обновления родной прошивки, позволяет активировать мод без полной его переустановки
 

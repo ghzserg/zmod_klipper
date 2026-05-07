@@ -1,5 +1,6 @@
 ---
 hide:
+
   - navigation
 ---
 
@@ -8,6 +9,8 @@ hide:
 <img width="698" height="291" alt="logo zmod" src="https://github.com/user-attachments/assets/5e26413b-c9a2-49f2-b9b8-5ecde709c521" />
 
 [Z-Mod LINK verfügbar unter diesem Link ->](https://zmod.link/link/)
+
+[Sammelaktion für Creator 5 Pro angekündigt, um Z-Mod auf diesem Drucker zu starten ->>>](https://github.com/ghzserg/zmod/discussions/554)
 
 ### **Z-Mod für FlashForge AD5M/PRO/AD5X: Volle Kontrolle über Ihren Drucker**
 
@@ -31,7 +34,7 @@ Das erhalten Sie, wenn Sie Z-Mod installieren:
     - **Fluidd / Mainsail:** Benutzerfreundliche Weboberflächen, auf denen Sie alle Druckinformationen, die Temperatur, die Steuerung der Lüftergeschwindigkeiten, das Bewegen der Achsen und vollen Zugriff auf die Befehlskonsole sehen.
     - **Dateiversand über "Octo/Klipper":** Integration mit Orca Slicer und anderen Slicern für den direkten G-Code-Versand.
     - **Zugang zum Drucker-Webinterface über Internet** Cloud-Service [zmod.link](https://zmod.link)
-    - **Benachrichtigung an Telegram und 100+ andere Dienste** [plugin notify](https://github.com/ghzserg/notify/blob/main/Readme_ru.md)
+    - **Benachrichtigung an Telegram und 100+ andere Dienste** [plugin notify](https://github.com/ghzserg/notify/blob/main/Readme.md)
 
 #### 2. Erweiterte Kalibrierungs- und Nivellierungssysteme
 
@@ -126,13 +129,11 @@ Diese Funktionen sind auf die Standard-Firmware portiert:
 7. [FF5M zu FF5MPro neu flashen](/de/Native_FW/#re-flash-5m-to-5mpro)
 8. [FF5MPro zu FF5M](/de/Native_FW/#übersetzen-5mpro-zu-5m)
 
-
-
 ### Kompatibilität
 Installiert auf einer sauberen Version:
 
 - FF5M/FF5MPro **mindestens 2.7.5** (2.7.5, 2.7.6, 2.7.7, 2.7.8, 2.7.9, 3.1.3, 3.1.4, 3.1.5, 3.1.9, **3.2.3**, 3.2.4, 3.2.5, 3.2.6, 3.2.7, 5.0.3)
-- [AD5X](/de/AD5X/) **nur** (1.0.2, 1.0.7, 1.0.8, 1.0.9, 1.1.1, 1.1.6, **1.1.7**, 1.1.9, 1.2.0, 1.2.1, 1.2.2, 1.2.3, 3.0.3)
+- [AD5X](/de/AD5X/) **nur** (1.0.2, 1.0.7, 1.0.8, 1.0.9, 1.1.1, 1.1.6, **1.1.7**, 1.1.9, 1.2.0, 1.2.1, 1.2.2, 1.2.3, 3.0.3, 3.0.9) _beliebige IFS-Version_
 
 Native Firmware ist [hier](/de/Native_FW/) verfügbar.
 
@@ -146,7 +147,7 @@ Native Firmware ist [hier](/de/Native_FW/) verfügbar.
 
 ## Empfehlungen zur Verbesserung der Druckerstabilität
 
-[Lesen - wenn etwas nicht richtig funktioniert](/de/Recomendations/)
+[Lesen - wenn etwas nicht richtig funktioniert](/de/Recommendations/)
 
 ## Plug-ins
 

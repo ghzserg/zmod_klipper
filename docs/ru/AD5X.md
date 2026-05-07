@@ -23,11 +23,11 @@
 
 [Плагины](https://github.com/ghzserg/g28_tenz/blob/main/Plugin_ru.md):
 
-- [bambufy](https://github.com/function3d/bambufy) - Совместим с Bambu Studio, улучшает управление башней подачи, обеспечивает точную оценку времени и расхода материала, снижает отходы, поддерживает Mainsail,
+- [**bambufy**](https://github.com/function3d/bambufy) - Совместим с Bambu Studio, улучшает управление башней подачи, обеспечивает точную оценку времени и расхода материала, снижает отходы, поддерживает Mainsail,
 быструю смену цвета и расширенные функции печати.
-
-- [nopoop](https://github.com/ghzserg/nopoop) - Максимальное уменьшение количества отходов от ninjamida
-- [lessWaste](https://github.com/Hrybmo/lessWaste/) - форк bambufy
+- [**lessWaste**](https://github.com/Hrybmo/lessWaste/) - форк bambufy
+- [**nopoop**](https://github.com/ghzserg/nopoop) - Максимальное уменьшение количества отходов от ninjamida
+- [**IFS Jacker**](https://github.com/ninjamida/ifs_jacker_plugin) — Плагин для поддержки [железного мода IFS Jacker](https://github.com/ninjamida/ifs_jacker)
 
 ---
 
@@ -45,7 +45,7 @@
 
 ## **2. Как подготовить файл в Orca AD5X**
 
-[Отправляйте файлы на печать через "Octo/Klipper".](/ru/Recomendations/#отправляйте-файлы-на--печать-через-octoklipper)
+[Отправляйте файлы на печать через "Octo/Klipper".](/ru/Recommendations/#отправляйте-файлы-на--печать-через-octoklipper)
 
 **Нужно удалить неиспользуемые катушки из списка в Orca.**
 
@@ -171,7 +171,7 @@ SAVE_ZMOD_DATA REMOVE_FILAMENT=1
 
 Чтобы настроить количество инструментов, отображаемых в окне выбора цвета (если информацию не удается получить путем сканирования файла), используйте параметр [ALLOWED_TOOL_COUNT](/ru/Global/#allowed_tool_count).
 
-[Смотри настройку препроцессинга](/ru/Recomendations/#enable-md5-checksum-control)
+[Смотри настройку препроцессинга](/ru/Recommendations/#enable-md5-checksum-control)
 
 ```gcode
 SAVE_ZMOD_DATA ALLOWED_TOOL_COUNT=16
@@ -179,7 +179,7 @@ SAVE_ZMOD_DATA ALLOWED_TOOL_COUNT=16
 
 Чтобы включить сканирование gcode-файлов на наличие информации об инструментах, цветах и материалах, используйте параметр [SCAN_FILE_COLORS](/ru/Global/#scan_file_colors). Вы также можете установить значение 2, чтобы проверять только данные, подготовленные скриптом слайсера, без сканирования файлов целиком.
 
-[Смотри настройку препроцессинга](/ru/Recomendations/#enable-md5-checksum-control)
+[Смотри настройку препроцессинга](/ru/Recommendations/#enable-md5-checksum-control)
 
 ```gcode
 SAVE_ZMOD_DATA SCAN_FILE_COLORS=1
@@ -194,7 +194,7 @@ SAVE_ZMOD_DATA SCAN_FILE_COLORS=1
 * 8 (Хотя бы один цвет совпадает плохо)
 * 16 (Одна и та же физическая катушка была назначена более чем одному индексу инструмента в файле)
 
-[Смотри настройку препроцессинга](/ru/Recomendations/#enable-md5-checksum-control)
+[Смотри настройку препроцессинга](/ru/Recommendations/#enable-md5-checksum-control)
 
 ```gcode
 SAVE_ZMOD_DATA AUTO_ASSIGN_COLORS=30
@@ -536,11 +536,11 @@ filament_NEWTYPE: 300
 - `IFS_F11` - Извлечь пруток
 - `IFS_F13` - Состояние IFS
 - `IFS_F15` - Сброс драйвера
-- `F18` - Отжим филамента везде
-- `F23` - Помечаем пруток как вставленный
-- `F24` - Прижим филамента
-- `F39` - Отжим филамента
-- `F112` - Прекращаем подачу прутка
+- `IFS_F18` - Отжим филамента везде
+- `IFS_F23` - Помечаем пруток как вставленный
+- `IFS_F24` - Прижим филамента
+- `IFS_F39` - Отжим филамента
+- `IFS_F112` - Прекращаем подачу прутка
 - `PURGE_PRUTOK_IFS` - Очистить пруток от IFS до экструдера
 - `REMOVE_PRUTOK_IFS` - Удаляет пруток по номеру прутка
 - `INSERT_PRUTOK_IFS` - Вставить пруток в IFS по номеру прутка

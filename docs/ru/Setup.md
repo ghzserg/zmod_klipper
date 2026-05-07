@@ -93,7 +93,7 @@
 
     <img width="864" height="87" alt="image" src="https://github.com/user-attachments/assets/ca96c67f-cc58-4655-8fdf-9554d1a489a3" />
 
-18. [Настройте  Orca](/ru/Recomendations/#отправляйте-файлы-на--печать-через-octoklipper)  
+18. [Настройте  Orca](/ru/Recommendations/#отправляйте-файлы-на--печать-через-octoklipper)  
     Весь стартовый код нужно заменить на этот:
 
     ```
@@ -126,11 +126,11 @@
     <img width="673" height="467" alt="image" src="https://github.com/user-attachments/assets/70d5da64-0604-44e5-9102-887b758b5cf0" />
     <img width="473" height="395" alt="image" src="https://github.com/user-attachments/assets/ca4c5330-dc88-4372-a3c8-51527ae76146" />
 
-19. [Включите контроль MD5](/ru/Recomendations/#включите-контроль-md5)
+19. [Включите контроль MD5](/ru/Recommendations/#включите-контроль-md5)
 
     <img width="476" height="355" alt="image" src="https://github.com/user-attachments/assets/0b59a617-5613-4def-aa01-7fe038898863" />
 
-20. [Прочитайте рекомендации](/ru/Recomendations/)
+20. [Прочитайте рекомендации](/ru/Recommendations/)
 21. [Прочитайте FAQ](/ru/FAQ/)
 22. [Откалибруйте принтер](/ru/SetupCalibrations/)
 
@@ -215,6 +215,10 @@
 <img width="262" height="262" alt="qrCode" src="https://github.com/user-attachments/assets/e7c1ebf3-3a54-4b46-b071-06656ac06ae1" />
 
 BTC `17wXTd9BqYp1K3zCLTxVyGLEXUDjf7XNLL`
+
+<a href="https://boosty.to/ghzserg">Support via Boosty (international Visa/Mastercard)</a>
+
+<img width="150" height="150" alt="ghzserg-donate" src="https://github.com/user-attachments/assets/86e7fe3a-327b-4a0e-b8c4-ee74078167c0" />
 
 ---
 

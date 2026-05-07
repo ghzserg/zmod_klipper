@@ -51,7 +51,7 @@
     <img width="800" height="480" alt="main" src="https://github.com/user-attachments/assets/a0466fa8-03e8-458d-8cc5-c1efb8f565ac" />
     <img width="800" height="480" alt="ip" src="https://github.com/user-attachments/assets/1d7dd5fa-86f4-4b1a-bd42-364619b20229" />
     
-    If the web interface doesn't open, the stock firmware has disabled the mod. To enable it, copy the file [AD5X-ENABLE-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-ENABLE-zmod.tgz) to a USB flash drive and [activate the mod](/en/Native_FW/#ad5x-enable-zmodtgz).
+    If the web interface doesn't open, the stock firmware has disabled the mod. To enable it, copy the file [AD5X-ENABLE-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-ENABLE-zmod.tgz) to a USB flash drive and [activate the mod](/Native_FW/#ad5x-enable-zmodtgz).
 12. Translate the mod into your language.
 
     <img width="564" height="583" alt="{8E14F84D-E8D1-4129-B192-AA335243A3D9}" src="https://github.com/user-attachments/assets/e6dd3f8a-3cc3-4a05-b5fb-ad8ba372ede6" />
@@ -92,7 +92,7 @@
 
     <img width="864" height="87" alt="image" src="https://github.com/user-attachments/assets/ca96c67f-cc58-4655-8fdf-9554d1a489a3" />
 
-18. [Send Files via "Octo/Klipper" for Printing](/Recomendations/#send-files-via-octoklipper-for-printing)
+18. [Send Files via "Octo/Klipper" for Printing](/Recommendations/#send-files-via-octoklipper-for-printing)
 
     You **need to switch to the Octo/Klipper protocol**:
 
@@ -126,11 +126,11 @@
     
     <img width="449" height="153" alt="image" src="https://github.com/user-attachments/assets/705fb49e-2c6b-451b-9b99-9d8d1f0e80f8" />
 
-20. [Enable MD5 verification](/Recomendations/#enable-md5-checksum-control)
+20. [Enable MD5 verification](/Recommendations/#enable-md5-checksum-control)
 
     <img width="476" height="355" alt="image" src="https://github.com/user-attachments/assets/0b59a617-5613-4def-aa01-7fe038898863" />
 
-21. [Read the recommendations](/Recomendations/)
+21. [Read the recommendations](/Recommendations/)
 22. [Read the FAQ](/FAQ/)
 23. [Calibrate the printer](/SetupCalibrations/)
 
@@ -155,7 +155,7 @@ If you encounter this issue, you need to calibrate the print head position using
 
 ## Updating the Mod
 
-If the mod displays ("Update Z-Mod via USB"), you must update via USB, even if recently updated.
+If the mod displays (`Update Z-Mod via USB`), you must update via USB, even if recently updated.
 
 **Updating via USB preserves all data.**
 
@@ -237,12 +237,6 @@ Attention!
 
 ---
 
-## Support Mod Development
-
-BTC `17wXTd9BqYp1K3zCLTxVyGLEXUDjf7XNLL`
-
----
-
 ## Boot Recovery
 
 *Guide by [@darksimpson](https://t.me/darksimpson), [Alexander](https://github.com/DrA1ex), [@Ikaros413](https://t.me/Ikaros413), [@SoloMen88](https://t.me/SoloMen88)*
@@ -314,3 +308,16 @@ Try restoring the firmware by installing a full firmware:
     sync
     reboot
     ```
+---
+
+## Support Mod Development
+
+[SBP, Bankkarte, T-pay](https://pay.cloudtips.ru/p/3cbf9e9f)
+
+<img width="262" height="262" alt="qrCode" src="https://github.com/user-attachments/assets/e7c1ebf3-3a54-4b46-b071-06656ac06ae1" />
+
+BTC `17wXTd9BqYp1K3zCLTxVyGLEXUDjf7XNLL`
+
+<a href="https://boosty.to/ghzserg">Support via Boosty (international Visa/Mastercard)</a>
+
+<img width="150" height="150" alt="ghzserg-donate" src="https://github.com/user-attachments/assets/86e7fe3a-327b-4a0e-b8c4-ee74078167c0" />
