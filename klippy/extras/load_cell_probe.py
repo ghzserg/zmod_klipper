@@ -5,7 +5,7 @@
 # This file may be distributed under the terms of the GNU GPLv3 license.
 import logging, math
 import mcu
-from . import probe, trigger_analog, load_cell, hx71x, ads1220
+from . import probe, manual_probe, trigger_analog, load_cell, hx71x, ads1220
 
 np = None  # delay NumPy import until configuration time
 
@@ -160,9 +160,14 @@ class ContinuousTareFilter:
 
     # create a filter design from the parameters
     def design_filter(self, error_func):
-        return trigger_analog.DigitalFilter(self.sps, error_func, self.drift,
-            self.drift_delay, self.buzz, self.buzz_delay, self.notches,
-            self.notch_quality)
+        df = trigger_analog.DigitalFilter(self.sps, error_func)
+        if self.drift:
+            df.add_highpass(self.drift, self.drift_delay)
+        if self.buzz:
+            df.add_lowpass(self.buzz, self.buzz_delay)
+        for notch in self.notches:
+            df.add_notch(notch, self.notch_quality)
+        return df
 
 
 # Combine ContinuousTareFilter and SosFilter into an easy-to-use class
@@ -323,11 +328,10 @@ class LoadCellProbingMove:
         # update internal tare value
         gpc = self._config_helper.get_grams_per_count() * FRAC_GRAMS_CONV
         sos_filter = self._mcu_trigger_analog.get_sos_filter()
-        Q17_14_FRAC_BITS = 14
-        sos_filter.set_offset_scale(int(-tare_counts), gpc, Q17_14_FRAC_BITS)
+        sos_filter.set_offset_scale(int(-tare_counts), gpc)
         # update trigger
         trigger_val = self._config_helper.get_trigger_force_grams(gcmd)
-        trigger_frac_grams = trigger_val * FRAC_GRAMS_CONV
+        trigger_frac_grams = int(trigger_val * FRAC_GRAMS_CONV)
         self._mcu_trigger_analog.set_trigger("abs_ge", trigger_frac_grams)
 
     # Probe towards z_min until the trigger_analog on the MCU triggers
@@ -426,7 +430,8 @@ class TapSession:
     # probe until a single good sample is returned or retries are exhausted
     def run_probe(self, gcmd):
         epos, is_good = self._tapping_move.run_tap(gcmd)
-        res = self._probe_offsets.create_probe_result(epos)
+        offsets = self._probe_offsets.get_offsets()
+        res = manual_probe.create_probe_result(epos, offsets)
         self._results.append(res)
 
     def pull_probed_results(self):

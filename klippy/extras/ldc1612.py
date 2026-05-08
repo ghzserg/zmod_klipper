@@ -78,7 +78,7 @@ class LDC1612:
         self.printer = config.get_printer()
         self.calibration = calibration
         self.dccal = DriveCurrentCalibrate(config, self)
-        self.data_rate = 250
+        self.data_rate = 400
         # Setup mcu sensor_ldc1612 bulk query code
         self.i2c = bus.MCU_I2C_from_config(config,
                                            default_addr=LDC1612_ADDR,
@@ -148,7 +148,9 @@ class LDC1612:
         self.batch_bulk.add_client(cb)
     def lookup_sensor_error(self, error):
         return self._sensor_errors.get(error, "Unknown ldc1612 error")
-    def convert_frequency(self, freq):
+    def convert_raw_to_frequency(self, raw_value):
+        return raw_value * self.freq_conv
+    def convert_frequency_to_raw(self, freq):
         return int(freq / self.freq_conv + 0.5)
     # Measurement decoding
     def _convert_samples(self, samples):
