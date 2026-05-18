@@ -8,8 +8,8 @@
 5. [Manuelle Angabe der Spule](#5-wie-man-dem-drucker-ad5x-manuell-mitteilt-welche-spule-eingelegt-ist)
 6. [Einstellen der Abfallmenge beim Filamentwechsel](#6-so-konfigurieren-sie-das-abfallfilament-beim-filamentwechsel)
 
-    - 🔧 [Grundeinstellungen](#wichtigste-einstellungen-was-am-häufigsten-zu-ändern-ist-ad5x)
-       - ⚙️ [Erweiterte Einstellungen](#erweiterte-einstellungen-nicht-ändern-wenn-sie-sich-des-ergebnisses-nicht-sicher-sind-ad5x)
+    - 🔧 [Grundeinstellungen](#grundlegende-parameter-am-häufigsten-angepasst)
+       - ⚙️ [Erweiterte Einstellungen](#erweiterte-parameter-nicht-anpassen-wenn-sie-sich-über-das-ergebnis-nicht-sicher-sind)
 
 7. [Fügen Sie Ihre Filamenttypen hinzu](#7-fügen-sie-ihre-ad5x-filamenttypen-hinzu)
 8. [Fügen Sie Ihre Farben hinzu](#8-fügen-sie-ihre-ad5x-farben-hinzu)
@@ -293,7 +293,7 @@ Damit diese Einstellungen funktionieren, müssen Sie **das native Display des Dr
 * **`filament_unload_after_cutting`** – Filament-Hubweg **nach** dem Schneiden, bevor das Filament in den Abfallbehälter befördert wird. **Standardwert: 5 mm.**
 * **`filament_unload_after_drop`** – Rückzugsdistanz nach dem Spülen, um Nachlaufen zu verhindern. **Standardwert: 3 mm.**
 * **`filament_extruder_speed`** – Geschwindigkeit (in mm/min), mit der Filament in den Extruder geladen wird. **Standardwert: 300 mm/min (5 mm/s).**
-* **`filament_ifs_speed`** – Geschwindigkeit (in mm/min), mit der das IFS-Modul arbeitet. **Standardwert: 12000 mm/min (20 mm/s).**
+* **`filament_ifs_speed`** – Geschwindigkeit (in mm/min), mit der das IFS-Modul arbeitet. **Standardwert: 1200 mm/min (20 mm/s).**
 * **`filament_fan_speed`** – Lüfterdrehzahl (0–255) während des Spülens zur Kühlung von Nachlaufen. **Standardwert: 102.**
 * **`filament_autoinsert_empty_length`** – Filamentlänge, die beim automatischen Laden in einen leeren Extruder eingezogen wird. **Standardwert: 600 mm.**
 
