@@ -411,7 +411,7 @@ class LoadCellSensor:
             self.logger.warning(f"{self.name}: Could not send H7 poll: {e}")
         temp = self.loadcell.last_weight_grams
         # zmod
-        if temp > self.max_temp and self.zcontrol == 1:
+        if temp > self.max_temp and self.zcontrol == 1 and self.max_temp != 2048:
             try:
                 toolhead = self.printer.lookup_object('toolhead')
                 current_pos = toolhead.get_position()
