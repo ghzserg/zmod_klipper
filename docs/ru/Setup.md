@@ -4,7 +4,7 @@
 
 0. [Удалить KlipperMod](https://github.com/xblax/flashforge_ad5m_klipper_mod/blob/master/docs/UNINSTALL.md), если он был установлен
 1. Сбросить принтер до настроек по умолчанию
-2. Отформатировать USB Flash в FAT/FAT16/FAT32
+2. Отформатировать USB Flash в FAT/FAT16/FAT32(MBR)
 3. Поместить файл из [Native firmware](/ru/Native_FW/) в корневую папку USB Flash
 
     - [Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz) для FF5m 
@@ -31,12 +31,16 @@
 <iframe src="https://vkvideo.ru/video_ext.php?oid=-238575243&id=456239017&hash=047fa1a63cc31586&hd=3" width="1280" height="720" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen></iframe>
 
 1. **[Вернуть принтер к заводским настройкам](/ru/Setup/#возврат-принтера-к-заводским-установкам-необходимо-для-установки-мода)** [Внимание AD5X](/ru/Setup/#внимание-ad5x)
-2. Отформатировать USB Flash в FAT/FAT16/FAT32
+2. Отформатировать USB Flash в FAT/FAT16/FAT32(MBR)
 3. Поместить [файл](https://github.com/ghzserg/zmod/releases/) в корневую папку USB Flash.
 
-    - для FF5M: Adventurer5M-**zmod**-\*.tgz
-       - для FF5MPro: Adventurer5MPro-**zmod**-\*.tgz
-       - для [AD5X](/ru/AD5X/): AD5X-**zmod**-\*.tgz
+   - для FF5M: Adventurer5M-**zmod**-\*.tgz
+   - для FF5MPro: Adventurer5MPro-**zmod**-\*.tgz
+   - для [AD5X](/ru/AD5X/): AD5X-**zmod**-\*.tgz
+
+  _А лучше поместить все 3 файла на флешку, тогда принтер сам запустит нужный файл_
+
+  **Распаковывать файлы не нужно**
 
 4. Выключить принтер
 5. Вставить флешку в принтер
@@ -127,11 +131,16 @@
     Необходимо переключиться на протокол "Octo/Klipper":
 
       - Протокол: `Octo/Klipper`
-          - Имя хоста: `IP_принтера:7125`
-          - Url-адрес хоста: `IP_принтера` или `IP_принтера:80`
+      - Сетевой Агент: `Moonraker`
+      - Имя хоста: `IP_принтера:7125`
+      - Url-адрес хоста: `IP_принтера` или `IP_принтера:80`
 
-    <img width="673" height="467" alt="image" src="https://github.com/user-attachments/assets/70d5da64-0604-44e5-9102-887b758b5cf0" />
+    <img width="678" height="471" alt="{8FB1D8A5-A02F-41A8-8309-CD556007FD1B}" src="https://github.com/user-attachments/assets/a9c3fc5e-3ec0-41ed-bbd7-779ee210c9a1" />
     <img width="473" height="395" alt="image" src="https://github.com/user-attachments/assets/ca4c5330-dc88-4372-a3c8-51527ae76146" />
+
+    В Orca старше 2.4.2 отключите передачу 3mf файлов: `Профиль принтера` -> `Общая информация` -> `Дополнительно` -> `Use 3MF instead of G-code` снять галочку.
+
+    <img width="462" height="521" alt="image" src="https://github.com/user-attachments/assets/36ec19d8-5263-4b18-b5b1-e45424c64785" />
 
 20. [Включите контроль MD5](/ru/Recommendations/#включите-контроль-md5)
 
@@ -195,7 +204,7 @@
 
 Обновление через флешку:
 
-1. Отформатировать USB Flash в FAT/FAT16/FAT32
+1. Отформатировать USB Flash в FAT/FAT16/FAT32(MBR)
 2. Поместить [файл](https://github.com/ghzserg/zmod/releases/) в корневую папку USB Flash.
 
     - для FF5M: Adventurer5M-**zmod**-\*.tgz
@@ -245,7 +254,7 @@ BTC `17wXTd9BqYp1K3zCLTxVyGLEXUDjf7XNLL`
 
 Удаление мода  через флешку:
 
-- Отформатируйте флешку в FAT/FAT16/FAT32
+- Отформатируйте флешку в FAT/FAT16/FAT32(MBR)
 - Поместите файл [flashforge_init.sh](https://github.com/ghzserg/zmod/blob/main/Native_firmware/rem_zmod/flashforge_init.sh) на эту флешку
 - Выключите принтер
 - Вставьте флешку в принтер

@@ -124,15 +124,22 @@ Nativní protokol FF občas přenáší poškozené soubory a postrádá podporu
 1. Klikněte na ikonu WiFi vedle tiskárny.
 2. Nastavit:
 
-    - **Protocol**: `Octo/Klipper`
-       - **Hostname**: `Printer_IP:7125`
-       - **Host URL**: `Printer_IP` or `Printer_IP:80`
+    - **Host Type**: `Octo/Klipper`
+    - **Printer Agent**: `Moonraker`
+    - **Hostname**: `IP_printer:7125`
+    - **Device UI**: `IP_printer` or `IP_printer:80`
+    
+    <img width="678" height="471" alt="{8FB1D8A5-A02F-41A8-8309-CD556007FD1B}" src="https://github.com/user-attachments/assets/a9c3fc5e-3ec0-41ed-bbd7-779ee210c9a1" />
 
 Pokud používáte Mainsail, zadejte pouze tyto velikosti miniatur: ```140x110/PNG, 64x64/PNG```
 
 V Orca, `Printer Profile` -> `General Information` -> `Advanced` -> `G-Code Thumbnails`
 
 Vezměte na vědomí, že na nativní obrazovce se již nebudou zobrazovat miniatury.
+
+V Orca verzi 2.4.2 a novější vypněte přenos souborů 3MF: `Profil tiskárny` -> `Obecné informace` -> `Rozšířené` -> zrušte zaškrtnutí `Use 3MF instead of G-code`.
+
+<img width="462" height="521" alt="image" src="https://github.com/user-attachments/assets/36ec19d8-5263-4b18-b5b1-e45424c64785" />
 
 ---
 

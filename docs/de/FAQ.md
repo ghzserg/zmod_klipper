@@ -102,9 +102,17 @@ Jede Funktion kann in `mod_data/user.cfg` oder `printer.cfg` überschrieben werd
 - Wenn Sie den Z-Offset vom nativen Bildschirmmodus in den nicht-nativen Bildschirmmodus übertragen wollen, rufen Sie das Makro ```LOAD_ZOFFSET_NATIVE``` auf. Es liest den Z-Offset-Wert vom nativen Bildschirm und wendet ihn auf den nicht-nativen Bildschirmmodus an.
 - Das Bettnetz wird beim Start automatisch geladen.
 - Das FlashForge-Protokoll wird nicht unterstützt (wird vom nativen Bildschirm verarbeitet). Verwenden Sie "Octo/Klipper".
-   - Protokoll: `Octo/Klipper`.
-     - Hostname: `IP-Adresse(vom Drucker):7125`.
-     - Url-Adresse des Hosts: `IP_printer` oder `IP_printer:80`.
+
+    - **Host Type**: `Octo/Klipper`
+    - **Printer Agent**: `Moonraker`
+    - **Hostname**: `IP_printer:7125`
+    - **Device UI**: `IP_printer` or `IP_printer:80`
+
+    <img width="678" height="471" alt="{8FB1D8A5-A02F-41A8-8309-CD556007FD1B}" src="https://github.com/user-attachments/assets/a9c3fc5e-3ec0-41ed-bbd7-779ee210c9a1" />
+
+    In Orca ab Version 2.4.2 deaktivieren Sie die Übertragung von 3MF-Dateien: `Druckerprofil` -> `Allgemeine Informationen` -> `Erweitert` -> `Use 3MF instead of G-code` deaktivieren (Häkchen entfernen).
+
+    <img width="462" height="521" alt="image" src="https://github.com/user-attachments/assets/36ec19d8-5263-4b18-b5b1-e45424c64785" />
 
 ---
 
@@ -629,6 +637,8 @@ Kataloge, die von entware erstellt und verwendet werden:
 ### Was ist ein Firmware Rückzug?
 
 - In Z-Mod verfügt Fluidd/Mainsail über Schieberegler zur Anpassung von Rückzugsgeschwindigkeit und -distanz per Firmware. 
+
+![](../images/retract.jpg)
 
 - Diese Einstellungen wirken sich nur dann auf den Druck aus, wenn die G-Code-Datei mit aktiviertem Firmware-Rückzug gesliced ​​wurde.
 

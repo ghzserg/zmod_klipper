@@ -124,15 +124,22 @@ The native FF protocol occasionally transfers corrupted files and lacks metadata
 1. Click the WiFi icon next to the printer.
 2. Set:
 
-    - **Protocol**: `Octo/Klipper`
-       - **Hostname**: `Printer_IP:7125`
-       - **Host URL**: `Printer_IP` or `Printer_IP:80`
+- **Host Type**: `Octo/Klipper`
+- **Printer Agent**: `Moonraker`
+- **Hostname**: `IP_printer:7125`
+- **Device UI**: `IP_printer` or `IP_printer:80`
+
+<img width="678" height="471" alt="{8FB1D8A5-A02F-41A8-8309-CD556007FD1B}" src="https://github.com/user-attachments/assets/a9c3fc5e-3ec0-41ed-bbd7-779ee210c9a1" />
 
 If using Mainsail, specify only these thumbnail sizes: ```140x110/PNG, 64x64/PNG```
 
 In Orca, `Printer Profile` -> `General Information` -> `Advanced` -> `G-Code Thumbnails`
 
 Note that the native screen will no longer display thumbnails.
+
+In Orca version 2.4.2 or later, disable 3MF file transfer: `Printer Profile` -> `General Information` -> `Advanced` -> uncheck `Use 3MF instead of G-code`.
+
+<img width="462" height="521" alt="image" src="https://github.com/user-attachments/assets/36ec19d8-5263-4b18-b5b1-e45424c64785" />
 
 ---
 

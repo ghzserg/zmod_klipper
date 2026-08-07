@@ -48,9 +48,17 @@ Jakoukoliv funkci lze přepsat v `mod_data/user.cfg` nebo `printer.cfg`.
 - Pokud chcete přenést z-offset z nativní obrazovky do režimu bez obrazovky, spusťte makro ```LOAD_ZOFFSET_NATIVE```, které přečte hodnotu z-offsetu z nativní obrazovky a aplikuje ji do režimu bez obrazovky.
 - Mesh podložky `auto` se načítá automaticky při startu.
 - Protokol FlashForge není podporován (řeší to obrazovka). Použijte "Octo/Klipper":
-    - Protokol: `Octo/Klipper`
-      - Hostname: `IP_tiskárny:7125`
-      - URL: `IP_tiskárny` nebo `IP_tiskárny:80`
+
+    - **Host Type**: `Octo/Klipper`
+    - **Printer Agent**: `Moonraker`
+    - **Hostname**: `IP_printer:7125`
+    - **Device UI**: `IP_printer` or `IP_printer:80`
+
+    <img width="678" height="471" alt="{8FB1D8A5-A02F-41A8-8309-CD556007FD1B}" src="https://github.com/user-attachments/assets/a9c3fc5e-3ec0-41ed-bbd7-779ee210c9a1" />
+
+    V Orca verzi 2.4.2 a novější vypněte přenos souborů 3MF: `Profil tiskárny` -> `Obecné informace` -> `Rozšířené` -> zrušte zaškrtnutí `Use 3MF instead of G-code`.
+
+    <img width="462" height="521" alt="image" src="https://github.com/user-attachments/assets/36ec19d8-5263-4b18-b5b1-e45424c64785" />
 
 ---
 
