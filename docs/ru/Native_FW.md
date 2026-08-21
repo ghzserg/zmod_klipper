@@ -1,6 +1,6 @@
 # Родная прошивка
 
-[Здесь находится родная прошивка для принтеров AD5M, AD5MPro, AD5X](https://github.com/ghzserg/FF/releases/R)
+[Здесь находится родная прошивка для принтеров AD5M, AD5M Pro, AD5X](https://github.com/ghzserg/FF/releases/R)
 
 ## Как установить родную прошивку
 
@@ -46,9 +46,9 @@
 - [5.0.3](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-5.0.3-2.2.3-20260122.tgz)
 - [5.1.1](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-5.1.1-2.2.3-20260417.tgz)
 
-## AD5MPro родная прошивка
+## AD5M Pro родная прошивка
 
-Это Facrory (фактори) родная прошивка для AD5MPro
+Это Facrory (фактори) родная прошивка для AD5M Pro
 
 Если вы не хотите чтобы принтер [измерял стол перед каждой печатью](/ru/FAQ/#перед-каждой-печатью-измеряет-стол-по-центру), то нужно установить прошивку не выше 3.2.3
 
@@ -59,6 +59,35 @@
 - [3.2.7](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.2.7-2.2.3-20251217-Factory.tgz)
 - [5.0.3](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-5.0.3-2.2.3-20260122.tgz)
 - [5.1.2](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-5.1.2-2.2.3-20260418.tgz)
+
+## Creator 5 родная прошивка
+
+Это Facrory (фактори) родная прошивка для Creator 5
+
+- [1.9.7](https://github.com/ghzserg/FF/releases/download/R/Creator5-1.9.7-1.2.9-20260810.tgz)
+
+## Creator 5 pro родная прошивка
+
+Это Facrory (фактори) родная прошивка для Creator 5 pro
+
+- [1.9.7](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-1.9.7-1.2.9-20260810.tgz)
+
+## Установка полной прошивки на Creator 5 / Creator 5 Pro
+
+**Это НЕ Facrory (фактори) родная прошивка, а раскирпичиватель принтера.** Ее нужно ставить только в случае если принтер вообще не запускается.
+
+Установка занимает много времени до часа.
+
+1. Загрузите на флешку:
+
+   - [Creator5-factory-1.9.7.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-factory-1.9.7.tgz)
+   - [Creator5Pro-factory-1.9.7.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-factory-1.9.7.tgz)
+   - [Creator5Pro-factory.tar.xz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-factory.tar.xz)
+
+2. После обновления, если вам надо перешить MCU установите:
+
+   - [Creator 5](https://github.com/ghzserg/FF/releases/download/R/Creator5-1.9.7-1.2.9-20260810.tgz)
+   - [Creator 5 Pro](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-1.9.7-1.2.9-20260810.tgz)
 
 ## Установка полной прошивки на AD5X
 
@@ -115,6 +144,8 @@
 - [Adventurer5M-root](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-root.tgz)
 - [Adventurer5MPro-root](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-root.tgz)
 - [AD5X-root](https://github.com/ghzserg/FF/releases/download/R/AD5X-root.tgz)
+- [Creator 5](https://github.com/ghzserg/FF/releases/download/R/Creator5-root.tgz)
+- [Creator 5 Pro](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-root.tgz)
 
 ## E0011 на родной прошивке
 
@@ -145,6 +176,14 @@ Fix E0011 Off
 
 [Adventurer5MPro-3.1.3-2.2.3-20250107-Factory-PRO25M.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.1.3-2.2.3-20250107-Factory-PRO25M.tgz)
 
+## Перевод Creator 5 в Creator 5 Pro
+
+[Creator5-to_c5pro.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-to_c5pro.tgz)
+
+## Перевод Creator 5 Pro в Creator 5
+
+[Creator5Pro-to_c5.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-to_c5.tgz)
+
 ## 5X IFS
 Архив IFS прошивки
 
@@ -174,6 +213,7 @@ Fix E0011 Off
 
 - [AD5X](https://github.com/ghzserg/zmod/tree/main/Native_firmware/config/ad5x)
 - [AD5M/Pro](https://github.com/ghzserg/zmod/tree/main/Native_firmware/config/ff5m)
+- [Creator 5 Pro](https://github.com/ghzserg/zmod/tree/main/Native_firmware/config/creator5pro)
 
 ## FIX_LOOP
 ### Восстановление загрузки
@@ -181,28 +221,30 @@ Fix E0011 Off
 Удаляет остатки ссылок из автозагрузки
 
 - [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-fix_loop.tgz)
-- [AD5MPro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-fix_loop.tgz)
+- [AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-fix_loop.tgz)
 - [AD5X](https://github.com/ghzserg/FF/releases/download/R/AD5X-fix_loop.tgz)
 
 ## FIX_UPDATE_MCU
 ### Исправление постоянного обновления MCU
 
 - [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-fix_update_mcu.tgz)
-- [AD5MPro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-fix_update_mcu.tgz)
+- [AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-fix_update_mcu.tgz)
 - [AD5X](https://github.com/ghzserg/FF/releases/download/R/AD5X-fix_update_mcu.tgz)
+- [Creator 5](https://github.com/ghzserg/FF/releases/download/R/Creator5-update_mcu.tgz)
+- [Creator 5 Pro](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-update_mcu.tgz)
 
 ## LOG
 ### Позволяет получить лог файлы, если Klipper не работает
 
 - [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-log.tgz)
-- [AD5MPro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-log.tgz)
+- [AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-log.tgz)
 - [AD5X](https://github.com/ghzserg/FF/releases/download/R/AD5X-log.tgz)
 
 ## REM_ZMOD
 ### Удалить ZMOD
 
 - [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-rem_zmod.tgz)
-- [AD5MPro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-rem_zmod.tgz)
+- [AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-rem_zmod.tgz)
 - [AD5X](https://github.com/ghzserg/FF/releases/download/R/AD5X-rem_zmod.tgz)
 
 
@@ -210,5 +252,5 @@ Fix E0011 Off
 ### Восстановить оригинальный Klipper
 
 - [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-fix_klipper.tgz)
-- [AD5MPro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-fix_klipper.tgz)
+- [AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-fix_klipper.tgz)
 - [AD5X](https://github.com/ghzserg/FF/releases/download/R/AD5X-fix_klipper.tgz)

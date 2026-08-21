@@ -12,13 +12,15 @@
     - [Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz) pro FF5M
     - [Adventurer5MPro-3.1.3-2.2.3-20250107-Factory.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.1.3-2.2.3-20250107-Factory.tgz) pro FF5M **Pro**
     - [AD5X-1.1.7-1.1.0-3.0.6-20250912.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-1.1.7-1.1.0-3.0.6-20250912-Factory.tgz) pro AD5X
+    - [Creator5-1.9.7-1.2.9-20260810.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-1.9.7-1.2.9-20260810.tgz) pro Creator 5
+    - [Creator5Pro-1.9.7-1.2.9-20260810.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-1.9.7-1.2.9-20260810.tgz) pro Creator 5 Pro
 
 4. Vypněte tiskárnu.
 5. Vložte USB disk do USB portu tiskárny.
 6. Zapněte tiskárnu.
 7. Počkejte, až se dokončí instalace standardního firmwaru.
 8. Nakonfigurujte Wi‑Fi nebo LAN.
-9. Získejte nejnovější aktualizace tiskárny nebo nainstalujte firmware 1.1.7 pro AD5X nebo 3.2.3 pro [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-3.2.3-2.2.3-20251016-Factory.tgz)/[AD5MPro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.2.3-2.2.3-20251017-Factory.tgz), pokud nechcete, aby tiskárna [měřila střed lože před každým tiskem](FAQ.md#before-each-print-the-printer-measures-the-center-of-the-bed).
+9. Získejte nejnovější aktualizace tiskárny nebo nainstalujte firmware 1.1.7 pro AD5X nebo 3.2.3 pro [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-3.2.3-2.2.3-20251016-Factory.tgz)/[AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.2.3-2.2.3-20251017-Factory.tgz), pokud nechcete, aby tiskárna [měřila střed lože před každým tiskem](FAQ.md#before-each-print-the-printer-measures-the-center-of-the-bed).
 
 ---
 
@@ -27,7 +29,7 @@
 [Video](https://www.youtube.com/watch?v=2sfb2OtY7wM)
 
 <div class="video-embed">
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/2sfb2OtY7wM" title="Install zmod to AD5X / AD5M / AD5MPro @Belovv_ilya" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/2sfb2OtY7wM" title="Install zmod to AD5X / AD5M / AD5M Pro @Belovv_ilya" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 </div>
 
 1. **[Obnovte tovární nastavení tiskárny](#restoring-printer-to-factory-settings-required-for-mod-installation).**  [Varování pro AD5X](#ad5x-warning)

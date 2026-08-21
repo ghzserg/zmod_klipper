@@ -12,13 +12,15 @@
     - [Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz) for FF5M
     - [Adventurer5MPro-3.1.3-2.2.3-20250107-Factory.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.1.3-2.2.3-20250107-Factory.tgz) for FF5m**Pro** версии 
     - [AD5X-1.1.7-1.1.0-3.0.6-20250912.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-1.1.7-1.1.0-3.0.6-20250912-Factory.tgz) for AD5X
+    - [Creator5-1.9.7-1.2.9-20260810.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-1.9.7-1.2.9-20260810.tgz) for Creator 5
+    - [Creator5Pro-1.9.7-1.2.9-20260810.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-1.9.7-1.2.9-20260810.tgz) for Creator 5 Pro
 
 4. Power off the printer.
 5. Insert the usb drive into printer usb port.
 6. Power on the printer.
 7. Wait for the stock firmware installation to complete.
 8. Configure Wi-Fi or Lan *new beaver*
-9. Get the latest printer updates or install firmware 1.1.7 for AD5X, or 3.2.3 for [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-3.2.3-2.2.3-20251016-Factory.tgz)/[AD5MPro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.2.3-2.2.3-20251017-Factory.tgz) if you don't want the printer to [measure the bed center before each print](/FAQ/#before-each-print-the-printer-measures-the-center-of-the-bed)
+9. Get the latest printer updates or install firmware 1.1.7 for AD5X, or 3.2.3 for [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-3.2.3-2.2.3-20251016-Factory.tgz)/[AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.2.3-2.2.3-20251017-Factory.tgz) if you don't want the printer to [measure the bed center before each print](/FAQ/#before-each-print-the-printer-measures-the-center-of-the-bed)
 
 ---
 
@@ -27,7 +29,7 @@
 [Video](https://www.youtube.com/watch?v=2sfb2OtY7wM)
 
 <div class="video-embed">
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/2sfb2OtY7wM" title="Install zmod to AD5X / AD5M / AD5MPro @Belovv_ilya" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/2sfb2OtY7wM" title="Install zmod to AD5X / AD5M / AD5M Pro @Belovv_ilya" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 </div>
 
 1. **[Restore the printer to factory settings](/Setup/#restoring-printer-to-factory-settings-required-for-mod-installation).**  [AD5X Warning](/Setup/#ad5x-warning)

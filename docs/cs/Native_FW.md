@@ -1,6 +1,6 @@
 # Nativní firmware
 
-[Zde je nativní firmware pro tiskárny AD5M, AD5MPro, AD5X](https://github.com/ghzserg/FF/releases/R)
+[Zde je nativní firmware pro tiskárny AD5M, AD5M Pro, AD5X](https://github.com/ghzserg/FF/releases/R)
 
 ## Jak nainstalovat nativní firmware
 
@@ -38,7 +38,7 @@
 - [5.0.3](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-5.0.3-2.2.3-20260122.tgz)
 - [5.1.1](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-5.1.1-2.2.3-20260417.tgz)
 
-## Nativní firmware pro AD5MPro
+## Nativní firmware pro AD5M Pro
 
 - [3.1.3](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.1.3-2.2.3-20250107-Factory.tgz)
 - [3.2.3](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.2.3-2.2.3-20251017-Factory.tgz)
@@ -47,6 +47,35 @@
 - [3.2.7](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.2.7-2.2.3-20251217-Factory.tgz)
 - [5.0.3](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-5.0.3-2.2.3-20260122.tgz)
 - [5.1.2](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-5.1.2-2.2.3-20260418.tgz)
+
+## Creator 5 Originální firmware
+
+Toto je Factory (factory) originální firmware pro Creator 5
+
+- [1.9.7](https://github.com/ghzserg/FF/releases/download/R/Creator5-1.9.7-1.2.9-20260810.tgz)
+
+## Creator 5 Pro Originální firmware
+
+Toto je Factory (factory) originální firmware pro Creator 5 Pro
+
+- [1.9.7](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-1.9.7-1.2.9-20260810.tgz)
+
+## Instalace kompletního firmwaru na Creator 5 / Creator 5 Pro
+
+**Toto NENÍ originální Factory firmware, ale nástroj pro odblokování tiskárny.** Měl by být instalován pouze v případě, že tiskárna vůbec nenastartuje.
+
+Instalace trvá dlouho, až hodinu.
+
+1. Stáhněte na USB flash disk:
+
+   - [Creator5-factory-1.9.7.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-factory-1.9.7.tgz)
+   - [Creator5Pro-factory-1.9.7.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-factory-1.9.7.tgz)
+   - [Creator5Pro-factory.tar.xz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-factory.tar.xz)
+
+2. Po aktualizaci, pokud potřebujete znovu nahrát firmware do MCU, nainstalujte:
+
+   - [Creator 5](https://github.com/ghzserg/FF/releases/download/R/Creator5-1.9.7-1.2.9-20260810.tgz)
+   - [Creator 5 Pro](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-1.9.7-1.2.9-20260810.tgz)
 
 ## Instalace úplného firmwaru na AD5X
 
@@ -100,6 +129,8 @@ Tato utilita je určena pro případy, kdy byla nesprávně nastavena "domovská
 - [Adventurer5M-root](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-root.tgz)
 - [Adventurer5MPro-root](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-root.tgz)
 - [AD5X-root](https://github.com/ghzserg/FF/releases/download/R/AD5X-root.tgz)
+- [Creator 5](https://github.com/ghzserg/FF/releases/download/R/Creator5-root.tgz)
+- [Creator 5 Pro](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-root.tgz)
 
 ## Nativní firmware pro opravu E0011
 
@@ -130,6 +161,14 @@ Vypnutí opravy E0011
 
 [Adventurer5MPro-3.1.3-2.2.3-20250107-Factory-PRO25M.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-3.1.3-2.2.3-20250107-Factory-PRO25M.tgz)
 
+## Převod Creator 5 na Creator 5 Pro
+
+[Creator5-to_c5pro.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-to_c5pro.tgz)
+
+## Převod Creator 5 Pro na Creator 5
+
+[Creator5Pro-to_c5.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-to_c5.tgz)
+
 ## 5X IFS
 Záloha firmwaru IFS
 
@@ -159,6 +198,7 @@ Záloha firmwaru IFS
 
 - [AD5X](https://github.com/ghzserg/zmod/tree/main/Native_firmware/config/ad5x)
 - [AD5M/Pro](https://github.com/ghzserg/zmod/tree/main/Native_firmware/config/ff5m)
+- [Creator 5 Pro](https://github.com/ghzserg/zmod/tree/main/Native_firmware/config/creator5pro)
 
 ## FIX_LOOP
 ### Obnovení zavádění
@@ -166,33 +206,35 @@ Záloha firmwaru IFS
 Odstraňuje zbytky odkazů z automatického spouštění
 
 - [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-fix_loop.tgz)
-- [AD5MPro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-fix_loop.tgz)
+- [AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-fix_loop.tgz)
 - [AD5X](https://github.com/ghzserg/FF/releases/download/R/AD5X-fix_loop.tgz)
 
 ## FIX_UPDATE_MCU
 ### Oprava neustálých aktualizací MCU
 
 - [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-fix_update_mcu.tgz)
-- [AD5MPro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-fix_update_mcu.tgz)
+- [AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-fix_update_mcu.tgz)
 - [AD5X](https://github.com/ghzserg/FF/releases/download/R/AD5X-fix_update_mcu.tgz)
+- [Creator 5](https://github.com/ghzserg/FF/releases/download/R/Creator5-update_mcu.tgz)
+- [Creator 5 Pro](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-update_mcu.tgz)
 
 ## LOG
 ### Umožňuje získat soubory protokolu, pokud Klipper nefunguje
 
 - [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-log.tgz)
-- [AD5MPro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-log.tgz)
+- [AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-log.tgz)
 - [AD5X](https://github.com/ghzserg/FF/releases/download/R/AD5X-log.tgz)
 
 ## REM_ZMOD
 ### Odstranit ZMOD
 
 - [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-rem_zmod.tgz)
-- [AD5MPro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-rem_zmod.tgz)
+- [AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-rem_zmod.tgz)
 - [AD5X](https://github.com/ghzserg/FF/releases/download/R/AD5X-rem_zmod.tgz)
 
 ## FIX_KLIPPER
 ### Obnovit původní Klipper
 
 - [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-fix_klipper.tgz)
-- [AD5MPro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-fix_klipper.tgz)
+- [AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-fix_klipper.tgz)
 - [AD5X](https://github.com/ghzserg/FF/releases/download/R/AD5X-fix_klipper.tgz)
