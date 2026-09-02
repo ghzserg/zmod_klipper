@@ -288,6 +288,12 @@ class PrinterMotionQueuing:
         self.reactor.update_timer(self.flush_timer, self.reactor.NOW)
         self._advance_flush_time(flush_time + self.kin_flush_delay)
         self.drip_start_times.remove(start_time)
+    def get_step_gen_lead_time(self, eventtime):
+        est_print_time = self.mcu.estimated_print_time(eventtime)
+        lead_time = self.last_step_gen_time - est_print_time
+        if (lead_time <= 0. and self.need_step_gen_time <= self.last_step_gen_time):
+            return None
+        return max(0., lead_time)
     def check_drip_timing(self):
         if not self.drip_start_times:
             return None

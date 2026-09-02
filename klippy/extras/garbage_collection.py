@@ -10,6 +10,11 @@ from types import FunctionType, MethodType
 
 THRESHOLD = 0.05
 
+# A generation sweep blocks the reactor
+GC_SAFETY_FACTOR = 1.5
+GC_TIME_MARGIN = 0.050
+GC_INITIAL_COST = [0.005, 0.050, 0.500]
+
 def get_function_owner(cb):
     if type(cb) in (FunctionType, MethodType):
         code = cb.__code__
@@ -30,7 +35,11 @@ class GarbageCollection:
         self.printer = printer = config.get_printer()
         # Perform gc on reactor idle
         self._last_gc_times = [0., 0., 0.]
-        reactor = printer.get_reactor()
+        self.defer_on_motion = config.getboolean('defer_gc_on_motion', False)
+        self._gc_costs = list(GC_INITIAL_COST)
+        self._skipped_gc = [0, 0, 0]
+        self.motion_queuing = None
+        self.reactor = reactor = printer.get_reactor()
         reactor.set_idle_notifier(self._handle_idle)
         printer.register_event_handler("klippy:analyze_shutdown",
                                        self._handle_analyze_shutdown)
@@ -45,7 +54,19 @@ class GarbageCollection:
                                        self._handle_ready_latency)
 
     def _handle_analyze_shutdown(self, msg, details):
-        logging.info("Reactor garbage collection: %s", self._last_gc_times)
+        logging.info("Reactor garbage collection: %s (costs %s, deferred %s)",
+                     self._last_gc_times, self._gc_costs, self._skipped_gc)
+
+    def _get_gc_budget(self, eventtime):
+        if self.motion_queuing is None:
+            self.motion_queuing = self.printer.lookup_object('motion_queuing', None)
+        if self.motion_queuing is None:
+            return None
+        return self.motion_queuing.get_step_gen_lead_time(eventtime)
+
+    def _fits_in_budget(self, gc_level, budget):
+        cost = self._gc_costs[gc_level] * GC_SAFETY_FACTOR + GC_TIME_MARGIN
+        return cost <= budget
 
     def _handle_idle(self, eventtime, start_busy_time):
         gi = gc.get_count()
