@@ -39,8 +39,10 @@
    - для FF5M: Adventurer5M-**zmod**-\*.tgz
    - для FF5MPro: Adventurer5MPro-**zmod**-\*.tgz
    - для [AD5X](/ru/AD5X/): AD5X-**zmod**-\*.tgz
+   - для Creator5: Creator5-**zmod**-\*.tgz
+   - для Creator5 Pro: Creator5Pro-**zmod**-\*.tgz
 
-  _А лучше поместить все 3 файла на флешку, тогда принтер сам запустит нужный файл_
+  _А лучше поместить все 5 файлов на флешку, тогда принтер сам запустит нужный файл_
 
   **Распаковывать файлы не нужно**
 
@@ -53,7 +55,7 @@
    
    <img width="800" height="480" alt="screenshot" src="https://github.com/user-attachments/assets/19d66329-72f9-4e92-aba6-35b7820ce9a0" />
    
-   На AD5X установка может занимать до 40 минут. _Если ставится долго или не ставится вообще - смените флешку_
+   На AD5X/Creator 5/Creator 5 Pro установка может занимать до 40 минут. _Если ставится долго или не ставится вообще - смените флешку_
 
    Если пропустили окно с зеленой галочкой и принтер автоматически перезагрузился, то загрузится стандартный экран принтера, в этом случае можно пемеходить сразу к 12 пункту меню.
 
@@ -64,7 +66,11 @@
     <img width="800" height="480" alt="main" src="https://github.com/user-attachments/assets/a0466fa8-03e8-458d-8cc5-c1efb8f565ac" />
     <img width="800" height="480" alt="ip" src="https://github.com/user-attachments/assets/1d7dd5fa-86f4-4b1a-bd42-364619b20229" />
     
-    Если веб интерфейс не открывается, значит родная прошивка деактивировала мод. Чтобы его включить нужно записать на USB флэш файл [AD5X-ENABLE-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-ENABLE-zmod.tgz) и [активировать мод](/ru/Native_FW/#ad5x-enable-zmodtgz).
+    Если веб интерфейс не открывается, значит родная прошивка деактивировала мод. Чтобы его включить нужно записать на USB флэш файл:
+
+    - [AD5X-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-enable-zmod.tgz)
+    - [Creator5-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-enable-zmod.tgz)
+    - [Creator5Pro-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-enable-zmod.tgz)
      
 13. Переведите мод на ваш язык.
     
@@ -112,7 +118,7 @@
     ```
     START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single]
     M190 S[bed_temperature_initial_layer_single]
-    M104 S[nozzle_temperature_initial_layer]
+    M104 S[nozzle_temperature_initial_layer] T{single_extruder_multi_material ? 0 : initial_extruder}
     SET_PRINT_STATS_INFO TOTAL_LAYER=[total_layer_count]
     ```
     
@@ -209,9 +215,11 @@
 1. Отформатировать USB Flash в FAT/FAT16/FAT32(MBR)
 2. Поместить [файл](https://github.com/ghzserg/zmod/releases/) в корневую папку USB Flash.
 
-    - для FF5M: Adventurer5M-**zmod**-\*.tgz
-       - для FF5MPro: Adventurer5MPro-**zmod**-\*.tgz
-       - для [AD5X](/ru/AD5X/): AD5X-**zmod**-\*.tgz
+   - для FF5M: Adventurer5M-**zmod**-\*.tgz
+   - для FF5MPro: Adventurer5MPro-**zmod**-\*.tgz
+   - для [AD5X](/ru/AD5X/): AD5X-**zmod**-\*.tgz
+   - для Creator 5: Creator5-**zmod**-\*.tgz
+   - для Creator 5 Pro: Creator5Pro-**zmod**-\*.tgz
 
 3. Выключить принтер
 4. Вставить флешку в принтер
@@ -277,7 +285,13 @@ BTC `17wXTd9BqYp1K3zCLTxVyGLEXUDjf7XNLL`
 - Ваш серийный номер еще не попал под раздачу обновлений
 - [Установите обновление родной прошивки с флешки](/ru/Native_FW/)
 
-**Для [AD5X](/ru/AD5X/) требуется [активация Z-Mod](/ru/Native_FW/) через `AD5X-ENABLE-zmod.tgz` с флешки, после обновления стока**.
+**Для [AD5X](/ru/AD5X/)/Creator 5/Creator 5 Pro требуется [активация Z-Mod](/ru/Native_FW/) с флешки, после обновления стока**:
+
+- [AD5X-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-enable-zmod.tgz)
+- [Creator5-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-enable-zmod.tgz)
+- [Creator5Pro-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-enable-zmod.tgz)
+
+Но если вы обновляете с родного экрана, а не с флешки, то до выключения принтера нужно вызвать макрос ```RESET_PASSWD```
 
 ---
 
@@ -353,7 +367,7 @@ mount -t proc proc /proc
 mount -o remount,rw /
 ```
 
-12. Исправляем то что сломалось, например `rm -f /etc/init.d/S01bad_script`, или `rm -f /opt/config/mod/.shell/S98camera`, если у вас не проходит запуск из-за камеры.
+12. Исправляем то что сломалось, например `rm -f /etc/init.d/S01bad_script`, или `rm -f /usr/data/zmod/zmod/.shell/S98camera`, если у вас не проходит запуск из-за камеры.
 
 13. Нужно сохранить изменения: ```sync```
 

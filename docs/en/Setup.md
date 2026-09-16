@@ -37,8 +37,10 @@
 3. Copy the [mod file](https://github.com/ghzserg/zmod/releases/) to the USB root directory:
 
     - For FF5M: Adventurer5M-**zmod**-*.tgz
-       - For FF5M Pro: Adventurer5MPro-**zmod**-\*.tgz
-       - For [AD5X](/AD5X/): AD5X-**zmod**-*.tgz
+    - For FF5M Pro: Adventurer5MPro-**zmod**-\*.tgz
+    - For [AD5X](/AD5X/): AD5X-**zmod**-*.tgz
+    - For Creator5: Creator5-**zmod**-\*.tgz
+    - For Creator5 Pro: Creator5Pro-**zmod**-\*.tgz
 
 4. Power off the printer.
 5. Insert the USB drive.
@@ -49,7 +51,7 @@
    
    <img width="800" height="480" alt="screenshot" src="https://github.com/user-attachments/assets/19d66329-72f9-4e92-aba6-35b7820ce9a0" />
    
-   Installation on the AD5X can take up to 40 minutes
+   Installation on the AD5X/Creator 5/Creator 5 Pro can take up to 40 minutes
 
 8. Remove the USB drive.
 9. Power the printer.
@@ -57,7 +59,12 @@
     <img width="800" height="480" alt="main" src="https://github.com/user-attachments/assets/a0466fa8-03e8-458d-8cc5-c1efb8f565ac" />
     <img width="800" height="480" alt="ip" src="https://github.com/user-attachments/assets/1d7dd5fa-86f4-4b1a-bd42-364619b20229" />
     
-    If the web interface doesn't open, the stock firmware has disabled the mod. To enable it, copy the file [AD5X-ENABLE-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-ENABLE-zmod.tgz) to a USB flash drive and [activate the mod](/Native_FW/#ad5x-enable-zmodtgz).
+    If the web interface doesn't open, the stock firmware has disabled the mod. To enable it, copy the file:
+
+    - [AD5X-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-enable-zmod.tgz)
+    - [Creator5-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-enable-zmod.tgz)
+    - [Creator5Pro-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-enable-zmod.tgz)
+
 12. Translate the mod into your language.
 
     <img width="564" height="583" alt="{8E14F84D-E8D1-4129-B192-AA335243A3D9}" src="https://github.com/user-attachments/assets/e6dd3f8a-3cc3-4a05-b5fb-ad8ba372ede6" />
@@ -118,7 +125,7 @@
     ```
     START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single]
     M190 S[bed_temperature_initial_layer_single]
-    M104 S[nozzle_temperature_initial_layer]
+    M104 S[nozzle_temperature_initial_layer] T{single_extruder_multi_material ? 0 : initial_extruder}
     SET_PRINT_STATS_INFO TOTAL_LAYER=[total_layer_count]
     ```
     
@@ -243,7 +250,11 @@ Attention!
 3. Enable Chinese cloud services (if you wish to update via the stock touchscreen):
    ```SAVE_ZMOD_DATA CHINA_CLOUD=1```
 
-**For [AD5X](/ru/AD5X/), [Z-Mod activation](/Native_FW/) is required via `AD5X-ENABLE-zmod.tgz` from a USB drive—after updating the stock firmware.**
+**For [AD5X](/ru/AD5X/)/Creator 5/Creator 5 Pro, [Z-Mod activation](/Native_FW/) from a USB drive—after updating the stock firmware.**:
+
+- [AD5X-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-enable-zmod.tgz)
+- [Creator5-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-enable-zmod.tgz)
+- [Creator5Pro-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-enable-zmod.tgz)
 
 ---
 
@@ -310,7 +321,7 @@ Try restoring the firmware by installing a full firmware:
 12. Fix corrupted files (e.g., delete faulty scripts):
     ```
     rm -f /etc/init.d/S01bad_script
-    rm -f /opt/config/mod/.shell/S98camera
+    rm -f /usr/data/zmod/zmod/.shell/S98camera
     ```
 
 13. Save changes and reboot:

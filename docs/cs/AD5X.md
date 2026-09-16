@@ -347,7 +347,7 @@ Při použití Bambu Studio je podporován pouze režim odpadu (poop mode).
 
 **Pokud tisknete z těchto profilů v režimu odpadu řízeném slicerem, nezapomeňte před tiskem jakéhokoli vícebarevného gcodu, který nebyl připraven pomocí těchto profilů, změnit nastavení USE_TRASH_ON_PRINT zpět na 0 nebo 1.**
 
-## **7. Přidat vlastní typy filamentů**
+## **7. Přidat nebo odebrat typy filamentů**
 
 Aby tato nastavení fungovala, musíte **vypnout nativní displej tiskárny** pomocí makra `DISPLAY_OFF`.
 
@@ -356,9 +356,17 @@ Chcete-li přidat nový typ filamentu, přidejte následující do ```mod_data/u
 [zmod_ifs]
 filament_NEWTYPE: 300
 ```
-Kde NEWTYPE je nahrazen požadovaným typem filamentu (např. HIPS) a číslo je teplota tání tohoto filamentu.
+Kde NEWTYPE je nahrazen požadovaným typem filamentu (např. HIPS) a číslo je teplota extruderu pro načítání, vyjímání a proplachování tohoto filamentu.
+
+Chcete-li skrýt typ filamentu, přidejte následující do ```mod_data/user.cfg```:
+```
+[zmod_color]
+hide_filament_types: XXX,YYY,ZZZ
+```
+Kde XXX, YYY, ZZZ jsou nahrazeny požadovanými typy filamentů (např. PLA-CF,PETG-CF,SILK). Tuto možnost můžete použít ke skrytí výchozích typů nebo typů, které jste ručně přidali pomocí výše uvedeného nastavení. Tím se typ filamentu nezakáže; pouze se skryje z nabídky výběru typu.
 
 ```IFS_PRINT_DEFAULTS``` - zobrazí dostupné typy filamentů a jejich teploty tání
+
 
 ---
 
@@ -556,7 +564,9 @@ Parametry modulu IFS:
 - silk_count - počet pokusů o načtení tyče do IFS (*1*)
 - stall_count - počet pokusů o započítání tyče jako zastavené (*1*)
 - retry_count - počet opakování příkazu při chybě (*3*)
-- filament_NEWFILEMENT - Přidat nový typ filamentu. Parametr - teplota výměny pro tento typ plastu.
+- next_cmd_delay - doba čekání mezi zpracováním odpovědi IFS a odesláním dalšího příkazu (*0.2*)
+- send_ff_terminator - povoluje nebo zakazuje zpoždění 0,2 s + odeslání 0xFF po příkazu IFS; může být vyžadováno velmi starým firmwarem IFS (True, *False*)
+- filament_NEWFILAMENT - Přidat nový typ filamentu. Parametr - teplota pro zavádění a vyjímání tohoto materiálu.
 
 Nastavte přes `mod_data/user.cfg`:
 ```

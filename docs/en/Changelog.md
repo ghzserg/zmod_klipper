@@ -1,6 +1,7 @@
 # Changelog
 
 - [Version History](#version-history)
+    - [Version 1.7.3](#version-173)
     - [Version 1.7.2](#version-172)
     - [Version 1.7.1](#version-171)
     - [Version 1.7.0](#version-170)
@@ -47,6 +48,13 @@
 ---
 
 ## Version History
+
+### Version 1.7.3
+09.09.2026
+
+* Alpha support for Creator 5 / Creator 5 Pro (no support for headless mode, 13 Klipper, not all macros tested)
+* AD5M: Support for native firmware 5.1.9
+* AD5X: Polling cycle speedup from @ninjamida
 
 ### Version 1.7.2
 06.08.2026

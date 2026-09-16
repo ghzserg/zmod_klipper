@@ -167,6 +167,16 @@ Vytvořit mesh podložky před každým tiskem (pomocí nativní obrazovky, poku
 Příklad: `SAVE_ZMOD_DATA PRINT_LEVELING=1`
 
 ---
+##### PRINT_AUTOPA
+Pouze pro Creator 5 / Creator 5 Pro
+
+Vybrat PA (Pressure Advance) při každém tisku: 0-ne, 1-ano (0). 
+
+*Aby Auto PA fungovalo z nativní obrazovky, přejděte v menu tiskárny na kartu „Nastavení“ -> „Ikona WiFi“ -> „Síťový režim“ -> zapněte posuvník „Pouze lokální sítě“*
+
+Příklad: `SAVE_ZMOD_DATA PRINT_AUTOPA=1`
+
+---
 ##### USE_KAMP
 
 Použít adaptivní mesh (KAMP) místo plného meshe podložky, kde je to možné: 0 (ne), 1 (ano) (0).
@@ -193,7 +203,7 @@ Algoritmus pro automatickou kalibraci Z-Offsetu:
 1.  **Zdrojová data:** V paměti tiskárny je uložen mesh podložky (obvykle 25 bodů) získaný při posledním vyrovnávání.
 2.  **Příprava:**
 
-    *   Tryska je nahřátá na pracovní teplotu, otřena o podložku a ochlazena na 151°C.
+    *   Tryska je nahřátá na pracovní teplotu, otřena o podložku a ochlazena na teplotu měření: [TEMP_TEST_MAX](/cs/Global/#temp_test_max) (výchozí 151), pokud je cílová teplota trysky vyšší než 230°C, jinak [TEMP_TEST_MIN](/cs/Global/#temp_test_min) (výchozí 121).
 
 3.  **Výběr měřicího bodu:**
 
@@ -228,6 +238,31 @@ Algoritmus validace meshe podložky:
 *   Při použití chytrého čištění (KAMP) se čekání na ohřev odehrává poblíž místa čištění, nikoli v rohu podložky.
 
 Příklad: `SAVE_ZMOD_DATA MESH_TEST=0`
+
+---
+
+##### TEMP_TEST_MIN
+
+Nižší teplota trysky pro test kontaktu s podložkou v režimech [MESH_TEST](/cs/Global/#mesh_test) 3/4 (s čištěním trysky). Pokud je cílová teplota trysky 230°C nebo nižší, ochladí se tryska před měřením na tuto teplotu. Výchozí hodnota: `121`.
+
+Snižte hodnotu, pokud vaše podložka nesnese výchozí teplotu: na podložkách PC (teplota skelného přechodu ~145-150°C) a některých G10 zanechává horká tryska hluboké vtisky.
+
+Tento parametr se nenastavuje přes `SAVE_ZMOD_DATA` — zadejte příkaz v konzoli Fluidd/Mainsail (hodnota se ukládá do `mod_data/variables.cfg`):
+
+Příklad: `SAVE_VARIABLE VARIABLE=temp_test_min VALUE=110`
+
+*   Doporučený rozsah: 100-150. Nová hodnota platí od dalšího tisku, restart není potřeba.
+*   Používá se pouze při čištění trysky ([MESH_TEST](/cs/Global/#mesh_test) 3/4). V režimech 1/2 (výchozí) se mapa kontroluje při plné tiskové teplotě bez ochlazení.
+
+---
+
+##### TEMP_TEST_MAX
+
+Vyšší teplota trysky pro test kontaktu s podložkou v režimech [MESH_TEST](/cs/Global/#mesh_test) 3/4 (s čištěním trysky). Pokud je cílová teplota trysky vyšší než 230°C, ochladí se tryska před měřením na tuto teplotu. Výchozí hodnota: `151`.
+
+Použití je stejné jako u [TEMP_TEST_MIN](/cs/Global/#temp_test_min) — snižte hodnotu pro teplotně citlivé podložky (PC, některé G10).
+
+Příklad: `SAVE_VARIABLE VARIABLE=temp_test_max VALUE=140`
 
 ---
 
@@ -571,6 +606,18 @@ Příklad: `SAVE_ZMOD_DATA FIX_E0017=1`
 Jas LED při spuštění (50).
 
 Příklad: `SAVE_ZMOD_DATA LED=50`
+
+---
+##### WEB_SCREEN
+
+Pouze Creator 5 / Creator 5 Pro
+
+Přesměrovat obrazovku tiskárny jako virtuální kameru `screen` do Fluidd/Mainsail a [zmod.link](https://zmod.link)
+
+- 1 - Přesměrovávat (výchozí)
+- 2 - Nepřesměrovávat
+
+Příklad: `SAVE_ZMOD_DATA WEB_SCREEN=1`
 
 ---
 ##### MIDI_ON

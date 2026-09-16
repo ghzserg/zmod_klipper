@@ -202,12 +202,24 @@ Beispiel: `SAVE_ZMOD_DATA PRECLEAR=0`.
 
 Erstellen Sie bei jedem Druck ein Bettnetz (über den nativen Bildschirm, wenn dieser aktiviert ist) 
 
-- 0-(nein), 
-- 1-(ja) . 
+- 0-(nein),
+- 1-(ja) .
 
-*Um die Bettnetz-Karte vom nativen Bildschirm zu entfernen, gehen Sie zu `Einstellungen` :arrow_right: `WiFi-Symbol` :arrow_right: `Netzwerkmodus` :arrow_right: **aktivieren Sie den Schieberegler** `Nur lokale Netzwerke `* über das Menü des Druckerbildschirms.
+*Um die Bettnetz-Karte vom nativen Bildschirm zu entfernen, gehen Sie zu `Einstellungen` :arrow_right: `WiFi-Symbol` :arrow_right: `Netzwerkmodus` :arrow_right: **aktivieren Sie den Schieberegler** `Nur lokale Netzwerke `* über das Menü des Druckerbildschirms.*
 
-Beispiel: `SAVE_ZMOD_DATA PRINT_LEVELING=1`.
+Beispiel: `SAVE_ZMOD_DATA PRINT_LEVELING=0`.
+
+---
+
+#####  PRINT_AUTOPA
+
+Nur für Creator 5 / Creator 5 Pro
+
+PA (Pressure Advance) bei jedem Druck anpassen: 0-nein, 1-ja (0).
+
+*Damit Auto PA über den Original-Bildschirm funktioniert, gehen Sie zu `Einstellungen` :arrow_right: `WiFi-Symbol` :arrow_right: `Netzwerkmodus` :arrow_right: **aktivieren Sie den Schieberegler** `Nur lokale Netzwerke `* über das Menü des Druckerbildschirms.*
+
+Beispiel: `SAVE_ZMOD_DATA PRINT_AUTOPA=1`
 
 ---
 
@@ -244,7 +256,7 @@ Algorithmus zur automatischen Z-Offset-Kalibrierung:
 
 2. **Vorbereitung:**
 
-	* Die Düse wird auf Betriebstemperatur erhitzt, über das Druckbett geführt und auf 151 °C abgekühlt.
+	* Die Düse wird auf Betriebstemperatur erhitzt, über das Druckbett geführt und auf die Prüftemperatur abgekühlt: [TEMP_TEST_MAX](/de/Global/#temp_test_max) (standardmäßig 151), wenn die Zieltemperatur der Düse über 230 °C liegt, sonst [TEMP_TEST_MIN](/de/Global/#temp_test_min) (standardmäßig 121).
 
 3. **Messpunktauswahl:**
 
@@ -285,6 +297,31 @@ Algorithmus zur Validierung des Druckbettnetzes:
 * Bei Verwendung der intelligenten Reinigung (KAMP) erfolgt die Heizwartezeit in der Nähe des Reinigungsbereichs, nicht in einer Ecke des Bettes.
 
 Beispiel: `SAVE_ZMOD_DATA MESH_TEST=0`
+
+---
+
+##### TEMP_TEST_MIN
+
+Untere Düsentemperatur für den Bettkontakttest in [MESH_TEST](/de/Global/#mesh_test) Modi 3/4 (mit Düsenreinigung). Liegt die Zieltemperatur der Düse bei 230 °C oder darunter, kühlt die Düse vor dem Prüfen auf diese Temperatur ab. Standard: `121`.
+
+Verringern Sie den Wert, wenn Ihre Druckplatte die Standardtemperatur nicht verträgt: Auf PC-Platten (Glasübergangspunkt ~145-150 °C) und einigen G10-Platten hinterlässt die heiße Düse tiefe Abdrücke.
+
+Dieser Parameter wird nicht über `SAVE_ZMOD_DATA` gesetzt — geben Sie den Befehl in der Fluidd/Mainsail-Konsole ein (der Wert wird in `mod_data/variables.cfg` gespeichert):
+
+Beispiel: `SAVE_VARIABLE VARIABLE=temp_test_min VALUE=110`
+
+*   Empfohlener Bereich: 100-150. Der neue Wert gilt ab dem nächsten Druck, ein Neustart ist nicht erforderlich.
+*   Wird nur verwendet, wenn eine Düsenreinigung durchgeführt wird ([MESH_TEST](/de/Global/#mesh_test) 3/4). In den Modi 1/2 (Standard) wird das Netz bei voller Drucktemperatur ohne Abkühlung geprüft.
+
+---
+
+##### TEMP_TEST_MAX
+
+Obere Düsentemperatur für den Bettkontakttest in [MESH_TEST](/de/Global/#mesh_test) Modi 3/4 (mit Düsenreinigung). Liegt die Zieltemperatur der Düse über 230 °C, kühlt die Düse vor dem Prüfen auf diese Temperatur ab. Standard: `151`.
+
+Die Verwendung entspricht [TEMP_TEST_MIN](/de/Global/#temp_test_min) — verringern Sie den Wert für temperaturempfindliche Druckplatten (PC, einige G10).
+
+Beispiel: `SAVE_VARIABLE VARIABLE=temp_test_max VALUE=140`
 
 ---
 
@@ -736,7 +773,18 @@ LED-Helligkeit im eingeschalteten Zustand (50)
 Beispiel: `SAVE_ZMOD_DATA LED=50`
 
 ---
+##### WEB_SCREEN
 
+Nur Creator 5 / Creator 5 Pro
+
+Leiten Sie den Druckerbildschirm als virtuelle `screen`-Kamera in Fluidd/Mainsail und [zmod.link](https://zmod.link) um
+
+- 1 - Umleiten (Standard)
+- 2 - Nicht umleiten
+
+Beispiel: `SAVE_ZMOD_DATA WEB_SCREEN=1`
+
+---
 ##### MIDI_ON
 
 Spielt MIDI, wenn es eingeschaltet ist (""), 0 zum Ausschalten

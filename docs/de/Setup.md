@@ -37,6 +37,8 @@
     - für FF5M: Adventurer5M-**zmod**-\*.tgz
     - für FF5MPro: Adventurer5MPro-**zmod**-\*.tgz
     - für *[AD5X](/de/AD5X/)*: AD5X-**zmod**-\*.tgz
+    - für Creator5: Creator5-**zmod**-\*.tgz
+    - für Creator5 Pro: Creator5Pro-**zmod**-\*.tgz
 
 4. Schalten Sie den Drucker aus
 5. Stecken Sie den USB-Stick in den Drucker
@@ -47,7 +49,7 @@
    
    <img width="800" height="480" alt="Bildschirmfoto" src="https://github.com/user-attachments/assets/19d66329-72f9-4e92-aba6-35b7820ce9a0" />
    
-   Auf dem AD5X kann die Installation bis zu **40 Minuten** dauern.
+   Auf dem AD5X/Creator 5/Creator 5 Pro kann die Installation bis zu **40 Minuten** dauern.
 
 8. Entfernen Sie den USB-Stick
 9. Schalten Sie den Drucker aus
@@ -56,7 +58,11 @@
     <img width="800" height="480" alt="main" src="https://github.com/user-attachments/assets/a0466fa8-03e8-458d-8cc5-c1efb8f565ac" />
     <img width="800" height="480" alt="ip" src="https://github.com/user-attachments/assets/1d7dd5fa-86f4-4b1a-bd42-364619b20229" />
     
-    Wenn sich das Webinterface nicht öffnet, hat die native Firmware den Mod deaktiviert. Um sie zu aktivieren, müssen Sie die USB-Flash-Datei [AD5X-ENABLE-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-ENABLE-zmod.tgz) und [activate mod](/de/Native_FW/#zmod-auf-ad5x-aktivieren) installieren.
+    Wenn sich das Webinterface nicht öffnet, hat die native Firmware den Mod deaktiviert. Um sie zu aktivieren, müssen Sie die USB-Flash-Datei installieren:
+
+    - [AD5X-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-enable-zmod.tgz)
+    - [Creator5-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-enable-zmod.tgz)
+    - [Creator5Pro-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-enable-zmod.tgz)
      
 12. Übersetzen Sie den Mod in Ihrer Sprache.
     
@@ -104,7 +110,7 @@
     ```
     START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single]
     M190 S[bed_temperature_initial_layer_single]
-    M104 S[düse_temperatur_anfangsschicht]
+    M104 S[nozzle_temperature_initial_layer] T{single_extruder_multi_material ? 0 : initial_extruder} T{single_extruder_multi_material ? 0 : initial_extruder}
     SET_PRINT_STATS_INFO TOTAL_LAYER=[total_layer_count]
     ```
     
@@ -279,7 +285,11 @@ Wenn der native Bildschirm das Update nicht findet:
 - Ihre Seriennummer wurde noch nicht von der Update-Verteilung getroffen
 - [Installieren Sie das native Firmware-Update von einem USB-Stick](/de/Native_FW/)
 
-**Für [AD5X](/de/AD5X/) ist die [Z-Mod-Aktivierung](/de/Native_FW/) über `AD5X-ENABLE-zmod.tgz` von einem USB-Stick erforderlich – nach dem Aktualisieren der Original-Firmware.**
+**Für [AD5X](/de/AD5X/)/Creator 5/Creator 5 Pro ist die [Z-Mod-Aktivierung](/de/Native_FW/) von einem USB-Stick erforderlich – nach dem Aktualisieren der Original-Firmware.**
+
+- [AD5X-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-enable-zmod.tgz)
+- [Creator5-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-enable-zmod.tgz)
+- [Creator5Pro-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-enable-zmod.tgz)
 
 ---
 
@@ -359,7 +369,7 @@ mount -o remount,rw /
 
 ```
 rm -f /etc/init.d/S01bad_script
-rm -f /opt/config/mod/.shell/S98camera
+rm -f /usr/data/zmod/zmod/.shell/S98camera
 
 ```
 

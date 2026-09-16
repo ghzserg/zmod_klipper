@@ -17,6 +17,7 @@ Externe Plugins, die nicht vom Autor von Z-Mod entwickelt wurden.
 3. [Dryer](https://github.com/pantata/dryer) - Filamenttrocknung über das Heizbett
 4. [IFS Jacker](https://github.com/ninjamida/ifs_jacker_plugin) – Plugin zur Unterstützung des [IFS Jacker Hardware-Mods](https://github.com/ninjamida/ifs-jacker). Es ermöglicht die automatische Erkennung der verfügbaren Kanalanzahl sowie die Klipper-Integration für Lüfter, LEDs und Sensoren, die über einen IFS Jacker verbunden sind.
 5. [HelixScreen](https://github.com/prestonbrown/helixscreen) – eine alternative Bildschirmimplementierung
+6. [QuickSwap](https://github.com/ninjamida/quickswap-5x) - Plugin für schnelleren Farbwechsel auf dem AD5X
 
 Um das Repository für externe Plugins zu aktivieren, führen Sie den Befehl `ENABLE_EXTRA_PLUGINS` aus.
 
@@ -80,7 +81,11 @@ primärer_Zweig: master
 Erstellen Sie einen symbolischen Link, um das Modul mit Klipper zu verbinden:
 
 ```bash
+exit
+# Native Klipper
 ln -s /opt/config/mod_data/plugins/klipper-led_effect/src/led_effect.py /usr/prog/klipper/klippy/extras/led_effect.py
+# Klipper 13
+ln -s /opt/config/mod_data/plugins/klipper-led_effect/src/led_effect.py /usr/data/zmod/klipper/klippy/extras/led_effect.py
 ```
 
 Ersetzen Sie mit:

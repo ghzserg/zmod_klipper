@@ -65,6 +65,7 @@ Dies ist die Factory (Factory) Original-Firmware für Creator 5
 Dies ist die Factory (Factory) Original-Firmware für Creator 5 Pro
 
 - [1.9.7](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-1.9.7-1.2.9-20260810.tgz)
+- [1.9.8](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-1.9.8-1.2.9-20260819.tgz)
 
 ## Installation der vollständigen Firmware auf Creator 5 / Creator 5 Pro
 
@@ -115,11 +116,13 @@ Die Installation kann bis zu einer Stunde dauern.
 
 3. Nach dem Update, falls ein erneutes Flashen des Mikrocontrollers erforderlich ist, installieren Sie [Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz)
 
-## zmod auf AD5X aktivieren
+## Z-Mod auf AD5X/Creator 5/Creator 5 Pro aktivieren
 
-Durch Aktivieren von Zmod auf dem AD5X nach einem Firmware-Update kann der Mod aktiviert werden, ohne ihn komplett neu installieren zu müssen.
+Durch Aktivieren von Z-Mod auf dem AD5X/Creator 5/Creator 5 Pro nach einem Firmware-Update kann der Mod aktiviert werden, ohne ihn komplett neu installieren zu müssen.
 
-[AD5X-ENABLE-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-ENABLE-zmod.tgz)
+- [AD5X-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-enable-zmod.tgz)
+- [Creator5-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-enable-zmod.tgz)
+- [Creator5Pro-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-enable-zmod.tgz)
 
 ## XY installieren
 
@@ -230,6 +233,8 @@ Entfernt übrig gebliebene Links aus dem Autostart
 - [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-log.tgz)
 - [AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-log.tgz)
 - [AD5X](https://github.com/ghzserg/FF/releases/download/R/AD5X-log.tgz)
+- [Creator 5](https://github.com/ghzserg/FF/releases/download/R/Creator5-log.tgz)
+- [Creator 5 Pro](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-log.tgz)
 
 ## REM_ZMOD
 ### ZMOD entfernen

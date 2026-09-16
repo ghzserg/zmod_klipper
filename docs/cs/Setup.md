@@ -37,8 +37,10 @@
 3. Zkopírujte soubor [soubor modu](https://github.com/ghzserg/zmod/releases/) do kořenového adresáře USB:
 
     - Pro FF5M: Adventurer5M-**zmod**-*.tgz
-       - Pro FF5M Pro: Adventurer5MPro-**zmod**-\*.tgz
-       - Pro [AD5X](AD5X.md): AD5X-**zmod**-*.tgz
+    - Pro FF5M Pro: Adventurer5MPro-**zmod**-\*.tgz
+    - Pro [AD5X](AD5X.md): AD5X-**zmod**-*.tgz
+    - Pro Creator5: Creator5-**zmod**-\*.tgz
+    - Pro Creator5 Pro: Creator5Pro-**zmod**-\*.tgz
 
 4. Vypněte tiskárnu.
 5. Vložte USB disk.
@@ -57,7 +59,11 @@
     <img width="800" height="480" alt="main" src="https://github.com/user-attachments/assets/a0466fa8-03e8-458d-8cc5-c1efb8f565ac" />
     <img width="800" height="480" alt="ip" src="https://github.com/user-attachments/assets/1d7dd5fa-86f4-4b1a-bd42-364619b20229" />
     
-    Pokud se webové rozhraní neotevře, znamená to, že standardní firmware tuto funkci zakázal. Chcete-li ji povolit, zkopírujte soubor [AD5X-ENABLE-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-ENABLE-zmod.tgz) na USB flash disk a [aktivujte mod](Native_FW.md#ad5x-enable-zmodtgz).
+    Pokud se webové rozhraní neotevře, znamená to, že standardní firmware tuto funkci zakázal. Chcete-li ji povolit, zkopírujte soubor na USB flash disk a [aktivujte mod](Native_FW.md#ad5x-enable-zmodtgz).
+
+    - [AD5X-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-enable-zmod.tgz)
+    - [Creator5-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-enable-zmod.tgz)
+    - [Creator5Pro-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-enable-zmod.tgz)
 
 12. Nastavte jazyk modu.
 
@@ -118,7 +124,7 @@
     ```
     START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single]
     M190 S[bed_temperature_initial_layer_single]
-    M104 S[nozzle_temperature_initial_layer]
+    M104 S[nozzle_temperature_initial_layer] T{single_extruder_multi_material ? 0 : initial_extruder}
     SET_PRINT_STATS_INFO TOTAL_LAYER=[total_layer_count]
     ```
     
@@ -242,7 +248,11 @@ Pozor!
 3. Povolení čínských cloudových služeb (pokud chcete aktualizovat přes nativní dotykový displej):
    ```SAVE_ZMOD_DATA CHINA_CLOUD=1```
 
-**U [AD5X](AD5X.md) je nutná aktivace modu [Z-Mod](Native_FW.md) pomocí `AD5X-ENABLE-zmod.tgz` z USB disku – po aktualizaci nativního firmwaru.**
+**U [AD5X](AD5X.md)/Creator 5/Creator 5 Pro je nutná aktivace modu [Z-Mod](Native_FW.md) z USB disku – po aktualizaci nativního firmwaru.**
+
+- [AD5X-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-enable-zmod.tgz)
+- [Creator5-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-enable-zmod.tgz)
+- [Creator5Pro-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-enable-zmod.tgz)
 
 ---
 
@@ -319,7 +329,7 @@ Zkuste obnovit firmware instalací plného firmwaru:
 12. Opravte poškozené soubory (např. smažte chybné skripty):
     ```
     rm -f /etc/init.d/S01bad_script
-    rm -f /opt/config/mod/.shell/S98camera
+    rm -f /usr/data/zmod/zmod/.shell/S98camera
     ```
 
 13. Uložte změny a restartujte:

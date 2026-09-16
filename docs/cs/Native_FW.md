@@ -59,6 +59,7 @@ Toto je Factory (factory) originální firmware pro Creator 5
 Toto je Factory (factory) originální firmware pro Creator 5 Pro
 
 - [1.9.7](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-1.9.7-1.2.9-20260810.tgz)
+- [1.9.8](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-1.9.8-1.2.9-20260819.tgz)
 
 ## Instalace kompletního firmwaru na Creator 5 / Creator 5 Pro
 
@@ -109,11 +110,15 @@ Instalace trvá dlouho, až jednu hodinu.
 
 3. Po aktualizaci, pokud potřebujete znovu flashovat MCU, nainstalujte [Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz)
 
-## AD5X-ENABLE-zmod.tgz
+## AD5X/Creator 5/Creator 5 Pro enable Z-Mod
 
-Povolení Z-Modu na AD5X po aktualizaci nativního firmwaru vám umožní aktivovat modifikaci bez nutnosti její kompletní přeinstalace.
+Povolení Z-Modu na AD5X/Creator 5/Creator 5 Pro po aktualizaci nativního firmwaru vám umožní aktivovat modifikaci bez nutnosti její kompletní přeinstalace.
 
-[AD5X-ENABLE-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-ENABLE-zmod.tgz)
+- [AD5X-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-enable-zmod.tgz)
+- [Creator5-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-enable-zmod.tgz)
+- [Creator5Pro-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-enable-zmod.tgz)
+- [Creator 5](https://github.com/ghzserg/FF/releases/download/R/Creator5-log.tgz)
+- [Creator 5 Pro](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-log.tgz)
 
 ## SET XY
 

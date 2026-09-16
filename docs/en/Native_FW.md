@@ -59,6 +59,7 @@ This is the Factory (factory) stock firmware for Creator 5
 This is the Factory (factory) stock firmware for Creator 5 Pro
 
 - [1.9.7](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-1.9.7-1.2.9-20260810.tgz)
+- [1.9.8](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-1.9.8-1.2.9-20260819.tgz)
 
 ## Installing Full Firmware on Creator 5 / Creator 5 Pro
 
@@ -110,11 +111,13 @@ Installation takes a long time, up to an hour.
 
 3. After the update, if you need to reflash the MCU, install [Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-3.1.9-2.2.3-20250807-Factory.tgz)
 
-## AD5X-ENABLE-zmod.tgz
+## AD5X/Creator 5/Creator 5 Pro enable Z-Mod
 
-Enabling zmod on AD5X after updating the native firmware allows you to activate the mod without completely reinstalling it
+Enabling zmod on AD5X/Creator 5/Creator 5 Pro after updating the native firmware allows you to activate the mod without completely reinstalling it
 
-[AD5X-ENABLE-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-ENABLE-zmod.tgz)
+- [AD5X-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/AD5X-enable-zmod.tgz)
+- [Creator5-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5-enable-zmod.tgz)
+- [Creator5Pro-enable-zmod.tgz](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-enable-zmod.tgz)
 
 ## SET XY
 
@@ -225,6 +228,8 @@ Removes leftover links from autostart
 - [AD5M](https://github.com/ghzserg/FF/releases/download/R/Adventurer5M-log.tgz)
 - [AD5M Pro](https://github.com/ghzserg/FF/releases/download/R/Adventurer5MPro-log.tgz)
 - [AD5X](https://github.com/ghzserg/FF/releases/download/R/AD5X-log.tgz)
+- [Creator 5](https://github.com/ghzserg/FF/releases/download/R/Creator5-log.tgz)
+- [Creator 5 Pro](https://github.com/ghzserg/FF/releases/download/R/Creator5Pro-log.tgz)
 
 ## REM_ZMOD
 ### Remove ZMOD
