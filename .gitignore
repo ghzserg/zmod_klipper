@@ -16,3 +16,4 @@ klippy/extras/zmod_tenz.py
 klippy/extras/virtual_sdcard.py
 klippy/extras/led_effect.py
 klippy/extras/ifs_jacker*.py
+klippy/extras/flook32.py
