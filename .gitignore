@@ -19,3 +19,4 @@ klippy/extras/ifs_jacker*.py
 klippy/extras/flook32.py
 klippy/extras/zmod_afclite.py
 klippy/extras/zmod_afc.py
+klippy/extras/quickswap.py
