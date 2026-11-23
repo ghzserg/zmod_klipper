@@ -9,19 +9,19 @@
 6. [Waste Filament Configuration](#6-how-to-configure-waste-filament-during-filament-change)
 
     - 🔧 [Basic Parameters](#basic-parameters-most-frequently-adjusted)
-       - ⚙️ [Advanced Parameters](#advanced-parameters-do-not-adjust-if-unsure-of-the-result)
+    - ⚙️ [Advanced Parameters](#advanced-parameters-do-not-adjust-if-unsure-of-the-result)
 
-7. [Add custom filament types](#7-add-custom-filament-types)
+7. [Add or remove filament types](#7-add-or-remove-filament-types)
 8. [Add custom colors](#8-add-custom-colors)
 9. [Fixing Trash Bin and Filament Cutting Knife Operation](#9-fixing-trash-bin-and-filament-cutting-knife-operation)
 
     - [Via the engineering menu on the stock firmware](#setting-up-the-basket-on-the-ad5x-stock-firmware)
-       - [Via a flash drive on the stock firmware](/Setup/#ad5x-warning)
+    - [Via a flash drive on the stock firmware](/Setup/#ad5x-warning)
 
 10. [IFS commands](#10-ifs-commands)
 11. [IFS Firmware Recovery](#11-ifs-firmware-recovery)
 
-### [Plugins](https://github.com/ghzserg/g28_tenz/blob/main/Plugin_en.md)
+### [Plugins](/Plugin/)
 
 - [**bambufy**](https://github.com/function3d/bambufy) - Bambu Studio compatibility, better prime towers, accurate estimates, waste reduction
 - [**lessWaste**](https://github.com/Hrybmo/lessWaste/) - Fork of Bambufy
@@ -38,7 +38,7 @@ Differences from AD5M:
 *   **Always use** `FAST_CLOSE_DIALOGS` (fast closing) instead of `CLOSE_DIALOGS` (slow closing).
 *   The `NEW_SAVE_CONFIG` macro **does not work**.
 *   To enable the camera, use ```CAMERA_ON VIDEO=video3``` or ```CAMERA_ON VIDEO=video0``` or ```CAMERA_ON VIDEO=video99```.
-*   Klipper may crash. Solution: 'Process Profile' -> 'Other' -> 'Output G-code' -> 'Exclude Models', uncheck.
+*   Klipper may crash. Solution: `Process Profile` -> `Other` -> `Output G-code` -> uncheck `Exclude Models`.
 
 ---
 
@@ -54,28 +54,28 @@ The printer has 4 spools (№1, №2, №3, №4). Only spools №1 and №3 are
 *   In the file, they will be named **T0** (first color) and **T1** (second color).
 *   In the menu, you’ll need to select:
     - **T0** → spool №1
-      - **T1** → spool №3
+    - **T1** → spool №3
 
 ---
 
 ## **3. How to Use the Color Selection Menu (Macro `COLOR`)**
 
-<img width="874" height="286" alt="image" src="https://github.com/user-attachments/assets/c0538a17-88a9-4aee-a65c-cff4cc1773d0" />
+<img width="874" height="286" alt="image" src="../../images/c0538a17-88a9-4aee-a65c-cff4cc1773d0.png" />
 
-<img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/b6eb3ddd-ad7d-4cc2-b1b5-9f1aef918b29" />
+<img width="800" height="480" alt="image" src="../../images/b6eb3ddd-ad7d-4cc2-b1b5-9f1aef918b29.png" />
 
-<img width="563" height="550" alt="image" src="https://github.com/user-attachments/assets/cc0c951f-48c1-469d-8940-90832ad1d3f5" />
+<img width="563" height="550" alt="image" src="../../images/cc0c951f-48c1-469d-8940-90832ad1d3f5.png" />
 
-<img width="800" height="480" alt="color" src="https://github.com/user-attachments/assets/4145baef-a695-49e6-a914-c12dd3f6b8a4" />
+<img width="800" height="480" alt="color" src="../../images/4145baef-a695-49e6-a914-c12dd3f6b8a4.png" />
 
 *   `Extruder: 1 (PETG/Orange)` – This means the printer is currently loaded with orange PETG filament from spool №1.
 *   `IFS: True` – The automatic filament feeding system is active.
 
 **Now select the spool you want to work with (e.g., spool 2):**
 
-<img width="568" height="455" alt="image" src="https://github.com/user-attachments/assets/f7ea3ed0-28a5-48d5-99db-eade0a199e99" />
+<img width="568" height="455" alt="image" src="../../images/f7ea3ed0-28a5-48d5-99db-eade0a199e99.png" />
 
-<img width="800" height="480" alt="screenshot" src="https://github.com/user-attachments/assets/c42cbefa-a29c-4df0-a62a-d99842c13961" />
+<img width="800" height="480" alt="screenshot" src="../../images/c42cbefa-a29c-4df0-a62a-d99842c13961.png" />
 
 You can perform four actions:
 
@@ -88,14 +88,16 @@ You can perform four actions:
 
 1.  Click "Change Color".
 2.  **Select a color from the list.** This ensures the printer and native screen understand your selection.
-<img width="561" height="823" alt="image" src="https://github.com/user-attachments/assets/8dbff228-dfc0-4705-92f9-d94df80b7a4e" />
 
-<img width="800" height="480" alt="screenshot" src="https://github.com/user-attachments/assets/f51f91a2-4131-4ba3-a8a0-3b9519f61f6d" />
+<img width="844" height="431" alt="{A27DB9D5-1C03-43D0-AF0D-5D2E16E6FFE4}" src="../../images/d9a0ab97-3f78-4b51-b1a4-c4c2c4dc2b68.png" />
+
+
+<img width="800" height="480" alt="screenshot" src="../../images/f51f91a2-4131-4ba3-a8a0-3b9519f61f6d.png" />
 
 3.  After selection, you’ll return to the menu, and the spool’s color **should update**.
-<img width="556" height="545" alt="image" src="https://github.com/user-attachments/assets/f32a9239-44c6-449d-bbf7-5f453f149ef7" />
+<img width="556" height="545" alt="image" src="../../images/f32a9239-44c6-449d-bbf7-5f453f149ef7.png" />
 
-<img width="800" height="480" alt="screenshot" src="https://github.com/user-attachments/assets/4fa7bb58-ee03-4613-ba06-a5af9b2ddfa6" />
+<img width="800" height="480" alt="screenshot" src="../../images/4fa7bb58-ee03-4613-ba06-a5af9b2ddfa6.png" />
 
 **If the color doesn’t change:** Close the window with the "X" button and restart the `COLOR` macro. Sometimes the screen doesn’t refresh immediately.
 
@@ -103,9 +105,10 @@ You can perform four actions:
 
 1.  Click "Change Type".
 2.  **Select a material type from the list.**
-<img width="562" height="710" alt="image" src="https://github.com/user-attachments/assets/baf7b807-c4f5-4ab4-8bfd-2fc43bb448cd" />
 
-<img width="800" height="480" alt="screenshot" src="https://github.com/user-attachments/assets/2d7b4f12-a8f1-4c99-a555-7c422bd5ffe4" />
+<img width="848" height="511" alt="{95B6566B-4FC0-4811-BC6A-E65B79E3DED7}" src="../../images/f4359f48-c998-4e52-a119-e088b38f0a26.png" />
+
+<img width="800" height="480" alt="screenshot" src="../../images/2d7b4f12-a8f1-4c99-a555-7c422bd5ffe4.png" />
 
 **If the type doesn’t change:** Close the window with the "X" button and restart the `COLOR` macro. Sometimes the screen doesn’t refresh immediately.
 
@@ -115,25 +118,39 @@ You can perform four actions:
 
 ## **4. Print Menu (Macro `PRINT`)**
 
-This window opens **automatically** when you start printing.
-<img width="567" height="564" alt="image" src="https://github.com/user-attachments/assets/a046c089-22d3-474e-89b6-89815412d068" />
+This window opens **by itself** when you start printing.
 
-<img width="800" height="480" alt="screenshot" src="https://github.com/user-attachments/assets/f1ad0f49-e2bd-43c8-9301-7c58b9c05c22" />
+Alternative: with the [ORCA_FF](/Global/#orca_ff) parameter, spools for colors are chosen right in OrcaSlicer or Flash Studio when sending a print.
 
-**How to interpret the display:**
+<img width="845" height="1046" alt="image" src="../../images/541ca73c-2492-4f72-839e-30af8e2ffeb8.png" />
 
-*   `Cube.gcode` – The name of the file being printed.
-*   `T0` – The first color in the file. Printed using **spool №4** (orange PLA).
-*   `T1` – The second color. Printed using **spool №3** (black PLA).
-*   `T2` – The third color. Printed using **spool №2** (green PLA).
-*   `T3` – The fourth color. Also printed using **spool №2** (green PLA).
+**How to understand what is written here:**
+
+- In the left column are tool numbers and colors from the file passed from the slicer.
+- In the right column are spool numbers and colors loaded/used on the printer.
+- `Cube.gcode` – this is the name of the file being printed.
+- `1: PETG ->` – this is the first color from the file (orange PETG). It is printed with filament from spool 3 (orange PETG).
+- `2: PLA ->` – this is the second color (gray PLA). It is printed with filament from spool 4 (blue PLA). Because there are no other PLA plastics in the printer.
+- `3: PETG ->` – the third color (black PETG), printed from spool 3 (orange PETG). Because there are no other PETG plastics in the printer.
+- `4: PETG-CF ->` – the fourth color (blue PETG-CF), printed from spool 1 (black PETG-CF). Because there are no other PETG-CF plastics in the printer.
+
+If the image looks like this:
+
+<img width="846" height="564" alt="{D869D7CB-8387-48C0-A636-7FD30401E088}" src="../../images/15b072f2-a63d-4514-b2e3-fd9c426b9fdb.png" />
+
+This means that you have disabled the auto color matching option and/or file scanning. You can click the `AUTO_SELECT_COLORS` button or enable it in global parameters:
+```
+SAVE_ZMOD_DATA SCAN_FILE_COLORS=1 AUTO_ASSIGN_COLORS=1
+```
+
+[It is strongly recommended to enable the preprocessor](/Global/#force_md5)
 
 **To change the spool for a color during printing:**
 
 *   Simply **click the target T** (e.g., T1) and select another spool from the list.
-<img width="553" height="550" alt="image" src="https://github.com/user-attachments/assets/4d831fdb-6ff5-4a0d-ac9e-10154d1c7956" />
+<img width="553" height="550" alt="image" src="../../images/4d831fdb-6ff5-4a0d-ac9e-10154d1c7956.png" />
 
-<img width="800" height="480" alt="screenshot" src="https://github.com/user-attachments/assets/a87d6115-87e4-4cb1-af3e-b194edefb42b" />
+<img width="800" height="480" alt="screenshot" src="../../images/a87d6115-87e4-4cb1-af3e-b194edefb42b.png" />
 
 ---
 
@@ -253,7 +270,7 @@ In screen-off mode, these sensors are enabled:
 2.  Navigate to the **`mod_data`** folder.
 3.  Open the **`filament.json`** file.
 
-![File Location](https://github.com/user-attachments/assets/109b0f0a-c87d-4f5c-9333-ebfbb8065b87)
+![File Location](../../images/109b0f0a-c87d-4f5c-9333-ebfbb8065b87.png)
 
 In this file, each material type (PLA, ABS, PETG, etc.) has a list of values. Here’s what they mean:
 
@@ -267,18 +284,18 @@ For these settings to work, you need to **disable the printer's native display**
 2.  **`filament_drop_length` (Purge Length)**
 
     *   **In simple terms:** How many millimeters of filament the printer will purge into the waste bin to **clean the nozzle** from the previous color. This applies when loading colors outside of printing or before a print, or when changing colors with USE_TRASH_ON_PRINT set to 1.
-        *   **Tip:** Increase this value if colors mix during spool changes. Decrease it to reduce waste.
+    *   **Tip:** Increase this value if colors mix during spool changes. Decrease it to reduce waste.
 
 3.  **`filament_drop_length_add` (Additional Purge)**
 
     *   **In simple terms:** Extra purge length when switching **material types** (e.g., PLA to PETG), not just colors. This applies when loading colors outside of printing or before a print, or when changing colors with USE_TRASH_ON_PRINT set to 1.
-        *   **Why it’s needed:** Different materials don’t mix well, so deeper nozzle cleaning is required.
+    *   **Why it’s needed:** Different materials don’t mix well, so deeper nozzle cleaning is required.
 
 4.  **`nozzle_cleaning_length`** — The length (in mm) of filament pulled out of the extruder when cleaning the nozzle when the spool is no longer in use. **Default: 60 mm.**
 
 5.  **`filament_unload_into_tube`** — How much filament to unload from the 4-in-1 module when the extruder is no longer used. **Default: 70 mm.**
 
-    *   If you have a new version 4-in-1 module, increase `filament_unload_into_tube` or as a last resort increase `nozzle_cleaning_length`
+    *   If you have a new version 4-in-1 module, increase `filament_unload_into_tube` or, as a last resort, increase `nozzle_cleaning_length`
 
 ---
 
@@ -379,7 +396,7 @@ Where XXX, YYY, ZZZ are replaced with the desired filament types (eg. PLA-CF,PET
 
 For these settings to work, you need to **disable the printer's native display** using the `DISPLAY_OFF` macro.
 
-To add or rename a color, open ```mod_data/colors/en.cfg``` (use your language instead of en):
+To add or rename a color, open `mod_data/color/en.json` (use your language instead of en):
 
 Add a new color or rename an existing one.
 
@@ -420,6 +437,62 @@ The text ```_transparent``` will be displayed on buttons.
 
 ---
 
+## Filament sync with OrcaSlicer
+
+For these settings to work, you need to **disable the printer’s native screen** using the `DISPLAY_OFF` macro.
+
+The `orca_lanes` parameter publishes the IFS slots to the Moonraker database. OrcaSlicer reads filament color and type from there for the "Sync filament" button when the printer is added via [Octo/Klipper](/Recommendations/#send-files-via-octoklipper-for-printing) (agent `Moonraker`) or via the `FlashForge` type.
+
+- `True` - publish slots (default)
+- `False` - do not publish
+
+If colors are managed by HelixScreen (`helix = 1`), publishing is skipped regardless of `orca_lanes`, so its data is not overwritten.
+
+To disable, add to `mod_data/user.cfg`:
+
+```
+[zmod_color]
+orca_lanes: False
+```
+
+??? info "Details"
+    Slots are written to the `lane_data` namespace in the same format as AFC and Happy Hare: slot 1 → `lane0`, …, slot 4 → `lane3`, for example `"lane0": {"lane": "0", "material": "PETG", "color": "#161616", "name": "PETG"}`. All slots are published when Klipper starts, then only the changed slot on every color or type change. A slot with type `?` is removed, filament presence from sensors is not taken into account. The external spool is not published.
+
+---
+
+## AFC panel
+
+The IFS slots (AD5X) and toolheads (Creator 5 Pro) are shown in Fluidd and Mainsail as a standard AFC panel. Works both with and without the native screen.
+
+<img width="875" height="327" alt="AFC" src="../../images/fd2e6473-9a05-4f93-b47b-211243470e4a.png" />
+
+### Enabling
+
+`SAVE_ZMOD_DATA AFC=1`, then restart Klipper. To disable: `SAVE_ZMOD_DATA AFC=0`.
+
+### Features
+
+- Color, type and filament presence in each slot.
+- Change color and type, load and unload right from the panel.
+- Lane selection window before printing in Fluidd (1.37.3+) and Mainsail: the mapping of file tools to slots is sent together with the print command, and the color selection window does not appear after it. The map is kept between prints and can be changed during a print as well.
+- The AFC window has a "Bed mesh" toggle. It changes the global setting immediately, before you press "Print".
+- Printing via the FlashForge protocol (OrcaSlicer, Flash Studio) uses the mapping from the slicer and starts right away, with the usual preparation (KAMP, MD5 check).
+- Printing without a mapping (OrcaSlicer via Moonraker, GuppyScreen, KlipperScreen, macros) shows the color selection window or runs automatic matching, depending on the settings, just as without AFC.
+- The infinite spool button reports that the replacement is picked by filament type and color.
+
+### zmod_afclite plugin
+
+The zmod_afclite plugin has been removed and replaced by built-in AFC support. On update:
+
+- if the plugin was enabled, it is disabled and AFC is enabled automatically;
+- the plugin is removed from the Moonraker configs and its directory is deleted.
+
+### Acknowledgements
+
+Thanks to [DIEHARDave](https://github.com/DIEHARDave) for the [zmod_afclite](https://github.com/DIEHARDave/zmod_afclite) plugin, which showed the way and the solution.
+
+---
+
 ## 9. Fixing Trash Bin and Filament Cutting Knife Operation
 
 [Alternative version of the instructions](/Setup/#ad5x-warning)
@@ -447,12 +520,13 @@ To fix this, you need to:
         "zProbeOffset" : 0.004999995231628418
 },
 ```
-<img width="504" height="241" alt="image" src="https://github.com/user-attachments/assets/8647b1fe-594c-4bb3-91ee-560cfe4a58fd  " />
+<img width="504" height="241" alt="image" src="../../images/8647b1fe-594c-4bb3-91ee-560cfe4a58fd.png" />
 
 Replace **only** these values:
 ```json
 "CutXOffset": 0.0,
 "CutYOffset": 0.0,
+"xOffset": 0.0,
 "yOffset": 0.0,
 ```
 
@@ -466,9 +540,11 @@ Replace **only** these values:
 [Alternative version of the instructions](/Setup/#ad5x-warning)
 
 1. Enter the command `_GOTO_TRASH` — the printer head will move to the trash bin.
-2. If the bin doesn't close. Сarefully move the head until the bin closes. You need use GCODE: ```G1 Y230.2```
+2. If the bin doesn't close, carefully move the head until the bin closes. Use GCODE: ```G1 Y230.2```
 3. Check what **Y** coordinate you now have.
 4. Subtract 229 from this number. The result will be your `yOffset`.
+5. Check what **X** coordinate you now have.
+6. Subtract 52.5 from this number. The result will be your `xOffset`.
 
 Examples:
 
@@ -478,8 +554,8 @@ Examples:
 
 Write this number to the file `/rw/Adventurer5M.json`. The bin is calibrated.
 
-5. Enter the command: `UPDATE_FF_OFFSET` (this will update the settings).
-6. Then enter: `_GOTO_TRASH` (this will move to the trash bin).
+7. Enter the command: `UPDATE_FF_OFFSET` (this will update the settings).
+8. Then enter: `_GOTO_TRASH` (this will move to the trash bin).
 
 ---
 
@@ -488,21 +564,21 @@ Write this number to the file `/rw/Adventurer5M.json`. The bin is calibrated.
 [Alternative version of the instructions](/Setup/#ad5x-warning)
 
 1. Enter the command `_CUT_PRUTOK` — the head will move to the knife.
-2. You need use GCODE: ```G1 Y-7.7``` ```G1 X-1.7```, move the head until the knife activates.
+2. Using the screen, move the head until the knife activates. Use GCODE: ```G1 Y-7.7``` ```G1 X-1.7```
 3. Check what X and Y coordinates you have.
 4. For **Y**:
 
     - Subtract your Y-coordinate from **7.5** by absolute value.
-       - Example: if Y = -7.7, then `CutYOffset = 7.5 - 7.7 = -0.2`
-       - Example: if Y = -5.9, then `CutYOffset = 7.5 - 5.9 = 1.6`
-       - Formula: `CutYOffset = 7.5 + Y`
+        - Example: if Y = -7.7, then `CutYOffset = 7.5 - 7.7 = -0.2`
+        - Example: if Y = -5.9, then `CutYOffset = 7.5 - 5.9 = 1.6`
+        - Formula: `CutYOffset = 7.5 + Y`
 
 5. For **X**:
 
     - Subtract your X-coordinate from **2.5** by absolute value.
-       - Example: if X = -1.7, then `CutXOffset = 2.5 - 1.7 = 0.8`
-       - Example: if X = -2.8, then `CutXOffset = 2.5 - 2.8 = -0.3`
-       - Formula: `CutXOffset = 2.5 + X`
+        - Example: if X = -1.7, then `CutXOffset = 2.5 - 1.7 = 0.8`
+        - Example: if X = -2.8, then `CutXOffset = 2.5 - 2.8 = -0.3`
+        - Formula: `CutXOffset = 2.5 + X`
 
 Write these numbers to the file `/rw/Adventurer5M.json`. The knife is calibrated.
 
@@ -517,27 +593,27 @@ Restart the printer — everything is ready.
 
 1. Go to the "i" tab and press the `Status` button
    
-   <img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/08a99d33-c970-4e86-933d-0064b447f5b7" />
+   <img width="800" height="480" alt="image" src="../../images/08a99d33-c970-4e86-933d-0064b447f5b7.png" />
    
 2. Go to the 6th tab
    
-   <img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/a0eb4b8f-552b-4e58-86d7-2b47b8b0035c" />
+   <img width="800" height="480" alt="image" src="../../images/a0eb4b8f-552b-4e58-86d7-2b47b8b0035c.png" />
    
 3. Press and hold `Move the extruder to waste tray position` for 20 seconds
-   <img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/81213d65-bf06-4d33-8e4a-eb3aae2782d7" />
+   <img width="800" height="480" alt="image" src="../../images/81213d65-bf06-4d33-8e4a-eb3aae2782d7.png" />
    
 4. Adjust the head position in the waste tray so that it closes. Using the control arrows, park the print head at the receiver in such a way that the print head sufficiently presses the shutter lever, the nozzle is behind the moving shutter, and the shutter itself is flush with the front surface of the receiver.
    
-   <img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/7b506200-0d61-4b88-aaf8-40475e3ad463" />
+   <img width="800" height="480" alt="image" src="../../images/7b506200-0d61-4b88-aaf8-40475e3ad463.png" />
    
    Press the `Set` button.
    
 5. Press and hold `Move the extruder to cutter striker position` for 20 seconds
-   <img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/e61c61c0-f1a1-4535-b9ef-37baa4ab1d8c" />
+   <img width="800" height="480" alt="image" src="../../images/e61c61c0-f1a1-4535-b9ef-37baa4ab1d8c.png" />
    
 6. Adjust the cutter. Press `CutX` — the cutter should cut the filament without slipping or striking.
    
-   <img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/a0c1939e-dada-48cb-8789-df43999bf99b" />
+   <img width="800" height="480" alt="image" src="../../images/a0c1939e-dada-48cb-8789-df43999bf99b.png" />
    
    Press the `Set` button.
 
@@ -551,23 +627,23 @@ For these settings to work, you need to **disable the printer's native display**
 - `IFS_F11` - Remove filament
 - `IFS_F13` - IFS state
 - `IFS_F15` - Reset driver
-- `IFS_F18` - Filament purge everywhere
+- `IFS_F18` - Release filament in all channels
 - `IFS_F23` - Mark filament as inserted
 - `IFS_F24` - Filament clamp
-- `IFS_F39` - Filament purge
+- `IFS_F39` - Release filament
 - `IFS_F112` - Stop filament feed
 - `PURGE_PRUTOK_IFS` - Purge filament from IFS to the extruder
 - `REMOVE_PRUTOK_IFS` - Removes filament by filament number
 - `INSERT_PRUTOK_IFS` - Insert filament into IFS by filament number
-- `SET_CURRENT_PRUTOK` - Tell klipper which filament is currently active
-- `ANALOG_PRUTOK` - Load an analog rod
+- `SET_CURRENT_PRUTOK` - Tell Klipper which filament is currently active
+- `ANALOG_PRUTOK` - Load an equivalent filament
 - `IFS_MOTION` - Check if the filament has stopped or run out
 
 IFS module parameters:
 
 - debug - debugging (True, *False*)
-- silk_count - number of attempts to read a rod into IFS (*1*)
-- stall_count - number of attempts to count a rod as stopped (*1*)
+- silk_count - on which attempt to consider the filament present in IFS (*1*)
+- stall_count - on which attempt to consider the filament stopped (*1*)
 - retry_count - number of times to retry the command on error (*3*)
 - next_cmd_delay - duration to wait between processing IFS response and sending next command (*0.2*)
 - send_ff_terminator - enables or disables 0.2s delay + 0xFF send after an IFS command; may be required by very old IFS firmwares (True, *False*)
@@ -586,13 +662,13 @@ filament_NEWTYPE: 300
 
 To recover the IFS firmware, you need an **ARM J-LINK V9** programmer.
 
-<img width="800" height="800" alt="image" src="https://github.com/user-attachments/assets/ae91768b-00d8-4e36-a62d-3056a7e117bf" />
+<img width="800" height="800" alt="image" src="../../images/ae91768b-00d8-4e36-a62d-3056a7e117bf.png" />
 
-<img width="960" height="479" alt="image" src="https://github.com/user-attachments/assets/f623fa41-4bc3-40a4-a434-5d8ad717792b" />
+<img width="960" height="479" alt="image" src="../../images/f623fa41-4bc3-40a4-a434-5d8ad717792b.png" />
 
-Solder wires to the iFS board.
+Solder wires to the IFS board.
 
-<img width="579" height="774" alt="image" src="https://github.com/user-attachments/assets/cb2b2f72-9eba-4831-8cea-072813b6e0e3" />
+<img width="579" height="774" alt="image" src="../../images/cb2b2f72-9eba-4831-8cea-072813b6e0e3.png" />
 
 Connect:
 
@@ -601,7 +677,7 @@ Connect:
 - VCC to 3.3
 - GND to GND
 
-<img width="346" height="390" src="https://github.com/user-attachments/assets/19438d58-9879-48e5-8acc-bfb21ce4549c" />
+<img width="346" height="390" src="../../images/19438d58-9879-48e5-8acc-bfb21ce4549c.png" />
 
 - Target Device - `Nations N32G455RE`
 - Target interface: `SWD`

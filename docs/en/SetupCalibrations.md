@@ -5,7 +5,7 @@
 Generally, you don't need to calibrate anything, but if you want to fine-tune your printer, read on:
 
 If you have completed the initial calibrations:
-<img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/c0c63cc4-c4b3-46d4-a3e7-6485d8bf26bb" />
+<img width="800" height="480" alt="image" src="../../images/c0c63cc4-c4b3-46d4-a3e7-6485d8bf26bb.png" />
 
 Then you already have:
 
@@ -33,7 +33,7 @@ Calibrate specifically for the conditions you print in:
 -   Use the special command (macro) [PID_TUNE_EXTRUDER](/Calibrations/#pid_tune_extruder)
 
 -   You can enter it manually in the console or press a button in the interface if available:
-    <img width="283" height="265" alt="image" src="https://github.com/user-attachments/assets/20b8a3c8-4726-44b0-b986-34881d95cb18" />
+    <img width="283" height="265" alt="image" src="../../images/20b8a3c8-4726-44b0-b986-34881d95cb18.png" />
 
 -   The command itself looks like this (this is an example!):
     ```gcode
@@ -42,11 +42,11 @@ Calibrate specifically for the conditions you print in:
     **What this means:**
 
     *   `TEMPERATURE=255` — calibration is performed for 255°C. Set your desired temperature.
-        *   `COOLER=80` — the part cooling fan runs at 80% power.
+    *   `COOLER=80` — the part cooling fan runs at 80% power.
 
 -   **After Completion:**
     *   The printer will automatically save the new settings.
-        *   **Be sure to reboot the printer!** This is needed to update the system data and prevent freezes.
+    *   **Be sure to reboot the printer!** This is needed to update the system data and prevent freezes.
 
 ---
 
@@ -76,7 +76,7 @@ The same rule applies here as with the extruder: calibrate for the temperature y
 
 -   You can also enter it in the console or call it via a button in the interface (often located next to the extruder calibration button):
 
-    <img width="227" height="192" alt="image" src="https://github.com/user-attachments/assets/77dd8332-1912-41df-a94e-469ebfa2f895" />
+    <img width="227" height="192" alt="image" src="../../images/77dd8332-1912-41df-a94e-469ebfa2f895.png" />
 
 -   The command for the bed is even simpler:
     ```gcode
@@ -88,7 +88,7 @@ The same rule applies here as with the extruder: calibrate for the temperature y
 
 -   **After Completion:**
     *   The new settings are automatically saved.
-        *   **Don't forget to reboot the printer!** This completes the process of applying the new parameters.
+    *   **Don't forget to reboot the printer!** This completes the process of applying the new parameters.
 
 ---
 
@@ -115,7 +115,7 @@ Before calibration, clean the nozzle, otherwise the measurements will be incorre
 
 -   Enter the command in the console or press the button:
 
-    <img width="344" height="310" alt="image" src="https://github.com/user-attachments/assets/6757eb4e-53b7-4b08-903f-75491b4daace" />
+    <img width="344" height="310" alt="image" src="../../images/6757eb4e-53b7-4b08-903f-75491b4daace.png" />
 
     ```gcode
     BED_LEVEL_SCREWS_TUNE EXTRUDER_TEMP=130 BED_TEMP=80
@@ -123,18 +123,20 @@ Before calibration, clean the nozzle, otherwise the measurements will be incorre
 
 -   **Important:**
     *   The printer will heat the extruder and bed to the specified temperatures.
-        *   It will start the procedure and show you which screw and how much to adjust (e.g., "clockwise" or "counter-clockwise").
+    *   It will start the procedure and show you which screw and how much to adjust (e.g., "clockwise" or "counter-clockwise").
 
-    <img width="621" height="394" alt="image" src="https://github.com/user-attachments/assets/f930f4ac-e907-4c83-bc1d-3d5a4e06fe3b" />
+    <img width="621" height="394" alt="image" src="../../images/f930f4ac-e907-4c83-bc1d-3d5a4e06fe3b.png" />
+
+    [This picture appears only on Klipper 13](/System/#update_mcu)
 
 -   After the first pass, the printer will wait for you to perform the adjustments. When all screws are adjusted, **press the repeat button** for the printer to check the result. Repeat until the readings are perfect.
 
 -   **Completion:**
     *   When you finish and exit the calibration mode, the printer will **NOT reset** the temperatures automatically.
-        *   **Be sure to manually set the extruder and bed temperatures to zero via the control menu!**
-        *   **The bed mesh and z-offset will become invalid**. Start the leveling calibration from the **stock screen**.
+    *   **Be sure to manually set the extruder and bed temperatures to zero via the control menu!**
+    *   **The bed mesh and z-offset will become invalid**. Start the leveling calibration from the **stock screen**.
 
-    <img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/2d17f77f-a98b-450d-a7e5-72a0a37e47de" />
+    <img width="800" height="480" alt="image" src="../../images/2d17f77f-a98b-450d-a7e5-72a0a37e47de.png" />
 
 ---
 
@@ -148,7 +150,7 @@ _If you replace one plate with another (or glass), you also need mesh calibratio
 **Why This Specific Command?**
 The built-in tools in Fluidd and Mainsail are not suitable for our printers because they:
 
-*   Do not know how to work with the **strain gauge** (which is responsible for precise touch detection).
+*   Do not know how to work with the **load cells** (which is responsible for precise touch detection).
 *   Do not perform **nozzle cleaning** beforehand to remove plastic ooze that could ruin measurement accuracy.
 
 Our macro [AUTO_FULL_BED_LEVEL](/Calibrations/#auto_full_bed_level) accounts for both these features!
@@ -165,7 +167,7 @@ The mesh must be built under the same conditions you print in – on a heated be
 AUTO_FULL_BED_LEVEL EXTRUDER_TEMP=255 BED_TEMP=80 PROFILE=80
 ```
 
-<img width="302" height="342" alt="image" src="https://github.com/user-attachments/assets/643b7bbc-992d-40cb-9404-1fed185ad0ea" />
+<img width="302" height="342" alt="image" src="../../images/643b7bbc-992d-40cb-9404-1fed185ad0ea.png" />
 
 In this example, we are building a mesh for printing on an 80°C bed and saving it under the name `80`.
 
@@ -242,7 +244,7 @@ Configure Orca:
 - `Process Profile` -> `Other` -> `Custom G-code` -> `Exclude objects` check the box
 - `Process Profile` -> `Other` -> `Custom G-code` -> `Label objects` check the box
 
-<img width="285" height="171" alt="image" src="https://github.com/user-attachments/assets/faceef98-2791-4975-bf72-425f4a2b1dfa" />
+<img width="285" height="171" alt="image" src="../../images/faceef98-2791-4975-bf72-425f4a2b1dfa.png" />
 
 **2. Enabling Calibration Before Each Print**
 
@@ -284,30 +286,36 @@ Now, before each print, the printer will take a bed mesh only where there are ob
 
 ### How Z-Offset Works on Your Printer
 
+!!! note "Creator 5 / Creator 5 Pro"
+    On Creator 5 / Creator 5 Pro the Z-offset with the native screen and in screenless mode is the same — they are fully synchronized. If the native screen is disabled, you can change the Z-offset during printing via GuppyScreen, HelixScreen, Fluidd or Mainsail — it will be saved.
+
 **What is Z-Offset?**
 Simply put, it is the **precise distance between the nozzle tip and the bed** at the moment the printer considers them to have "touched." The correct Z-Offset ensures that the first layer of plastic adheres perfectly to the bed – not too low (the nozzle will scrape the bed) and not too high (the plastic won't stick). [Learn more](/FAQ/#how-does-z-offset-work)
 
 **The Most Important Rule:**
 On our printer, **Z-Offset is ONLY relevant DURING printing**. The values you see on the screen or in the interface BEFORE or AFTER printing are for reference only and do not reflect the actual situation.
 
+**The Second Most Important Rule:**
+**The Z-Offset with the native screen and in screenless mode is not the same**: each lives its own life. When switching to screenless mode, run the ```LOAD_ZOFFSET_NATIVE``` macro — it reads the Z-Offset from the native screen and applies it to screenless mode. _Not required for Creator 5 / Creator 5 Pro._
+
 #### Adjusting Z-Offset from the Stock Printer Screen
 
 The stock screen is the primary tool for Z-Offset adjustment. It automatically manages the offset, and its settings are saved reliably.
 
-**To make the printer select the offset automatically, you need to start building the table map from the native screen.**
+**To make the printer select the offset automatically, you need to start building the bed mesh from the native screen.**
 
-<img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/81cb7bdd-e8c4-4d2f-a5b4-38e12fe72241" />
+<img width="800" height="480" alt="image" src="../../images/7e5f1ba4-832e-493b-94be-14aadf67ad4e.png" />
 
 **How to Adjust:**
 
 1.  Adjustment is possible **only during printing**.
 2.  Press the **bottom right square** on the touch screen.
     
-    <img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/ae62aced-07af-489f-99b1-ce91cd55027d" />
+    <img width="800" height="480" alt="image" src="../../images/ae62aced-07af-489f-99b1-ce91cd55027d.png" />
 
 3.  Then press the **"pencil" icon** to edit the Z-Offset value.
     
-    <img width="800" height="474" alt="image" src="https://github.com/user-attachments/assets/7d185d47-6c60-4d57-8901-923971a9ee7f" />
+    <img width="800" height="474" alt="image" src="../../images/7d185d47-6c60-4d57-8901-923971a9ee7f.png" />
 
 4.  Make changes based on the first layer quality.
 
@@ -320,25 +328,25 @@ The stock screen is the primary tool for Z-Offset adjustment. It automatically m
 *   Adjusting the Z-Offset via Fluidd/Mainsail while using the native screen is not advisable, because the native screen is not aware of the existence of Fluidd/Mainsail.
 
 **Second important rule:**
-**The Z-Offset for native and non-native screens is different; each has its own unique setting. Use ```LOAD_ZOFFSET_NATIVE``` to copy the Z-Offset from the native screen to non-native screen mode.
+**The Z-Offset for native-screen mode and screenless mode is different; each has its own setting.** Use ```LOAD_ZOFFSET_NATIVE``` to copy the Z-Offset from the native screen to screenless mode. _Not required for Creator 5 / Creator 5 Pro._
 
 #### Adjusting Z-Offset via Fluidd / Mainsail / GuppyScreen when operating *without the stock screen*
 
 **How it Works:**
 
-1.  To make the printer remember the Z-Offset from the web interface and GuppyScreen/HelixScreen, you need to activate a special setting once [SAVE_ZMOD_DATA LOAD_ZOFFSET=1](/Global/#load_zoffset):
+1.  To make the printer remember the Z-Offset from the web interface and GuppyScreen/HelixScreen/Rivet, you need to activate a special setting once [SAVE_ZMOD_DATA LOAD_ZOFFSET=1](/Global/#load_zoffset):
     ```gcode
     SAVE_ZMOD_DATA LOAD_ZOFFSET=1
     ```
     *This command tells the system: "Load the Z-Offset from the saved settings, don't reset it."*
 
-2.  After enabling this option, you can adjust the Z-Offset directly during printing in Fluidd/Mainsail or via the adjustment panel in GuppyScreen/HelixScreen.
+2.  After enabling this option, you can adjust the Z-Offset directly during printing in Fluidd/Mainsail or via the adjustment panel in GuppyScreen/HelixScreen/Rivet.
 
-    <img width="418" height="73" alt="image" src="https://github.com/user-attachments/assets/96d644b3-9c52-44d1-9a7c-18ccbac61796" />
+    <img width="418" height="73" alt="image" src="../../images/96d644b3-9c52-44d1-9a7c-18ccbac61796.png" />
 
-    <img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/0f282f39-dec1-4488-9317-4e1395747277" />
+    <img width="800" height="480" alt="image" src="../../images/0f282f39-dec1-4488-9317-4e1395747277.png" />
 
-3.  If you want to transfer z-offset from native screen to non-native screen mode, call the macro ```LOAD_ZOFFSET_NATIVE``` it will read the z-offset value from the native screen and apply it to non-native screen mode.
+3.  If you want to transfer z-offset from the native screen to screenless mode, call the macro ```LOAD_ZOFFSET_NATIVE``` — it will read the z-offset value from the native screen and apply it to screenless mode. _Not required for Creator 5 / Creator 5 Pro._
 
 **Key Advantages:**
 
@@ -346,6 +354,9 @@ The stock screen is the primary tool for Z-Offset adjustment. It automatically m
 *   **No manual commands required.** You do NOT need to use the `Z_OFFSET_APPLY_PROBE` or `Z_OFFSET_APPLY_ENDSTOP` commands. Everything happens "under the hood."
 
 #### About Z-Offset in Simple Terms:
+
+!!! note "Creator 5 / Creator 5 Pro"
+    On Creator 5 / Creator 5 Pro the Z-offset with the native screen and in screenless mode is the same — they are fully synchronized. If the native screen is disabled, you can change the Z-offset during printing via GuppyScreen, HelixScreen, Fluidd or Mainsail — it will be saved.
 
 *   **Adjust Z-Offset only during the first layer printing.**
 *   **When working with the stock screen — adjust z-offset on it.**
@@ -388,7 +399,7 @@ The graph and input shaper calculations in Klipper by default use the value `squ
 
     *   **What does this do?** The printer will slightly reduce speed on sharp corners. This will marginally increase print time but significantly reduce vibrations and improve corner clarity.
 
-You can simplify things. Enter ENABLE_PLUGIN name=recommend into the console. This command will enable the recommendations plugin, which already has FIX_SCV enabled and square_corner_velocity: 9 set.
+You can simplify things: enter `ENABLE_PLUGIN name=recommend` into the console. This command will enable the recommendations plugin, which already has FIX_SCV enabled and square_corner_velocity: 9 set.
 
 Don't forget to restart your printer!
 
@@ -420,14 +431,14 @@ To avoid overloading the system, **calibrate the axes separately**.
     ```
 
     *   The system recommends the `zv` shaper because it has the least smoothing.
-        *   But the `mzv` shaper completely suppresses vibrations (`0.0%`), although it requires slightly lower acceleration.
+    *   But the `mzv` shaper completely suppresses vibrations (`0.0%`), although it requires slightly lower acceleration.
 
 #### How to Interpret the Results and Make a Decision
 
 **Where to View the Graphs?**
 After executing `ZSHAPER`, graphs and CSV files will appear on the **"Configuration" -> mod_data** tab in your web interface (Fluidd/Mainsail).
 
-<img width="996" height="596" alt="image" src="https://github.com/user-attachments/assets/7e1dbdf8-5de5-4ce6-8f4a-2c37b320b8b3" />
+<img width="996" height="596" alt="image" src="../../images/7e1dbdf8-5de5-4ce6-8f4a-2c37b320b8b3.png" />
 
 **Detailed Guide on Reading Graphs:** [https://github.com/Tombraider2006/klipperFB6/blob/main/accel_graph/readme.md](https://github.com/Tombraider2006/klipperFB6/blob/main/accel_graph/readme.md)
 
@@ -435,9 +446,9 @@ After executing `ZSHAPER`, graphs and CSV files will appear on the **"Configurat
 
 If you are satisfied with everything, simply press the **`SAVE CONFIG & RESTART`** button in the web interface, and the printer will automatically write the recommended parameters.
 
-<img width="324" height="68" alt="image" src="https://github.com/user-attachments/assets/9c76d5f7-0021-4e03-b495-6736f49dc1c9" />
+<img width="324" height="68" alt="image" src="../../images/9c76d5f7-0021-4e03-b495-6736f49dc1c9.png" />
 
-<img width="745" height="389" alt="image" src="https://github.com/user-attachments/assets/b5b55e95-52af-4ee0-b34e-5bc6077d8d10" />
+<img width="745" height="389" alt="image" src="../../images/b5b55e95-52af-4ee0-b34e-5bc6077d8d10.png" />
 
 **Option 2: Manual Configuration**
 

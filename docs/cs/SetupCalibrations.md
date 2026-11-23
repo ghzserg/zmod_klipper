@@ -5,12 +5,12 @@
 Obecně není nutné nic kalibrovat, ale pokud chcete svou tiskárnu vyladit, čtěte dále:
 
 Pokud jste dokončili úvodní kalibrace:
-<img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/c0c63cc4-c4b3-46d4-a3e7-6485d8bf26bb" />
+<img width="800" height="480" alt="image" src="../../images/c0c63cc4-c4b3-46d4-a3e7-6485d8bf26bb.png" />
 
 Pak již máte:
 
 - Nastavený Z-offset
-- Mapa podložky ```MESH_DATA``` (získaná při 60 °C) – nemažte ji, pokud používáte originální obrazovku, protože ta ji načítá při každém tisku
+- Síť podložky ```MESH_DATA``` (změřená při 60 °C) – nemůžete ji smazat, pokud používáte nativní obrazovku, protože ta ji načítá při každém tisku
 - Kalibrace PID extruderu pro 240 °C
 
 Tyto hodnoty jsou však dost univerzální; málokdo tiskne při 240 °C na trysce a 60 °C na podložce.
@@ -30,12 +30,12 @@ Kalibrujte konkrétně pro podmínky, ve kterých běžně tisknete:
 
 **Jak kalibraci provést?**
 
--   Použijte speciální příkaz (makro) [PID_TUNE_EXTRUDER](Calibrations.md#pid_tune_extruder)
+-   Použijte speciální příkaz (makro) [PID_TUNE_EXTRUDER](/cs/Calibrations/#pid_tune_extruder)
 
 -   Zadáte jej ručně do konzole, nebo použijete tlačítko v rozhraní, pokud je k dispozici:
-    <img width="283" height="265" alt="image" src="https://github.com/user-attachments/assets/20b8a3c8-4726-44b0-b986-34881d95cb18" />
+    <img width="283" height="265" alt="image" src="../../images/20b8a3c8-4726-44b0-b986-34881d95cb18.png" />
 
---   Příkaz vypadá takto (příklad!):
+-   Příkaz vypadá takto (příklad!):
     ```gcode
     PID_TUNE_EXTRUDER TEMPERATURE=255 COOLER=80
     ```
@@ -65,18 +65,18 @@ max_power: 0.6
 To umožní rychlejší ohřev podložky a PID se správně nastaví.
 Po změně a uložení parametru je nutné tiskárnu restartovat.
 
-Nebo můžete povolit doporučovací plugin, který tento soubor upraví automaticky: ```ENABLE_PLUGIN NAME=recommend```
+Nebo můžete zapnout plugin s doporučeními, který tento soubor upraví automaticky: ```ENABLE_PLUGIN NAME=recommend```
 
 **Důležité před zahájením!**
 Stejně jako u extruderu platí: kalibrujte na teplotu, kterou nejčastěji používáte (např. 60 °C pro PLA nebo 110 °C pro ABS).
 
 **Jak kalibraci provést?**
 
--   Použijte makro [PID_TUNE_BED](Calibrations.md#pid_tune_bed)
+-   Použijte makro [PID_TUNE_BED](/cs/Calibrations/#pid_tune_bed)
 
 -   Zadáte jej do konzole nebo stisknete tlačítko v rozhraní (často vedle tlačítka pro kalibraci extruderu):
 
-    <img width="227" height="192" alt="image" src="https://github.com/user-attachments/assets/77dd8332-1912-41df-a94e-469ebfa2f895" />
+    <img width="227" height="192" alt="image" src="../../images/77dd8332-1912-41df-a94e-469ebfa2f895.png" />
 
 -   Příkaz pro podložku je ještě jednodušší:
     ```gcode
@@ -104,7 +104,7 @@ Vaše podložka je uchycena několika šrouby. Pokud jsou dotaženy nestejně, p
 3.  Podle pokynů šrouby upravíte.
 4.  Proces se opakuje, dokud není podložka dokonale vyrovnaná.
 
-**Nastavení pro [BED_LEVEL_SCREWS_TUNE](Calibrations.md#bed_level_screws_tune):**
+**Nastavení pro [BED_LEVEL_SCREWS_TUNE](/cs/Calibrations/#bed_level_screws_tune):**
 
 *   `EXTRUDER_TEMP=130` — teplota extruderu. Je potřeba kvůli tepelné roztažnosti trysky, která by jinak zkreslila měření. Nastavte teplotu, při které z trysky nevytéká filament.
 *   `BED_TEMP=80` — teplota podložky. Podložka se také při ohřevu roztahuje, proto kalibrujte při teplotě, na kterou běžně tisknete.
@@ -115,7 +115,7 @@ Před kalibrací očistěte trysku, jinak budou měření nepřesná!
 
 -   Zadejte příkaz do konzole nebo stiskněte tlačítko:
 
-    <img width="344" height="310" alt="image" src="https://github.com/user-attachments/assets/6757eb4e-53b7-4b08-903f-75491b4daace" />
+    <img width="344" height="310" alt="image" src="../../images/6757eb4e-53b7-4b08-903f-75491b4daace.png" />
 
     ```gcode
     BED_LEVEL_SCREWS_TUNE EXTRUDER_TEMP=130 BED_TEMP=80
@@ -123,55 +123,57 @@ Před kalibrací očistěte trysku, jinak budou měření nepřesná!
 
 -   **Důležité:**
     *   Tiskárna zahřeje extruder i podložku na zadané teploty.
-    *   Spustí proceduru a zobrazí, kterým šroubem a jak otáčet (např. „doprava“ nebo „doleva“).
+    *   Spustí proceduru a zobrazí, kterým šroubem a jak otáčet (např. „clockwise“ – po směru hodinových ručiček, „counter-clockwise“ – proti směru).
 
-    <img width="621" height="394" alt="image" src="https://github.com/user-attachments/assets/f930f4ac-e907-4c83-bc1d-3d5a4e06fe3b" />
+    <img width="621" height="394" alt="image" src="../../images/f930f4ac-e907-4c83-bc1d-3d5a4e06fe3b.png" />
+
+    [Tento obrázek se zobrazuje pouze v Klipper 13](/cs/System/#update_mcu)
 
 -   Po prvním kole tiskárna počká, až šrouby upravíte. Jakmile jsou všechny nastavené, **stiskněte tlačítko pro opakování** a tiskárna zkontroluje výsledek. Opakujte, dokud nejsou hodnoty perfektní.
 
 -   **Dokončení:**
     *   Po ukončení a opuštění režimu kalibrace tiskárna **NEvypne** teploty automaticky.
     *   **Nezapomeňte ručně nastavit teploty extruderu i podložky na nulu v ovládacím menu!**
-    *   **Mapa podložky i Z-offset budou nyní neplatné**. Spusťte vyrovnání podložky z **originální obrazovky**.
+    *   **Síť podložky i Z-offset budou nyní neplatné**. Spusťte měření sítě podložky z **nativní obrazovky**.
 
-    <img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/2d17f77f-a98b-450d-a7e5-72a0a37e47de" />
+    <img width="800" height="480" alt="image" src="../../images/2d17f77f-a98b-450d-a7e5-72a0a37e47de.png" />
 
 ---
 
-### Přesné měření mapy podložky (AUTO_FULL_BED_LEVEL)
+### Přesné měření sítě podložky (AUTO_FULL_BED_LEVEL)
 
 **Proč je to potřeba?**
-I dokonale vyrovnaná podložka může mít drobné prohlubně nebo vyvýšeniny. Mapa podložky (nebo „mesh kalibrace“) je jako „topografická mapa“ vašeho lože. Tiskárna si tyto nerovnosti zapamatuje a během tisku jemně posouvá osu Z, aby tryska zůstala v ideální vzdálenosti od povrchu. To zajišťuje perfektní přilnavost první vrstvy v celé ploše.
+I dokonale vyrovnaná podložka může mít drobné prohlubně nebo vyvýšeniny. Síť podložky (nebo „mesh kalibrace“) je jako „výšková mapa“ vaší podložky. Tiskárna si tyto nerovnosti zapamatuje a během tisku jemně posouvá osu Z, aby tryska zůstala v ideální vzdálenosti od povrchu. To zajišťuje perfektní přilnavost první vrstvy v celé ploše.
 
-_Pokud vyměníte jednu desku za jinou (nebo sklo), potřebujete také kalibraci sítě, protože výška desek se může lišit, a to překalibruje počáteční nulu na výšku nové desky._
+_Pokud vyměníte jednu desku za jinou (nebo sklo), potřebujete také kalibraci sítě, protože výška desek se může lišit, a kalibrace sítě nastaví nulový bod na výšku nové desky._
 
 **Proč právě tento příkaz?**
 Vestavěné nástroje ve Fluidd a Mainsail nejsou pro naše tiskárny vhodné, protože:
 
-*   Neumí pracovat s **tenzometrem** (zajišťuje přesnou detekci dotyku).
-*   Neprovádí **čištění trysky** před měřením, což může ovlivnit přesnost kvůli zbytkům plastu.
+*   neumí pracovat s **tenzometry** (zajišťují přesnou detekci dotyku);
+*   neprovádějí **čištění trysky** před měřením, což může ovlivnit přesnost kvůli zbytkům plastu.
 
-Naše makro [AUTO_FULL_BED_LEVEL](Calibrations.md#auto_full_bed_level) s těmito vlastnostmi počítá!
+Naše makro [AUTO_FULL_BED_LEVEL](/cs/Calibrations/#auto_full_bed_level) počítá s obojím!
 
 **Důležitá nastavení:**
-Mapu podložky je třeba vytvářet za stejných podmínek, za jakých tisknete – tedy na vyhřáté podložce a s horkým extruderem, protože kov se teplem mírně roztahuje. Mapa pořízená při 60 °C se výrazně liší od té při 110 °C.
+Síť podložky je třeba vytvářet za stejných podmínek, za jakých tisknete – tedy na vyhřáté podložce a s horkým extruderem, protože kov se teplem mírně roztahuje. Mapa pořízená při 60 °C se výrazně liší od té při 110 °C.
 
-*   `EXTRUDER_TEMP=255` — teplota extruderu. Plast v trysce musí být rozpuštěný, aby šla tryska před měřením očistit. Nastavte požadovanou hodnotu.
+*   `EXTRUDER_TEMP=255` — teplota extruderu. Plast v trysce musí být roztavený, aby šla tryska před měřením očistit.
 *   `BED_TEMP=80` — teplota podložky. Nastavte hodnotu, kterou používáte při tisku.
-*   `PROFILE=auto` — název profilu, pod kterým bude mapa uložena. Nejlepší je pojmenovat podle teploty podložky, např. `80`.
+*   `PROFILE=auto` — název profilu, pod kterým bude síť uložena. Nejlepší je pojmenovat podle teploty podložky, např. `80`.
 
 **Příklad příkazu:**
 ```gcode
 AUTO_FULL_BED_LEVEL EXTRUDER_TEMP=255 BED_TEMP=80 PROFILE=80
 ```
 
-<img width="302" height="342" alt="image" src="https://github.com/user-attachments/assets/643b7bbc-992d-40cb-9404-1fed185ad0ea" />
+<img width="302" height="342" alt="image" src="../../images/643b7bbc-992d-40cb-9404-1fed185ad0ea.png" />
 
-V tomto příkladu vytváříme mapu pro tisk na 80 °C a ukládáme ji pod názvem `80`.
+V tomto příkladu vytváříme síť pro tisk při 80 °C a ukládáme ji pod názvem `80`.
 
-#### Jak použít uloženou mapu podložky při tisku?
+#### Jak použít uloženou síť podložky při tisku?
 
-Aby tiskárna automaticky načetla správnou mapu na začátku každého tisku, přidejte do **Start G-code** ve svém sliceru (OrcaSlicer) následující řádky:
+Aby tiskárna automaticky načetla správnou síť na začátku každého tisku, přidejte do **Start G-code** ve svém sliceru (OrcaSlicer) následující řádky:
 
 ```gcode
 START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single] MESH=80
@@ -181,32 +183,32 @@ M104 S[nozzle_temperature_initial_layer] T{single_extruder_multi_material ? 0 : 
 
 **Co se zde děje:**
 
-*   [START_PRINT](Main.md#start_print) – hlavní startovací makro
-*   Řádek `START_PRINT... MESH=80` říká tiskárně: „Začni tisk a načti mapu podložky s názvem `80`“.
+*   [START_PRINT](/cs/Main/#start_print) – hlavní startovací makro
+*   Řádek `START_PRINT... MESH=80` říká tiskárně: „Začni tisk a načti síť podložky s názvem `80`“.
 *   `[nozzle_temperature_initial_layer]` a `[bed_temperature_initial_layer_single]` jsou proměnné ze sliceru, které automaticky doplní vaše nastavené hodnoty pro první vrstvu.
 *   Důležité je, aby parametr `MESH=` odkazoval na stejný název profilu (v našem příkladu `80`), který jste použili v `AUTO_FULL_BED_LEVEL`.
 
-Ještě lepší je vytvořit několik map pro různé teploty (např. 60, 70, 80, 90, 100, 110) a použít tento startovací kód:
+Ještě lepší je vytvořit několik sítí pro různé teploty (např. 60, 70, 80, 90, 100, 110) a použít tento startovací kód:
 ```gcode
 START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single] MESH=[bed_temperature_initial_layer_single]
 M190 S[bed_temperature_initial_layer_single] ; Čekej na zahřátí podložky
 M104 S[nozzle_temperature_initial_layer] T{single_extruder_multi_material ? 0 : initial_extruder} ; Nastav teplotu trysky
 ```
 
-V tomto případě se načte mapa odpovídající aktuální teplotě podložky.
+V tomto případě se načte síť odpovídající teplotě podložky.
 
 **Shrnutí postupu:**
 
-1.  Vytvořte mapu podložky pomocí makra `AUTO_FULL_BED_LEVEL` pro vaši tiskovou teplotu.
+1.  Vytvořte síť podložky pomocí makra `AUTO_FULL_BED_LEVEL` pro vaši tiskovou teplotu.
 2.  Přidejte do startovacího kódu sliceru příkaz `START_PRINT` s parametrem `MESH=...`, který odkazuje na váš profil.
-3.  Nyní tiskárna při každém tisku automaticky použije správnou mapu nerovností!
+3.  Nyní tiskárna při každém tisku automaticky použije správnou síť podložky!
 
 ---
 
 ### Adaptivní měření podložky (KAMP)
 
 **Proč je to potřeba?**
-[KAMP](Calibrations.md#kamp) je chytrý systém, který nevytváří mapu podložky po celé ploše, ale jen v oblasti, kde se budou tisknout vaše modely! To výrazně urychluje přípravu tisku, zejména na velkých tiskárnách, a přitom zachovává všechny výhody přesné mapy podložky.
+[KAMP](/cs/Calibrations/#kamp) je chytrý systém, který neměří síť po celé ploše podložky, ale jen v oblasti, kde se budou tisknout vaše modely! To výrazně urychluje přípravu tisku, zejména na velkých tiskárnách, a přitom zachovává všechny výhody přesné sítě podložky.
 
 **Jak to funguje:**
 
@@ -221,17 +223,17 @@ Při použití KAMP (a i plné kalibrace) tiskárna postupuje podle chytrého sc
 1.  Tryska se **zahřeje na tiskovou teplotu**.
 2.  Proběhne **čištění trysky** kvůli odstranění zbytků plastu.
 3.  Tryska **zchladne na 120 °C**. Je to nutné, aby při měření z čisté trysky neodkapával roztavený plast, což by zkreslilo výsledky.
-4.  **Měření mapy podložky** probíhá se studenou a čistou tryskou.
+4.  **Měření sítě podložky** probíhá se studenou a čistou tryskou.
 5.  Po měření se tryska **opět zahřeje na tiskovou teplotu** a začne tisk.
 
 #### Nastavení KAMP
 
 **Kdy použít KAMP?**
-Ve většině případů není nutné vytvářet mapu podložky před každým tiskem. Výjimkou je použití **výměnných plátů s různou tloušťkou** (např. PEI fólie a sklo), protože mohou mít rozdílnou výšku, proto bude počáteční nula pro tisk jiná.
+Ve většině případů není nutné vytvářet síť podložky před každým tiskem. Výjimkou je použití **výměnných plátů s různou tloušťkou** (např. PEI deska a sklo), protože mají rozdílnou výšku, a nulový bod pro tisk se proto liší.
 
-**1. Povolení adaptivní kalibrace (KAMP)**
+**1. Zapnutí adaptivní kalibrace (KAMP)**
 
-Aktivujte tuto volbu, aby tiskárna používala KAMP, kde je to možné: [SAVE_ZMOD_DATA USE_KAMP=1](Global.md#use_kamp).
+Aktivujte tuto volbu, aby tiskárna používala KAMP, kde je to možné: [SAVE_ZMOD_DATA USE_KAMP=1](/cs/Global/#use_kamp).
 
 ```gcode
 SAVE_ZMOD_DATA USE_KAMP=1
@@ -239,14 +241,14 @@ SAVE_ZMOD_DATA USE_KAMP=1
 
 Nastavte OrcaSlicer:
 
-- `Process Profile` -> `Other` -> `Custom G-code` -> `Exclude objects` zaškrtněte
-- `Process Profile` -> `Other` -> `Custom G-code` -> `Label objects` zaškrtněte
+- `Process Profile` -> `Other` -> `G-code output` -> zaškrtněte `Exclude objects`
+- `Process Profile` -> `Other` -> `G-code output` -> zaškrtněte `Label objects`
 
-<img width="285" height="171" alt="image" src="https://github.com/user-attachments/assets/faceef98-2791-4975-bf72-425f4a2b1dfa" />
+<img width="285" height="171" alt="image" src="../../images/faceef98-2791-4975-bf72-425f4a2b1dfa.png" />
 
-**2. Povolení kalibrace před každým tiskem**
+**2. Zapnutí kalibrace před každým tiskem**
 
-Pokud chcete, aby tiskárna automaticky vytvářela mapu podložky před každým tiskem (např. při časté výměně plátů), aktivujte tuto funkci: [SAVE_ZMOD_DATA PRINT_LEVELING=1](Global.md#print_leveling).
+Pokud chcete, aby tiskárna automaticky vytvářela síť podložky před každým tiskem (např. při časté výměně plátů), aktivujte tuto funkci: [SAVE_ZMOD_DATA PRINT_LEVELING=1](/cs/Global/#print_leveling).
 
 ```gcode
 SAVE_ZMOD_DATA PRINT_LEVELING=1
@@ -259,12 +261,12 @@ M190 S[bed_temperature_initial_layer_single] ; Čekej na zahřátí podložky
 M104 S[nozzle_temperature_initial_layer] T{single_extruder_multi_material ? 0 : initial_extruder} ; Nastav teplotu trysky
 ```
 
-**Důležité pro použití originální obrazovky:** Pokud chcete spustit měření mapy podložky z originální obrazovky, musíte přejít do menu:
-`Nastavení` → `Ikona WiFi` → `Režim sítě` → povolte přepínač `Pouze místní sítě`.
+**Důležité pro použití nativní obrazovky:** Pokud chcete spustit měření sítě podložky z nativní obrazovky, musíte přejít do menu:
+`Nastavení` → `Ikona Wi-Fi` → `Režim sítě` → zapněte přepínač `Pouze místní sítě`.
 
 **3. Chytré čištění před tiskem**
 
-Přidejte toto nastavení, aby tiskárna použila stejnou oblast pro čištění trysky, kde právě změřila mapu podložky. Ušetříte místo i čas: [SAVE_ZMOD_DATA CLEAR=LINE_PURGE](Global.md#clear).
+Přidejte toto nastavení, aby tiskárna použila stejnou oblast pro čištění trysky, kde právě změřila síť podložky. Ušetříte místo i čas: [SAVE_ZMOD_DATA CLEAR=LINE_PURGE](/cs/Global/#clear).
 
 ```gcode
 SAVE_ZMOD_DATA CLEAR=LINE_PURGE
@@ -272,42 +274,48 @@ SAVE_ZMOD_DATA CLEAR=LINE_PURGE
 
 #### Shrnutí: Jak nastavit KAMP pro dokonalý tisk
 
-Pro povolení chytrého měření mapy podložky před každým tiskem spusťte jednorázově tento příkaz:
+Pro povolení chytrého měření sítě podložky před každým tiskem spusťte jednorázově tento příkaz:
 
 ```gcode
 SAVE_ZMOD_DATA USE_KAMP=1 PRINT_LEVELING=1 CLEAR=LINE_PURGE
 ```
 
-Nyní bude tiskárna před každým tiskem měřit mapu pouze v oblasti, kde se bude tisknout.
+Nyní bude tiskárna před každým tiskem měřit síť pouze v oblasti, kde se bude tisknout.
 
 ---
 
 ### Jak funguje Z-offset na vaší tiskárně
 
+!!! note "Creator 5 / Creator 5 Pro"
+    U Creator 5 / Creator 5 Pro je Z-offset s nativní obrazovkou i v režimu bez nativní obrazovky stejný – oba jsou plně synchronizované. Pokud je nativní obrazovka vypnutá, můžete Z-offset měnit během tisku přes GuppyScreen, HelixScreen, Fluidd nebo Mainsail – uloží se.
+
 **Co je Z-offset?**
-Jednoduše řečeno, je to **přesná vzdálenost mezi špičkou trysky a podložkou** ve chvíli, kdy tiskárna vyhodnotí jejich dotyk. Správně nastavený Z-offset zajistí, že první vrstva plastu bude perfektně přilnutá – ani příliš nízko (tryska škrábe podložku), ani příliš vysoko (plast se nelepí). [Více zde](FAQ.md#how-does-z-offset-work)
+Jednoduše řečeno, je to **přesná vzdálenost mezi špičkou trysky a podložkou** ve chvíli, kdy tiskárna vyhodnotí jejich dotyk. Správně nastavený Z-offset zajistí, že první vrstva plastu bude perfektně přilnout – ani příliš nízko (tryska škrábe podložku), ani příliš vysoko (plast se nelepí). [Více zde](/cs/FAQ/#jak-funguje-z-offset)
 
 **Nejdůležitější pravidlo:**
 U této tiskárny **má Z-offset smysl pouze BĚHEM tisku**. Hodnoty, které vidíte na displeji nebo v rozhraní PŘED nebo PO tisku, jsou pouze orientační a neodpovídají skutečnosti.
 
-#### Nastavení Z-offsetu z originální obrazovky tiskárny
+**Druhé nejdůležitější pravidlo:**
+**Z-offset s nativní obrazovkou a v režimu bez nativní obrazovky není stejný**: každý žije vlastním životem. Při přechodu do režimu bez nativní obrazovky spusťte makro ```LOAD_ZOFFSET_NATIVE``` — přečte Z-offset z nativní obrazovky a přenese ho do režimu bez nativní obrazovky. _Pro Creator 5 / Creator 5 Pro není potřeba._
 
-Originální obrazovka je hlavní nástroj pro úpravu Z-offsetu. Automaticky jej spravuje a hodnoty se spolehlivě ukládají.
+#### Nastavení Z-offsetu z nativní obrazovky tiskárny
 
-**Aby tiskárna vybrala offset automaticky, spusťte měření mapy podložky z originální obrazovky.**
+Nativní obrazovka je hlavní nástroj pro úpravu Z-offsetu. Automaticky jej spravuje a hodnoty se spolehlivě ukládají.
 
-<img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/81cb7bdd-e8c4-4d2f-a5b4-38e12fe72241" />
+**Aby tiskárna vybrala offset automaticky, spusťte měření sítě podložky z nativní obrazovky.**
+
+<img width="800" height="480" alt="image" src="../../images/7e5f1ba4-832e-493b-94be-14aadf67ad4e.png" />
 
 **Jak upravit:**
 
 1.  Úprava je možná **pouze během tisku**.
 2.  Stiskněte **pravý dolní čtverec** na dotykové obrazovce.
     
-    <img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/ae62aced-07af-489f-99b1-ce91cd55027d" />
+    <img width="800" height="480" alt="image" src="../../images/ae62aced-07af-489f-99b1-ce91cd55027d.png" />
 
 3.  Poté stiskněte ikonu **tužky** pro editaci hodnoty Z-offsetu.
     
-    <img width="800" height="474" alt="image" src="https://github.com/user-attachments/assets/7d185d47-6c60-4d57-8901-923971a9ee7f" />
+    <img width="800" height="474" alt="image" src="../../images/7d185d47-6c60-4d57-8901-923971a9ee7f.png" />
 
 4.  Upravujte podle kvality první vrstvy.
 
@@ -315,58 +323,61 @@ Originální obrazovka je hlavní nástroj pro úpravu Z-offsetu. Automaticky je
 
 **Důležité vědět:**
 
-*   U tiskárny AD5M originální obrazovka vždy přičítá fixní hodnotu **0,025 mm** k vašemu nastavení.
+*   U tiskárny AD5M nativní obrazovka vždy přičítá fixní hodnotu **0,025 mm** k vašemu nastavení.
 *   Proto hodnota Z-offsetu, kterou vidíte ve Fluidd nebo Mainsail, bude vždy **o 0,025 mm VYŠŠÍ** než ta, kterou nastavíte na obrazovce tiskárny. Je to v pořádku!
-*   Seřizování Z-Offset přes Fluidd/Mainsail při práci s nativní obrazovkou není vhodné, protože nativní obrazovka neví o existenci Fluidd/Mainsail.
+*   Seřizování Z-offsetu přes Fluidd/Mainsail při práci s nativní obrazovkou není vhodné, protože nativní obrazovka neví o existenci Fluidd/Mainsail.
 
 **Druhé důležité pravidlo:**
-**Z-offset pro originální a neoriginální obrazovky je odlišný; každá má své vlastní nastavení. Použijte ```LOAD_ZOFFSET_NATIVE``` pro zkopírování Z-offsetu z originální obrazovky do režimu neoriginální obrazovky.**
+**Z-offset v režimu s nativní obrazovkou a v režimu bez nativní obrazovky je odlišný; každý má své vlastní nastavení. Použijte ```LOAD_ZOFFSET_NATIVE``` pro zkopírování Z-offsetu z nativní obrazovky do režimu bez nativní obrazovky.** _Pro Creator 5 / Creator 5 Pro není potřeba._
 
-#### Nastavení Z-offsetu přes Fluidd / Mainsail / GuppyScreen při provozu *bez originální obrazovky*
+#### Nastavení Z-offsetu přes Fluidd / Mainsail / GuppyScreen při provozu *bez nativní obrazovky*
 
 **Jak to funguje:**
 
-1.  Aby si tiskárna pamatovala Z-offset z webového rozhraní a GuppyScreen/HelixScreen, je potřeba jednorázově aktivovat speciální nastavení [SAVE_ZMOD_DATA LOAD_ZOFFSET=1](Global.md#load_zoffset):
+1.  Aby si tiskárna pamatovala Z-offset z webového rozhraní a GuppyScreen/HelixScreen/Rivet, je potřeba jednorázově aktivovat speciální nastavení [SAVE_ZMOD_DATA LOAD_ZOFFSET=1](/cs/Global/#load_zoffset):
     ```gcode
     SAVE_ZMOD_DATA LOAD_ZOFFSET=1
     ```
     *Tento příkaz říká systému: „Načítej Z-offset z uložených nastavení, neměň jej.“*
 
-2.  Po povolení této volby můžete Z-offset upravovat přímo během tisku ve Fluidd/Mainsail nebo v panelu úprav v GuppyScreen/HelixScreen.
+2.  Po povolení této volby můžete Z-offset upravovat přímo během tisku ve Fluidd/Mainsail nebo v panelu úprav v GuppyScreen/HelixScreen/Rivet.
 
-    <img width="418" height="73" alt="image" src="https://github.com/user-attachments/assets/96d644b3-9c52-44d1-9a7c-18ccbac61796" />
+    <img width="418" height="73" alt="image" src="../../images/96d644b3-9c52-44d1-9a7c-18ccbac61796.png" />
 
-    <img width="800" height="480" alt="image" src="https://github.com/user-attachments/assets/0f282f39-dec1-4488-9317-4e1395747277" />
+    <img width="800" height="480" alt="image" src="../../images/0f282f39-dec1-4488-9317-4e1395747277.png" />
 
-3.  Pokud chcete přenést Z-offset z originální obrazovky do režimu neoriginální obrazovky, spusťte makro ```LOAD_ZOFFSET_NATIVE```, které přečte hodnotu Z-offsetu z originální obrazovky a použije ji pro režim neoriginální obrazovky.
+3.  Pokud chcete přenést Z-offset z nativní obrazovky do režimu bez nativní obrazovky, spusťte makro ```LOAD_ZOFFSET_NATIVE```, které přečte hodnotu Z-offsetu z nativní obrazovky a použije ji pro režim bez nativní obrazovky. _Pro Creator 5 / Creator 5 Pro není potřeba._
 
 **Hlavní výhody:**
 
-*   **Automatické uložení.** Bez ohledu na způsob úpravy (obrazovka nebo web rozhraní) se hodnota Z-offsetu automaticky uloží a použije při dalším tisku.
+*   **Automatické uložení.** Bez ohledu na způsob úpravy (obrazovka nebo webové rozhraní) se hodnota Z-offsetu automaticky uloží a použije při dalším tisku.
 *   **Žádné ruční příkazy nejsou potřeba.** Není nutné používat příkazy `Z_OFFSET_APPLY_PROBE` ani `Z_OFFSET_APPLY_ENDSTOP`. Vše probíhá automaticky „na pozadí“.
 
 #### Z-offset jednoduše:
 
+!!! note "Creator 5 / Creator 5 Pro"
+    U Creator 5 / Creator 5 Pro je Z-offset s nativní obrazovkou i v režimu bez nativní obrazovky stejný – oba jsou plně synchronizované. Pokud je nativní obrazovka vypnutá, můžete Z-offset měnit během tisku přes GuppyScreen, HelixScreen, Fluidd nebo Mainsail – uloží se.
+
 *   **Z-offset upravujte pouze během tisku první vrstvy.**
-*   **Při práci s originální obrazovkou upravujte Z-offset na ní.**
-*   **Při práci bez originální obrazovky** nejprve spusťte příkaz ```SAVE_ZMOD_DATA LOAD_ZOFFSET=1```.
+*   **Při práci s nativní obrazovkou upravujte Z-offset na ní.**
+*   **Při práci bez nativní obrazovky** nejprve spusťte příkaz ```SAVE_ZMOD_DATA LOAD_ZOFFSET=1```.
 *   Systém vše uloží sám, nemusíte se o nic starat.
 
 !!! danger
-    Nelze použít `Z_OFFSET_APPLY_ENDSTOP` na této tiskárně.
+    Na této tiskárně nelze použít `Z_OFFSET_APPLY_ENDSTOP`.
     
     Nelze měnit ```[probe] z_offset: ``` v souborech ```printer.cfg``` nebo ```printer.base.cfg```.
     
-    Protože originální obrazovka i makro ```START_PRINT``` načítají offset na začátku tisku.
+    Nativní obrazovka i makro ```START_PRINT``` totiž načítají offset na začátku tisku.
 
 ---
 
-### Kalibrace Input Shaperu (Input Shaper)
+### Kalibrace Input Shaperu
 
 **Co je Input Shaper a proč je potřeba?**
-Při rychlých pohybech tiskárny může docházet k vibracím, podobně jako auto na nerovné silnici. Tyto vibrace se projeví na výtisku jako „ghosting“ nebo „ringing“ na stěnách. Input Shaper jsou chytré algoritmy, které tyto vibrace „předpoví“ a potlačí, takže můžete tisknout rychleji bez ztráty kvality.
+Při rychlých pohybech tiskárny může docházet k vibracím, podobně jako auto při vysoké rychlosti. Tyto vibrace se projeví na výtisku jako „ghosting“ nebo „ringing“ na stěnách. Input Shaper jsou chytré algoritmy, které tyto vibrace „předpoví“ a potlačí, takže můžete tisknout rychleji bez ztráty kvality.
 
-Vaše tiskárna nastavila Input Shaper automaticky při první kalibraci, což pro většinu tisků stačí. Pokud ale chcete dosáhnout maximální kvality nebo chcete porozumět principu, můžete si prohlédnout grafy a nastavit parametry ručně.
+Tiskárna nastavila Input Shaper automaticky při první kalibraci, což pro většinu tisků stačí. Pokud ale chcete dosáhnout maximální kvality nebo chcete porozumět principu, můžete si prohlédnout grafy a nastavit parametry ručně.
 
 #### Důležitá poznámka: parametr `FIX_SCV`
 
@@ -375,7 +386,7 @@ Grafy a výpočty Input Shaperu v Klipperu standardně používají hodnotu `squ
 
 **Co s tím?**
 
-1.  **Oprava výpočtů:** Aktivujte opravu pro správné zobrazení grafů: [SAVE_ZMOD_DATA FIX_SCV=1](Global.md#fix_scv).
+1.  **Oprava výpočtů:** Aktivujte opravu pro správné zobrazení grafů: [SAVE_ZMOD_DATA FIX_SCV=1](/cs/Global/#fix_scv).
     ```gcode
     SAVE_ZMOD_DATA FIX_SCV=1
     ```
@@ -386,15 +397,15 @@ Grafy a výpočty Input Shaperu v Klipperu standardně používají hodnotu `squ
     square_corner_velocity: 9
     ```
 
-    *   **Co to udělá?** Tiskárna mírně zpomalí v ostrých rozích. Tisk se nepatrně prodlouží, ale vibrace a neostré rohy výrazně zmizí.
+    *   **Co to udělá?** Tiskárna mírně zpomalí v ostrých rozích. Tisk se nepatrně prodlouží, ale vibrace se sníží a rohy budou ostřejší.
 
-Chcete to mít jednodušší? Zadejte do konzole: `ENABLE_PLUGIN name=recommend`. Tento příkaz aktivuje doporučovací plugin, který už má FIX_SCV aktivní a square_corner_velocity: 9 nastaveno.
+Chcete to mít jednodušší? Zadejte do konzole: `ENABLE_PLUGIN name=recommend`. Tento příkaz zapne plugin s doporučeními, ve kterém je `FIX_SCV` již aktivní a nastaveno `square_corner_velocity: 9`.
 
 Nezapomeňte tiskárnu restartovat!
 
 #### Jak používat makro `ZSHAPER`
 
-[ZSHAPER](Calibrations.md#zshaper) – toto makro rozvibruje tiskárnu různými frekvencemi, změří odezvu a vytvoří grafy pro určení ideálních parametrů Input Shaperu pro osy X a Y.
+[ZSHAPER](/cs/Calibrations/#zshaper) – toto makro rozvibruje tiskárnu různými frekvencemi, změří odezvu a vytvoří grafy pro určení ideálních parametrů Input Shaperu pro osy X a Y.
 
 **Specifika pro tiskárny s malou pamětí (AD5M, AD5M Pro):**
 Aby nedošlo k přetížení systému, **kalibrujte osy zvlášť**.
@@ -420,14 +431,14 @@ Aby nedošlo k přetížení systému, **kalibrujte osy zvlášť**.
     ```
 
     *   Systém doporučí shaper `zv`, protože má nejmenší „vyhlazení“.
-    *   Ale shaper `mzv` zcela potlačí vibrace (`0.0%`), i když vyžaduje nižší zrychlení.
+    *   Ale shaper `mzv` zcela potlačí vibrace (`0.0%`), ale umožňuje jen nižší zrychlení.
 
 #### Jak číst výsledky a rozhodnout se
 
 **Kde najdete grafy?**
-Po spuštění `ZSHAPER` se grafy a CSV soubory objeví na záložce **"Configuration" -> mod_data** ve vašem webovém rozhraní (Fluidd/Mainsail).
+Po spuštění `ZSHAPER` se grafy a CSV soubory objeví na kartě **„Konfigurace“ -> mod_data** ve vašem webovém rozhraní (Fluidd/Mainsail).
 
-<img width="996" height="596" alt="image" src="https://github.com/user-attachments/assets/7e1dbdf8-5de5-4ce6-8f4a-2c37b320b8b3" />
+<img width="996" height="596" alt="image" src="../../images/7e1dbdf8-5de5-4ce6-8f4a-2c37b320b8b3.png" />
 
 **Podrobný návod na čtení grafů:** [https://github.com/Tombraider2006/klipperFB6/blob/main/accel_graph/readme.md](https://github.com/Tombraider2006/klipperFB6/blob/main/accel_graph/readme.md)
 
@@ -435,9 +446,9 @@ Po spuštění `ZSHAPER` se grafy a CSV soubory objeví na záložce **"Configur
 
 Pokud vám vše vyhovuje, stačí kliknout na **`SAVE CONFIG & RESTART`** v rozhraní a tiskárna automaticky zapíše doporučené parametry.
 
-<img width="324" height="68" alt="image" src="https://github.com/user-attachments/assets/9c76d5f7-0021-4e03-b495-6736f49dc1c9" />
+<img width="324" height="68" alt="image" src="../../images/9c76d5f7-0021-4e03-b495-6736f49dc1c9.png" />
 
-<img width="745" height="389" alt="image" src="https://github.com/user-attachments/assets/b5b55e95-52af-4ee0-b34e-5bc6077d8d10" />
+<img width="745" height="389" alt="image" src="../../images/b5b55e95-52af-4ee0-b34e-5bc6077d8d10.png" />
 
 **Možnost 2: Ruční nastavení**
 

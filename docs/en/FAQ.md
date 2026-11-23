@@ -33,10 +33,8 @@ Any function can be overridden in `mod_data/user.cfg` or `printer.cfg`
 ## Known Peculiarities:
 
 - During actions like `M109` (extruder heating), `M190` (bed heating), PID calibration, or any gcode-pausing task, the stock screen freezes.
-- Restarting Klipper freezes the stock screen (use [NEW_SAVE_CONFIG](/Main/#new_save_config) for restarts).
-- After canceling a print, press "OK" on the stock screen (use [CLOSE_DIALOGS](/Main/#close_dialogs) or [FAST_CLOSE_DIALOGS](/Main/#f
-ast_close_dialogs)).
-
+- Restarting Klipper (after saving the bed mesh, PID, shapers, etc.) freezes the stock screen (use [NEW_SAVE_CONFIG](/Main/#new_save_config) for restarts or the [global parameter](/Global/#new_save_config)).
+- After canceling a print, press "OK" on the stock screen (use [CLOSE_DIALOGS](/Main/#close_dialogs) or [FAST_CLOSE_DIALOGS](/Main/#fast_close_dialogs) or the [global parameter](/Global/#close_dialogs)).
 - The stock screen always loads the `DEFAULT_MESH` profile when starting a print and deletes the `Default` profile post-print.
 
 ---
@@ -44,22 +42,28 @@ ast_close_dialogs)).
 ## Screenless Version Notes:
 
 - Remove all start gcode and use [START_PRINT](/Main/#start_print) and [END_PRINT](/Main/#end_print) macros.
-- Stock camera disabled; use the alternative via [CAMERA_ON](https://github.com//Zmod/#camera_on).
-- Manually set [Z_OFFSET] in [START_PRINT](/Main/#start_print) or use [LOAD_ZOFFSET](/Global/#load_zoffset) to load saved offsets.
-- If you want to transfer z-offset from native screen to non-native screen mode, call the macro ```LOAD_ZOFFSET_NATIVE``` it will read the z-offset value from the native screen and apply it to non-native screen mode.
+- Stock camera disabled; use the alternative via [CAMERA_ON](/Zmod/#camera_on).
+- AD5M/AD5X: If needed, manually set `Z_OFFSET` in [START_PRINT](/Main/#start_print) or use [LOAD_ZOFFSET](/Global/#load_zoffset) to load saved offsets.
+- If you want to transfer z-offset from the native screen to screenless mode, call the macro ```LOAD_ZOFFSET_NATIVE``` — it will read the z-offset value from the native screen and apply it to screenless mode. _Not required for Creator 5 / Creator 5 Pro._
 - Bed mesh `auto` loads automatically on startup.
 - FlashForge protocol is unsupported (handled by the screen). Use "Octo/Klipper":
 
     - **Host Type**: `Octo/Klipper`
     - **Printer Agent**: `Moonraker`
+
+    For Creator 5 / Creator 5 Pro / AD5X:
+
+    - **Hostname**: `IP_printer`
+
+    <img width="612" height="447" alt="{D625ED9D-902D-4412-A99E-20FB0C5ED85F}" src="../../images/1c26beca-9aff-4c7c-846d-273efa8624f8.png" />
+
+    For FF5M / FF5M Pro:
+
     - **Hostname**: `IP_printer:7125`
     - **Device UI**: `IP_printer` or `IP_printer:80`
     
-    <img width="678" height="471" alt="{8FB1D8A5-A02F-41A8-8309-CD556007FD1B}" src="https://github.com/user-attachments/assets/a9c3fc5e-3ec0-41ed-bbd7-779ee210c9a1" />
+    <img width="678" height="471" alt="{8FB1D8A5-A02F-41A8-8309-CD556007FD1B}" src="../../images/a9c3fc5e-3ec0-41ed-bbd7-779ee210c9a1.png" />
 
-    In Orca version 2.4.2 or later, disable 3MF file transfer: `Printer Profile` -> `General Information` -> `Advanced` -> uncheck `Use 3MF instead of G-code`.
-    
-    <img width="462" height="521" alt="image" src="https://github.com/user-attachments/assets/36ec19d8-5263-4b18-b5b1-e45424c64785" />
 
 ---
 
@@ -70,14 +74,17 @@ The printer can operate in two modes:
 - With the native screen - in this case, almost all operating logic is controlled by the native screen, and many features cannot be changed.
 - Without the native screen - in this case, all features are controlled by Z-Mod.
 This doesn't mean you need to turn off the screen or replace it with a different one.
-In the mode without the native screen, you can use the alternative software screen GuppyScreen/HelixScreen or turn off the screen completely, so it will turn off.
+In the mode without the native screen, you can use the alternative software screen GuppyScreen/HelixScreen/Rivet or turn off the screen completely, and it will go dark.
 
 !!! warning
     Do not disable the screen unless you fully understand bed leveling, z-offset, and START_PRINT/END_PRINT macros
 
-**Disabling the screen saves RAM but changes print management (start/pause/resume/cancel/recovery). Modify start/end G-code accordingly.** *elk*
+AD5M/AD5M Pro have 128 MB of RAM; half of it is used by the system, and native screen management takes 13 MB (20 MB in older stock firmware versions). [Disabling the native screen](/System/#display_off) saves this memory.
+
+**Disabling the screen saves RAM but changes print management (start/pause/resume/cancel/recovery, file upload, power-loss recovery). Modify start/end G-code accordingly.** *elk*
 
 Without the screen, Z-offset from the screen isn't applied. Use [START_PRINT](/Main/#start_print) parameters or global settings. [Details](/FAQ/#how-does-z-offset-work)
+To transfer the z-offset from the native screen to screenless mode, run ```LOAD_ZOFFSET_NATIVE``` — it reads the z-offset from the native screen and applies it to screenless mode. _Not required for Creator 5 / Creator 5 Pro._
 
 Read [features of screenless operation](#screenless-version-notes).
 
@@ -87,12 +94,12 @@ Read [features of screenless operation](#screenless-version-notes).
 
 Differences between KlipperMod and Z-Mod:
 
-- KlipperMod uses pure Klipper with minimal Flashforge 5m (pro)-specific changes.
+- KlipperMod uses pure Klipper with minimal FlashForge 5M (Pro)-specific changes.
 - Z-Mod uses the standard Klipper from the native firmware, as well as Klipper 13.
 - KlipperMod uses KlipperScreen as a printer screen.
-- Z-Mod uses the native screen or GuppyScreen/HelixScreen instead of KlipperScreen.
+- Z-Mod uses the native screen or GuppyScreen/HelixScreen/Rivet instead of KlipperScreen.
 - KlipperMod uses Moonraker-timelapse.
-- Z-Mod uses moonraker-telegram-bot on an EXTERNAL host with timelapse support and plugin timelapse
+- Z-Mod uses moonraker-telegram-bot on an EXTERNAL host with timelapse support, or the [TimeLapse plugin](https://github.com/ghzserg/timelapse/)
 
 Different philosophies:
 
@@ -107,25 +114,26 @@ Z-Mod is NOT based on KlipperMod and is NOT its evolution. However, Z-Mod uses s
 
 #### What's in KlipperMod but not in Z-Mod:
 
-*   [KlipperScreen](https://klipperscreen.readthedocs.io/en/latest/) - screen for the printer. In Z-Mod, native screen or GuppyScreen/HelixScreen is used instead of KlipperScreen
+*   [KlipperScreen](https://klipperscreen.readthedocs.io/en/latest/) - screen for the printer. In Z-Mod, native screen or GuppyScreen/HelixScreen/Rivet is used instead of KlipperScreen
 *   [Moonraker-timelapse](https://github.com/mainsail-crew/moonraker-timelapse) - Z-Mod uses Telegram bot and [plugin Timelapse](https://github.com/ghzserg/timelapse/)
-*   Network configuration via iwd/wpa_supplicant (in case of GuppyScreen/HelixScreen) - in Z-Mod network configuration is done through the native screen, network startup is possible even without the native screen
+*   Network configuration via iwd/wpa_supplicant (in case of GuppyScreen/HelixScreen/Rivet) - in Z-Mod network configuration is done through the native screen, network startup is possible even without the native screen
 
 #### What's in Z-Mod but not in KlipperMod:
 
 *   [AD5X](/AD5X/) support
-*   Support for [the following languages](/Global/#lang): English, German, French, Italian, Spanish, Chinese, Japanese, Korean, Portugal, Russsian
+*   [Creator 5 / Creator 5 Pro](/C5PRO/) support
+*   Support for [the following languages](/Global/#lang): English, German, French, Italian, Spanish, Chinese, Japanese, Korean, Portuguese, Czech, Turkish, Russian
 *   Native screen support
 *   [Print recovery after power loss](/Zmod/#zrestore)
-*   [Shaper calibration with graphs](de/Calibrations/#zshaper) considering [SCV](/Global/#fix_scv) ([square_corner_velocity](https://www.klipper3d.org/Config_Reference.html#printer))
+*   [Shaper calibration with graphs](/Calibrations/#zshaper) considering [SCV](/Global/#fix_scv) ([square_corner_velocity](https://www.klipper3d.org/Config_Reference.html#printer))
 *   [File/permission/symlink check and repair for the native filesystem](/System/#check_system)
 *   Automatic updates for `Fluidd`/`Mainsail`/`Moonraker` and Z-Mod over the network
 *   [Entware](/FAQ/#entware-in-z-mod-how-to-use-it)
 *   Fixed [E0017 error](/Global/#fix_e0017)
-*   Additionally, GuppyScreen/HelixScreen supports: PID calibration, damper control, firmware rollback, nozzle cleaning, strain gauge reset, screw adjustment, ColdPull, enhanced bed leveling
+*   Additionally, GuppyScreen/HelixScreen/Rivet supports: PID calibration, damper control, firmware retraction, nozzle cleaning, load cell reset, screw adjustment, ColdPull, enhanced bed leveling
 *   Fixed driver cooling fans operation. They automatically turn on when motors are running. On native firmware - only during printing.
 *   Adaptive bed leveling [KAMP](/Calibrations/#kamp)
-*   PID calibration for [extruder](/Calibrations/#pid_tune_extruder) and [bed](/Calibrations/#pid_tune_bed), including via GuppyScreen/HelixScreen
+*   PID calibration for [extruder](/Calibrations/#pid_tune_extruder) and [bed](/Calibrations/#pid_tune_bed), including via GuppyScreen/HelixScreen/Rivet
 *   Implemented [COLDPULL](/Filament/#coldpull) (nozzle cleaning) without force. Implementation of [this algorithm](https://t.me/FF_5M_5M_Pro/2836/447172)
 
 #### What's in Z-Mod but not in native firmware:
@@ -134,7 +142,7 @@ Z-Mod is NOT based on KlipperMod and is NOT its evolution. However, Z-Mod uses s
 - Klipper 13 support
 - Telegram bot support
 - All features listed in the comparison with KlipperMod
-- [The native firmware sends a lot of data to Chinese servers](https://github.com/FlashForge/Orca-Flashforge/issues/26), this can be avoided by using zmod with GuppyScreen/HelixScreen
+- [The native firmware sends a lot of data to Chinese servers](https://github.com/FlashForge/Orca-Flashforge/issues/26), this can be avoided by using Z-Mod with GuppyScreen/HelixScreen/Rivet
 
 ---
 
@@ -167,7 +175,7 @@ Without these lines, the printer screen doesn't know the target temperatures for
 
 ### After installing Z-Mod, my screen is dead and not responding to touches.
 
-- Install the latest native [firmware and Z-Mod updates](/Recommendations/#install-latest-native-firmware-and-zmod-updates)
+- Install the latest native [firmware and Z-Mod updates](/Recommendations/#install-the-latest-stock-firmware-and-z-mod-updates)
 - Read [known peculiarities](#known-peculiarities) *bison*
 - You might have disabled the screen. Enable it with the [DISPLAY_ON](/System/#display_on) macro
 
@@ -216,21 +224,24 @@ SET_RETRACTION RETRACT_LENGTH=[filament_retraction_length]
 
 ### How does Z-Offset work?
 
+!!! note "Creator 5 / Creator 5 Pro"
+    On Creator 5 / Creator 5 Pro the Z-offset with the native screen and in screenless mode is the same — they are fully synchronized. If the native screen is disabled, you can change the Z-offset during printing via GuppyScreen, HelixScreen, Fluidd or Mainsail — it will be saved.
+
 Read the article: [How Z-Offset Works on Your Printer](/SetupCalibrations/#how-z-offset-works-on-your-printer)
 
 When using the screen, the mod doesn't interfere with z-offset. The z-offset saved on the screen is used.
 
-The offset for native and non-native screens is not the same, and each has its own unique behavior and is configured separately.
+The Z-offset for native-screen mode and screenless mode is not the same: each lives its own life and is configured separately.
 
-Use ```LOAD_ZOFFSET_NATIVE``` to copy the Z-offset from native screens to non-native screens.
+Use ```LOAD_ZOFFSET_NATIVE``` to copy the Z-offset from the native screen to screenless mode. _Not required for Creator 5 / Creator 5 Pro._
 
-Z-offset adjustments via Fluidd/Mainsail/GuppyScreen/HelixScreen only affect until reboot. Changing it without understanding nozzle movement is not recommended.
+Z-offset adjustments via Fluidd/Mainsail/GuppyScreen/HelixScreen/Rivet only apply until reboot. Changing it without understanding nozzle movement is not recommended.
 
-Any `SET_GCODE_OFFSET` call (automatically triggered when adjusting Z-offset from Fluid/Mainsail/GuppyScreen/HelixScreen) saves the current z-offset to the mod's global parameters. This saved value is used only if the [LOAD_ZOFFSET](/Global/#load_zoffset) global parameter is enabled (disabled by default; enable with `SAVE_ZMOD_DATA LOAD_ZOFFSET=1`), native screen isn't used, and the [START_PRINT](/Main/#start_print) macro is utilized.
+Any `SET_GCODE_OFFSET` call (automatically triggered when adjusting Z-offset from Fluidd/Mainsail/GuppyScreen/HelixScreen/Rivet) saves the current z-offset to the mod's global parameters. This saved value is used only if the [LOAD_ZOFFSET](/Global/#load_zoffset) global parameter is enabled (disabled by default; enable with `SAVE_ZMOD_DATA LOAD_ZOFFSET=1`), native screen isn't used, and the [START_PRINT](/Main/#start_print) macro is utilized.
 
 Z-offset can also be set via [START_PRINT](/Main/#start_print) parameters:
 
-- Z_OFFSET - Set Z offset (0.0)
+- Z_OFFSET - Set Z-offset (0.0)
 
 ---
 
@@ -248,7 +259,7 @@ The native screen always uses:
 
 Without the native screen, the `auto` mesh is auto-loaded on startup.
 
-If you want to use a different card for printing (e.g., `PETG_75`), then:
+If you want to use a different bed mesh for printing (e.g., `my_80_degree_mesh`), then:
 
 - Disable automatic calibration in the global parameters.
 
@@ -264,62 +275,61 @@ I recommend using global parameters that are configured once and used for every 
 
 Parameter `PRINT_LEVELING`:
 
-- Removes the bed mesh map on every print job
-- When working with the screen, the bed mesh map is removed from the native screen, as if you had selected a file on the screen and checked the `LEVELING` checkbox.
-- If the parameter is set to `SAVE_ZMOD_DATA PRINT_LEVELING=1`, when sending files via Orca/Fluidd/Mainsail, the printer assumes you have selected the file to be printed on the original screen and checked the "Orientation" checkbox. In this case, the bed mesh is captured every time you print.
-- When working in non-native screen mode and using the macro [START_PRINT](/Main/#start_print) in the initial G-code, the bed mesh is also cleared on every print job.
+- Probes the bed mesh on every print job
+- When working with the screen, the bed mesh is probed by the native screen, as if you had selected a file on the screen and checked the `Leveling` checkbox. If the parameter is set to `SAVE_ZMOD_DATA PRINT_LEVELING=1`, when sending files via Orca/Fluidd/Mainsail, the printer assumes you have selected the file on the native screen and checked `Leveling`. In this case, the bed mesh is probed every time you print.
+- When working in screenless mode and using the macro [START_PRINT](/Main/#start_print) in the start G-code, the bed mesh is also probed on every print job.
 
-To activate this function, you must first enter the macro [SAVE_ZMOD_DATA](/Global/#save_zmod_data) and the parameter [PRINT_LEVELING](/Global/#print_leveling)
+To activate this function, configure once the macro [SAVE_ZMOD_DATA](/Global/#save_zmod_data) and the parameter [PRINT_LEVELING](/Global/#print_leveling)
 
-```SAVE_ZMOD_DATA PRINT_LEVELING=1``` *(**must be entered in the Fluidd/Mainsail console**)*. In this case, the bed mesh will be removed with every print.
+```SAVE_ZMOD_DATA PRINT_LEVELING=1``` *(**must be entered in the Fluidd/Mainsail console**)*. In this case, the bed mesh will be probed with every print.
 
-- To remove the bed mesh map from the native screen, go to ```Settings``` -> ```Wi-Fi icon``` -> ```Network mode``` -> enable the slider for ````Local networks only```` via the printer screen menu.
+- For bed mesh probing from the native screen to work, go to `Settings` -> `Wi-Fi icon` -> `Network mode` -> enable the `Local networks only` slider via the printer screen menu.
 
-- When this option is enabled, all START_PRINT parameters related to creating/using a bed mesh map (FORCE_LEVELING, FORCE_KAMP, SKIP_LEVELING, MESH) will be ignored.
+- When this option is enabled, all START_PRINT parameters related to creating/using a bed mesh (FORCE_LEVELING, FORCE_KAMP, SKIP_LEVELING, MESH) will be ignored.
 
 Parameter `USE_KAMP`:
 
-- Klipper Adaptive Meshing and Purging (KAMP) can be enabled. This means that only the parts containing printable models are removed from the entire bed mesh.
+- Klipper Adaptive Meshing and Purging (KAMP) can be enabled. This means that instead of the whole bed, only the areas containing printable models are probed.
 
-**Automatic table map skimming is not triggered!** This parameter specifies that KAMP should be executed instead of table map skimming.
+**Automatic bed mesh probing is not triggered!** This parameter specifies that whenever bed mesh probing is called, KAMP should be executed instead.
 
 To enable this feature, you must configure the macro [SAVE_ZMOD_DATA](/Global/#save_zmod_data) once, parameter [USE_KAMP](/Global/#use_kamp)
 
-```SAVE_ZMOD_DATA USE_KAMP=1``` *(**must be entered in the Fluidd/Mainsail console**)*. In this case, the adaptive bed mesh map is used wherever possible, even if the bed mesh map is captured over the network using the native screen.
+```SAVE_ZMOD_DATA USE_KAMP=1``` *(**must be entered in the Fluidd/Mainsail console**)*. In this case, the adaptive bed mesh is used wherever possible, including when the bed mesh is probed by the native screen over the network.
 
 ---
 
 #### By modifying the start code and START_PRINT macro
 
-If you do not want to use the global parameters *(SAVE_ZMOD_DATA PRINT_LEVELING=0)*, the following parameters of the macro [START_PRINT](/de/Main/#start_print), which is written in the start G-code, are available.
+If you do not want to use the global parameters *(SAVE_ZMOD_DATA PRINT_LEVELING=0)*, the following parameters of the macro [START_PRINT](/Main/#start_print), which is written in the start G-code, are available.
 
-- FORCE_LEVELING - forces the creation of a table map; True - create, False - do not create.
-- FORCE_KAMP - starts the creation of the adaptive table map; True - yes, False - no.
-- SKIP_LEVELING - never create the table map. Stronger than FORCE_KAMP and FORCE_LEVELING.
-- MESH - name of the table map to load; if not specified, nothing is loaded; if it does not exist, it is created.
+- FORCE_LEVELING - force building a bed mesh; True - build, False - do not build (False)
+- FORCE_KAMP - build an adaptive bed mesh; True - yes, False - no (False)
+- SKIP_LEVELING - never build a bed mesh under any condition. Stronger than FORCE_KAMP and FORCE_LEVELING (False)
+- MESH - name of the bed mesh to load; if not specified, nothing is loaded; if it does not exist, it is created ("")
 
 Examples:
 
-Removing the entire Bedmesh:
+Probing the full bed mesh:
 ```
 START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single] FORCE_LEVELING=True
 M190 S[bed_temperature_initial_layer_single]
 M104 S[nozzle_temperature_initial_layer] T{single_extruder_multi_material ? 0 : initial_extruder}
 ```
 
-Removing the adaptive Bedmesh:
+Probing the adaptive bed mesh:
 ```
 START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single] FORCE_KAMP=True
 M190 S[bed_temperature_initial_layer_single]
 M104 S[nozzle_temperature_initial_layer] T{single_extruder_multi_material ? 0 : initial_extruder}
 ```
 
-Algorithm for removing the bed net map in the macro [START_PRINT](/Main/#start_print):
+Bed mesh algorithm in the macro [START_PRINT](/Main/#start_print):
 
 1. If MESH is not empty, the map with the name specified in the MESH parameter is loaded.
-2. If `SKIP_LEVELING=True`, the bed net map is never removed.
-3. Otherwise, if `FORCE_CAMP=True` is set, KAMP is removed.
-4. Otherwise, if the bed net map is not loaded (the native header always loads the `MESH_DATA` map) or if `FORCE_LEVELING=True`, the bed net map is built, but it is not saved.
+2. If `SKIP_LEVELING=True`, the bed mesh is never probed.
+3. Otherwise, if `FORCE_KAMP=True` is set, KAMP is probed.
+4. Otherwise, if no bed mesh is loaded (the native screen always loads the `MESH_DATA` mesh) or if `FORCE_LEVELING=True`, the bed mesh is built, but it is not saved.
 
 ---
 
@@ -327,9 +337,9 @@ Algorithm for removing the bed net map in the macro [START_PRINT](/Main/#start_p
 
 If you don't want to use the START_PRINT macro and global parameters, the following macros are available:
 
-- [AUTO_FULL_BED_LEVEL](/Calibrations/#auto_full_bed_level) (Fluidd button `BED LEVELING`) - removes the bed map and cleans the nozzle at a specified bed and extruder temperature. Turns off heating after removing the bed map.
+- [AUTO_FULL_BED_LEVEL](/Calibrations/#auto_full_bed_level) - probes the bed mesh with nozzle cleaning at a specified bed and extruder temperature. *Turns off heating after probing.*
 
-- This same macro can be called using the Fluidd/Mainsail button; it's called `BED CALIBRATION`. After removing the bed map at a specified temperature, you can click the `Save Parameters` button, and the bed map will be saved to the `printer.cfg` file.
+  This same macro can be called using the Fluidd/Mainsail button; it's called `BED CALIBRATION`. After probing the bed mesh at a specified temperature, you can click the `Save Parameters` button, and the bed mesh will be saved to the `printer.cfg` file.
 
 It can also be written into the startup G-code:
 ```
@@ -344,8 +354,8 @@ M104 S[nozzle_temperature_initial_layer] T{single_extruder_multi_material ? 0 : 
   BED_TEMP=[bed_temperature_initial_layer_single]
   ```
 
-- BED_MESH_CALIBRATE - Mesh removal using the standard Klipper macro.
-  **Not recommended**, as it does not clean the nozzle, resulting in incorrect results. **Orca's adaptive bed map is not recommended** at all, as it lacks randomization of point measurements, meaning that when printing identical models, the nozzle will consistently take measurements at the same points, resulting in micro-holes and, consequently, an incorrect bed map.
+- BED_MESH_CALIBRATE - Bed mesh probing using the standard Klipper macro.
+  **Not recommended**, as it does not clean the nozzle, resulting in incorrect results. **Orca's adaptive bed mesh is not recommended** at all, as it lacks randomization of point measurements, meaning that when printing identical models, the nozzle will consistently take measurements at the same points, resulting in micro-dents and, consequently, an incorrect bed mesh.
 
 - Standard Klipper macros (**not recommended**)
 
@@ -353,19 +363,19 @@ M104 S[nozzle_temperature_initial_layer] T{single_extruder_multi_material ? 0 : 
 
 #### Using Standard Klipper Commands
 
-To work with MESH, there are standard KLIPPER macros:
+To work with MESH, there are standard Klipper macros:
 
-- [BED_MESH_CALIBRATE](https://www.klipper3d.org/G-Codes.html#bed_mesh_calibrate) - Remove bed mesh map
-- [BED_MESH_OUTPUT](https://www.klipper3d.org/G-Codes.html#bed_mesh_output) - Output bed mesh map
-- [BED_MESH_PROFILE](https://www.klipper3d.org/G-Codes.html#bed_mesh_profile) - Load, delete, and save bed mesh maps
+- [BED_MESH_CALIBRATE](https://www.klipper3d.org/G-Codes.html#bed_mesh_calibrate) - Probe the bed mesh
+- [BED_MESH_OUTPUT](https://www.klipper3d.org/G-Codes.html#bed_mesh_output) - Output the bed mesh
+- [BED_MESH_PROFILE](https://www.klipper3d.org/G-Codes.html#bed_mesh_profile) - Load, delete, and save bed meshes
 
-When loading a print bed map using KLIPPER commands in the filament profile, ensure you use the same print bed map in both START_PRINT and the filament profile. Alternatively, you can disable nozzle cleaning in START_PRINT and perform it separately in the filament profile.
+When loading a bed mesh using Klipper commands in the filament profile, ensure you use the same bed mesh in both START_PRINT and the filament profile. Alternatively, you can disable nozzle cleaning in START_PRINT and perform it separately in the filament profile.
 
 It is strongly recommended that you review the nozzle cleaning options:
 
-- [CLEAR_NOZZLE](Main/#clear_nozzle) – Nozzle cleaning as in the native firmware.
-- [PRECLEAR](/Global/#preclear) – Additional nozzle cleaning when removing the print bed map.
-- [CLEAR](/Global/#clear) – Four algorithms (you can add your own) for cleaning the nozzle line before printing.
+- [CLEAR_NOZZLE](/Main/#clear_nozzle) – Nozzle cleaning as in the native firmware.
+- [PRECLEAR](/Global/#preclear) – Additional nozzle cleaning when probing the bed mesh.
+- [CLEAR](/Global/#clear) – Four algorithms (you can add your own) for purging the nozzle with a line before printing.
 
 ---
 
@@ -382,9 +392,9 @@ Documentation is often unread, though 90% of questions are answered here. To ver
 
 ---
 
-### I want to remove Z-Mod - I have to recalib?
+### I want to remove Z-Mod - do I have to recalibrate everything?
 
-No - all settings are saved
+No, all settings are preserved.
 
 ---
 
@@ -394,15 +404,15 @@ The native camera, which is turned on from the screen, has a number of disadvant
 
 - High RAM consumption
 - Low image quality
-- Only one connection to the camera. Having opened it in the orc, you will no longer see it in the browser
-- Periodic image dumps
+- Only one connection to the camera. Once it is opened in Orca, you will no longer see it in the browser
+- Periodic image dropouts
 
-The alternative camera, allows you to change the resolution, fps, allow multiple connections, does not overcompress the image, is easily restarted and is configured with a [macro](/Zmod/#camera_on). *hare*
+The alternative camera allows you to change the resolution, FPS, allow multiple connections, does not overcompress the image, is easily restarted and is configured with a [macro](/Zmod/#camera_on). *hare*
 
 - Disable the native camera on the printer screen.
 - Call the macro [CAMERA_ON](/Zmod/#camera_on)
 
-Read: [I installed a printer, and Z-Mod hid my camera!](/FAQ/#i-installed-the-printer-but-zmod-hid-my-camera-in-orca-ff-i-could-see-it-but-now-its-gone)
+Read: [I installed a printer, and Z-Mod hid my camera!](/FAQ/#i-installed-the-printer-but-z-mod-hid-my-camera-in-orca-ff-i-could-see-it-but-now-its-gone)
 
 #### Camera Setup
 
@@ -468,27 +478,33 @@ The program will show a list of available cameras.
 
 #### I installed the printer, but Z-Mod hid my camera! In Orca-FF I could see it, but now it's gone!
 
-In Fluidd: `Settings` -> `Cameras`. Create a new camera with:
+In the web interface (Fluidd), go to `Settings` -> `Cameras`.
 
+There will already be one camera, "Camera_settings_example". Open it and look at the settings.
+
+**Create a new camera** with settings similar to "Camera_settings_example":
+
+- Stream type: `MJPEG stream`
 - Stream URL: `http://your_IP:8080/?action=stream`
 - Snapshot URL: `http://your_IP:8080/?action=snapshot`
+- your_IP - replace with the IP address of your printer.
 
-In versions up than `1.4.3`, you can also specify:
+In versions newer than `1.4.3`, you can also specify:
 
 - Stream type: `MJPEG stream`
 - Stream URL: `/webcam/?action=stream`
 - Snapshot URL: `/webcam/?action=snapshot`
 
-For advanced features, use [alternative camera](/Zmod/#camera_on). *mole*
+If you want to configure the resolution and FPS, use the camera in the Telegram bot, reduce RAM usage or allow parallel connections, use the [alternative camera](/Zmod/#camera_on). *mole*
 
-Assign a static IP to the printer on your router.
+Assign a *static IP address to the printer* on your router, otherwise it will change and the camera will drop out.
 
 ---
 
 #### I have 2 cameras / how to disable/turn the camera
 
-If you do not have a camera, or you are not satisfied with the settings of the automatic camera, then you need to open a file through Fluidd / Mainsal `mod_data/user.moonraker.conf`
-`Settings`
+If you do not have a camera, or you are not satisfied with the settings of the automatic camera, then you need to open the file `mod_data/user.moonraker.conf` via Fluidd / Mainsail
+
 And write:
 
 To disable the camera:
@@ -512,24 +528,26 @@ After rebooting, the following error appears:
 !! Cannot update MCU 'eboard' config as it is shutdown
 ```
 
+_If you believe this error appeared during printing, then your heater has a short circuit (after long use) and the printer reboots without you noticing._
+
 Rebooting the printer is an abnormal operating mode.
 
 This is why, when installing the original firmware, you are asked to power off the printer and turn it back on.
 
 During a reboot, power is not removed from the MCU, meaning the program stored in the MCU continues running. This program attempts to communicate with Klipper, which is unavailable during the reboot, causing the MCU to freeze or disconnect.
 
-In this case, you have one option:
+In this case, choose one of the options:
 
-- Execute `FIRMWARE_RESTART` — this will freeze the original screen.
+- Execute `FIRMWARE_RESTART` — this will freeze the native screen.
 - Power off the printer and turn it back on.
 
-The difference between `REBOOT` and `FIRMWARE_RESTART` is that `REBOOT` restarts Linux and Klipper on the motherboard, while `FIRMWARE_RESTART` partially restarts Klipper and fully restarts the MCU.
+The difference between `REBOOT` and `FIRMWARE_RESTART` is that `REBOOT` restarts Linux and Klipper on the motherboard, while `FIRMWARE_RESTART` restarts Klipper and fully restarts the MCU.
 
 ---
 
 ### I Switched the Web Interface, and Now Nothing Works
 
-If you switched the interface using the [WEB](/System/#web) macro *выхухоль*:
+If you switched the interface using the [WEB](/System/#web) macro *desman*:
 
 1. Press `Ctrl + F5` or `Ctrl + Shift + R` or `Option + Command + E`
 2. If the issue persists in Orca, press `Ctrl + F5` or `Ctrl + Shift + R` or `Option + Command + E` again. *fox*
@@ -548,7 +566,7 @@ Z-Mod uses the following ports:
 - `8080` — Camera
 - `80` — Fluidd/Mainsail
 
-To access the printer, enter its IP address **without specifying a port**. *кролик*
+To access the printer, enter its IP address **without specifying a port**. *rabbit*
 
 [How to configure in Orca](/Recommendations/#send-files-via-octoklipper-for-printing)
 
@@ -556,11 +574,15 @@ To access the printer, enter its IP address **without specifying a port**. *кр
 
 ### What is Firmware Retraction?
 
-In Z-Mod, Fluidd/Mainsail has sliders to adjust firmware retraction speed and distance. These do not affect prints unless the G-code file is sliced with firmware retraction enabled.
+In Z-Mod, Fluidd/Mainsail has sliders to adjust firmware retraction speed and distance.
+
+![](../../images/retract.jpg)
+
+These do not affect prints unless the G-code file is sliced with firmware retraction enabled.
 
 Firmware retraction allows adjusting retraction during printing without reslicing.
 
-Instead of commands like `G1 E-.5 F2100`, use `G10` for retraction and `G11` for unretraction.
+Instead of bulky commands like `G1 E-.5 F2100` for retraction, the short `G10` is used, and instead of `G1 E.5 F2100` for unretraction, `G11` is used.
 
 **To enable in Orca:**
 `Printer Settings` -> `General` -> `Advanced` -> Enable `Use Firmware Retraction`.
@@ -589,13 +611,18 @@ unretract_speed: 35
 SET_RETRACTION RETRACT_LENGTH=[filament_retraction_length]
 ```
 
-Use `GET_RETRACTION` to view current settings.
+Use `GET_RETRACTION` to view current settings in the terminal.
+
+Retraction substitution variant by [@minicx](https://github.com/loss-and-quick/)
+```
+SET_RETRACTION RETRACT_LENGTH={if not is_nil(filament_retraction_length[current_extruder])}[filament_retraction_length[current_extruder]]{else}[retraction_length]{endif} RETRACT_SPEED={if not is_nil(filament_retraction_speed[current_extruder])}[filament_retraction_speed[current_extruder]]{else}[retraction_speed]{endif}
+```
 
 ---
 
 ### I have installed the latest version, and the developer says you need to update.
 
-- Make sure you put the latest version from a flash drive
+- Make sure you installed the latest version from a flash drive
 
 - **Go to the web interface**.
 ```
@@ -605,7 +632,7 @@ Settings-> Software updates-> Press Check for update
 - Update all components *tree climber*
 - Reboot the printer
 
-<img width="1239" height="535" alt="image" src="https://github.com/user-attachments/assets/b42c4ce9-1c0a-45c0-a20c-36919a27d648" />
+<img width="1239" height="535" alt="image" src="../../images/b42c4ce9-1c0a-45c0-a20c-36919a27d648.png" />
 
 ---
 
@@ -620,7 +647,7 @@ Settings-> Software updates-> Press Check for update
 3. Now you can use `mc` or `opkg`:
 
     - Update package database: `opkg update`
-       - Install a package: `opkg install mc`
+    - Install a package: `opkg install mc`
 
 **Entware directories:**
 
@@ -628,11 +655,6 @@ Settings-> Software updates-> Press Check for update
 
 ---
 
-### Known features
-
-[Known features](https://github.com/ghzserg/zmod#known-peculiarities)
-
----
 
 ### AD5X Specifics
 
@@ -645,16 +667,7 @@ Settings-> Software updates-> Press Check for update
 ### Help
 ### How to Contact Support
 
-1. [Update Z-Mod to the latest version and all plugins](/Setup/#updating-the-mod).
-2. Translate the mod into Russian ```LANG LANG=ru``` or English ```LANG LANG=en```
-3. Describe the issue clearly (screenshots, photos, text).
-4. Run [CLEAR_EMMC](/System/#clear_emmc) to clear logs.
-5. **Power off the printer.**
-6. Power it back on.
-7. Reproduce the issue.
-8. Run [TAR_CONFIG](/Zmod/#tar_config) to save logs.
-9. Submit the issue with `config.tar.gz` and description.
-10. [Open a GitHub issue](https://github.com/ghzserg/zmod/issues).
+[The instructions have moved](/Help/)
 
 ---
 
@@ -680,7 +693,7 @@ Removing the mod will restore the original logo. If this doesn't happen on the A
 
 Logo by Alberto Maciel:
 
-- [ADM5/AD4MPro](https://github.com/ghzserg/zmod/tree/main/Native_firmware/logo/ad5m)
+- [AD5M/AD5M Pro](https://github.com/ghzserg/zmod/tree/main/Native_firmware/logo/ad5m)
 - [AD5X](https://github.com/ghzserg/zmod/tree/main/Native_firmware/logo/ad5x)
 
 ---
@@ -707,9 +720,9 @@ WeightValue is the value on the load cells in grams. It is displayed in degrees,
 
 What is this sensor for?
 
-- It can be used to measure zoffset via the [g28_tenz](https://github.com/ghzserg/g28_tenz) plugin
-- You can stop printing if the nozzle hits the part or the part is torn off. [NOZZLE_CONTROL](/ru/Global/#nozzle_control)
-- Without resetting it, the table map will be measured incorrectly.
+- It can be used to measure Z-offset via the [g28_tenz](https://github.com/ghzserg/g28_tenz) plugin
+- You can stop printing if the nozzle hits the part or the part is detached. [NOZZLE_CONTROL](/Global/#nozzle_control)
+- Without resetting it, the bed mesh will be measured incorrectly.
 
 ---
 
@@ -726,9 +739,9 @@ The essence of all these errors is that the Klipper version does not match the M
 
 You can view the MCU version in the System tab.
 
-<img width="700" height="396" alt="{9CCFD772-CCDB-42ED-B952-DA15231DCF68}" src="https://github.com/user-attachments/assets/80e6a573-b372-4620-a7bc-7cbf020bc874" />
+<img width="700" height="396" alt="{9CCFD772-CCDB-42ED-B952-DA15231DCF68}" src="../../images/80e6a573-b372-4620-a7bc-7cbf020bc874.png" />
 
-<img width="438" height="277" alt="{52EC8847-ACAB-461D-A9FA-633CDAF180CC}" src="https://github.com/user-attachments/assets/9bba3ff2-9a0e-4aa6-8327-f93fd1b46c3a" />
+<img width="438" height="277" alt="{52EC8847-ACAB-461D-A9FA-633CDAF180CC}" src="../../images/9bba3ff2-9a0e-4aa6-8327-f93fd1b46c3a.png" />
 
 For example, you are running Klipper 13, but the MCU used is from Klipper 11 or 12.
 
@@ -744,7 +757,9 @@ Accordingly, Z-Mod needs to load native Klipper.
 - Save the file
 - Turn the printer off and on (do not reboot!)
 
-<img width="422" height="570" alt="image" src="https://github.com/user-attachments/assets/821eb1c7-8cba-4a22-951f-852b1cb6c8ef" />
+<img width="422" height="570" alt="image" src="../../images/6a96aa9d-7d07-4bf7-8039-042d28f4a87f.png" />
+
+<img width="422" height="570" alt="image" src="../../images/821eb1c7-8cba-4a22-951f-852b1cb6c8ef.png" />
 
 If this isn't the case and Klipper is working, run ```UPDATE_MCU FORCE=13``` - this command will install the latest MCU version.
 
@@ -841,3 +856,75 @@ If you can't fix it, [you need to create a ticket](/Help/).
 
 [Native configs](https://github.com/ghzserg/zmod/tree/main/Native_firmware/config/)
 
+### eMMC speed-up on AD5M / AD5M Pro
+
+AD5M / AD5M Pro only, enabled by default. Not needed on AD5X, Creator 5 and Creator 5 Pro: their eMMC is already fast.
+
+By default the eMMC runs at 25 MHz, reading at about 11 MB/s. HS52 mode is enabled at 50 MHz: a standard eMMC mode (up to 52 MHz) that FlashForge did not enable. Reading becomes about 2 times faster, up to ~22 MB/s.
+
+How it works:
+
+1. After installation, a test is prepared. The printer does not reboot by itself.
+2. On the next boot the eMMC runs at 50 MHz and is tested: 128 MB is written and read and the checksum compared. At least 256 MB of free space in `/data` is required, otherwise the test is postponed.
+3. Test passed: from then on the eMMC always runs at 50 MHz. Test failed or the chip does not support the mode: it stays at 25 MHz, with no further attempts.
+
+Hang protection: 50 MHz is enabled only for the next single boot, and again after every successful boot. If the printer hangs while booting, turn it off and on: it will boot in stock mode. After 3 failed boots in a row the feature disables itself. When the mod is removed, the stock boot settings are restored automatically.
+
+!!! warning "Risk"
+    On an unstable chip, data corruption is possible before the test finishes. The mode is within the standard, so the risk is low.
+
+- Disable: create the file `mod_data/emmc/disable.txt`. The next boot will be in stock mode. Delete the file to enable it again.
+- Repeat the test: delete all files from `mod_data/emmc/` and reboot the printer twice. After an algorithm update the test is repeated automatically.
+- Log: `mod_data/log/emmc/emmc.log`
+
+**DDR52** (option): about 2 times faster than HS52, up to ~44 MB/s. Enable: create the file `mod_data/emmc/ddr.txt`, the test runs on the next boot. If DDR52 does not work, `ddr.txt` is deleted automatically and the eMMC returns to HS52. Disable: delete `ddr.txt`, one more boot will still be in DDR52, then HS52 with a test. Tested only on Hynix HAG2e.
+
+??? info "Details"
+    Speed on AD5M (Hynix HAG2e):
+
+    | Mode | Frequency / voltage | Read | Write |
+    |---|---|---|---|
+    | Stock | 25 MHz / 1.8 V | ~11.5 MB/s | ~10.6 MB/s |
+    | HS52 (default) | 50 MHz / 3.3 V | ~22.5 MB/s | ~21 MB/s |
+    | DDR52 (`ddr.txt`) | 50 MHz / 1.8 V | ~43.9 MB/s | ~42.6 MB/s |
+
+    Higher is not possible: DDR52 is limited to 52 MHz by the standard, and HS400 requires an 8-bit bus, while AD5M has a 4-bit one.
+
+    HS200 is not used: on some chips (for example, FORESEE PSE6A0SL) it does not work, and the kernel then drops straight to 25 MHz, skipping HS52. HS52 is supported by any eMMC.
+
+    The `sunxi.dtb` file on disk is not modified: the DTB is edited in memory with U-Boot commands via env, and only for one boot. The editing method is chosen automatically by the printer memory size (128 or 256 MB), nothing needs to be configured.
+
+    Check the current mode (`clock`, `timing spec`: 1 = HS52, 8 = DDR52, 9 = HS200 (stock)):
+
+    ```
+    cat /sys/kernel/debug/mmc0/ios
+    ```
+
+    Chip model:
+
+    ```
+    cat /sys/class/mmc_host/mmc0/mmc0:*/name
+    cat /sys/class/mmc_host/mmc0/mmc0:*/manfid
+    ```
+
+    Manual rollback:
+
+    ```
+    fw_setenv bootcmd 'run setargs_mmc boot_dsp0 boot_uImage'
+    fw_setenv boot_zmod
+    ```
+
+#### Extra RAM (extra_ram)
+
+AD5M / AD5M Pro only (128 and 256 MB boards), enabled by default. Works in the same one-shot boot as the eMMC speed-up.
+
+Returns about 7 MB of RAM: on a 128 MB board `MemTotal` 110,404 → 117,636 KB. During a print there is usually 20–30 MB free, so this is +24…35 %.
+
+Where the memory comes from: `sunxi.dtb` reserves about 8 MB for the DSP (an audio processor the printer does not use) and OP-TEE. The reservation is removed, keeping only the 1 MB where OP-TEE itself runs: Linux uses it to control the CPU cores and reboot.
+
+Protection: if this 1 MB is not reserved after boot, the stock boot is restored immediately and the printer reboots. After 3 boots in a row without extra_ram the feature disables itself.
+
+- Disable: create the file `mod_data/emmc/disable_extra_ram.txt`.
+- Enable again: delete `mod_data/emmc/disable_extra_ram.txt` and the `mod_data/emmc/xr_*.txt` files.
+
+Method and research: [mlengle](https://github.com/mlengle), project [ad5m-extra-ram](https://github.com/mlengle/ad5m-extra-ram).

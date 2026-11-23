@@ -4,21 +4,21 @@ hide:
   - navigation
 ---
 
-# Community & Social Links
+# Community und soziale Netzwerke
 
 Schließen Sie sich unserer Community an! Hier finden Sie offizielle Supportkanäle, Diskussionsgruppen und Ressourcen zur Interaktion mit dem Projekt.
 
-## 🤖 Official Support
+## 🤖 Offizieller Support
 
 ### Help Bot
 <div class="grid cards" markdown>
 
 -  __Help Bot__
     - [Telegram Help Bot](https://t.me/zmod_help_bot)
-    - Automatisierte Hilfe und Unterstützung
+    - Automatischer Support: Der Bot findet die Antwort in der Dokumentation
 </div>
 
-### Telegram Channels
+### Telegram-Kanäle
 <div class="grid cards" markdown>
 
 -   __Offizieller Informationskanal__
@@ -27,7 +27,14 @@ Schließen Sie sich unserer Community an! Hier finden Sie offizielle Supportkan�
 
 -   __Offizielle Diskussionsgruppe__
     - [Telegram Group](https://t.me/FF_5M_5M_Pro/408369)
-    - Diskussionen und Hilfe in der Gemeinschaft
+    - Diskussionen und Hilfe in der Community
+</div>
+
+### MAX
+<div class="grid cards" markdown>
+-   __Offizielle Z-Mod-Gruppe in MAX__
+    - [MAX Group](https://max.ru/join/g-kAuR4MRepgzqHohksuX34UCw0jqFMTuGf9IcHP_0k)
+    - Diskussionen und Hilfe in der Community
 </div>
 
 ### Facebook
@@ -38,51 +45,60 @@ Schließen Sie sich unserer Community an! Hier finden Sie offizielle Supportkan�
     - Offizielle Diskussionsgruppe
 </div>
 
+### VK
+<div class="grid cards" markdown>
+-   __VK-Gruppe__
+    - [VK](https://vk.com/zmod_official)
+    - Bot für die Registrierung bei zmod.link
+</div>
 
-## 🌐 Community Resources
 
-### Unofficial Groups
+## 🌐 Community-Ressourcen
+
+### Inoffizielle Gruppen
 <div class="grid cards" markdown>
 
 -   __Facebook-Gruppe__
-    - [Facebook Community](https://www.facebook.com/groups/1526322885078508) (read only)
+    - [Facebook Community](https://www.facebook.com/groups/1526322885078508) (nur lesen)
     - Inoffizielle Diskussionsgruppe
 
 -   __Discord Server__
     - [Discord Community](https://discord.gg/Cw4cT5C24q)
-    - Unofficial real-time chat server
+    - Inoffizieller Echtzeit-Chatserver
 </div>
 
-## 💻 Development
+## 💻 Entwicklung
 
 ### GitHub Repository
 <div class="grid cards" markdown>
 
--   __Source Code__
+-   __Quellcode__
     - [GitHub Repository](https://github.com/ghzserg/zmod)
     - Projektquellcode und Dokumentation
 </div>
 
-## 📋 Quick Links Summary
+## 📋 Kurzübersicht der Links
 
-| Resource Type | Platform | Link | Status |
+| Ressource | Plattform | Link | Status |
 |--------------|----------|------|--------|
-| **Support** | Telegram Bot | [Help Bot](https://t.me/zmod_help_bot) | Official |
-| **News** | Telegram Channel | [Info Channel](https://t.me/zmod_info) | Official |
-| **Discussion** | Telegram Group | [Discussion Group](https://t.me/FF_5M_5M_Pro/408369) | Official |
-| **Community** | Facebook | [Facebook Group](https://www.facebook.com/groups/zmodgroup) | Official |
-| **Community** | Facebook | [Facebook Group](https://www.facebook.com/groups/1526322885078508) (ro) | Unofficial |
-| **Chat** | Discord | [Discord Server](https://discord.gg/Cw4cT5C24q) | Unofficial |
-| **Code** | GitHub | [Repository](https://github.com/ghzserg/zmod) | Official |
+| **Support** | Telegram Bot | [Help Bot](https://t.me/zmod_help_bot) | Offiziell |
+| **Neuigkeiten** | Telegram Channel | [Info Channel](https://t.me/zmod_info) | Offiziell |
+| **Diskussion** | Telegram Group | [Discussion Group](https://t.me/FF_5M_5M_Pro/408369) | Offiziell |
+| **Community** | MAX | [MAX Group](https://max.ru/join/g-kAuR4MRepgzqHohksuX34UCw0jqFMTuGf9IcHP_0k) | Offiziell |
+| **Community** | Facebook | [Facebook Group](https://www.facebook.com/groups/zmodgroup) | Offiziell |
+| **zmod.link** | VK | [VK Group](https://vk.com/zmod_official) | Offiziell |
+| **Community** | Facebook | [Facebook Group](https://www.facebook.com/groups/1526322885078508) (ro) | Inoffiziell |
+| **Chat** | Discord | [Discord Server](https://discord.gg/Cw4cT5C24q) | Inoffiziell |
+| **Code** | GitHub | [Repository](https://github.com/ghzserg/zmod) | Offiziell |
 
-## 🎯 How to Get Help
+## 🎯 So erhalten Sie Hilfe
 
 1. **Bei kurzen Fragen** – nutzen Sie den Hilfe-Bot.
-2. **Für Neuigkeiten** – abonnieren Sie den offiziellen Kanal
-3. **Für Diskussionen** – tretet der Telegram-Gruppe bei.
+2. **Für Neuigkeiten** – abonnieren Sie den offiziellen Kanal.
+3. **Für Diskussionen** – treten Sie der Telegram-Gruppe bei.
 4. **Für die Entwicklung** – erkunden Sie das GitHub-Repository.
 
-## 📱 Stay Connected
+## 📱 Bleiben Sie in Verbindung
 
 Wählen Sie die für Sie bequemste Plattform, um Updates zu erhalten und mit der Community zu kommunizieren. Alle offiziellen Ressourcen sind mit entsprechenden Symbolen gekennzeichnet.
 

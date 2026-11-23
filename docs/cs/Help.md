@@ -2,15 +2,15 @@
 
 Otevřete Telegram bot [@zmod_help_bot](http://t.me/zmod_help_bot) a položte mu svou otázku. Zná celou dokumentaci.
 
-1. [Aktualizujte Z-Mod a všechny pluginy na nejnovější verzi](Setup.md#updating-the-mod)
+1. [Aktualizujte Z-Mod a všechny pluginy na nejnovější verzi](/cs/Setup/#aktualizace-modu)
 2. Jasně popište problém: uveďte snímky obrazovky, fotografie a podrobné textové vysvětlení.
-3. Spusťte [CLEAR_EMMC](System.md#clear_emmc) pro vyčištění předchozích protokolů.
+3. Spusťte [CLEAR_EMMC](/cs/System/#clear_emmc) pro vyčištění předchozích protokolů.
 4. **Zcela vypněte tiskárnu.**
 5. Znovu zapněte tiskárnu.
 6. Reprodukujte problém.
-7. Spusťte [TAR_CONFIG](Zmod.md#tar_config) pro sběr souborů protokolů.
-8. Odešlete **jeden** příspěvek s vaším popisem a generovaným souborem `config-1.6.6-28.tar.gz`. 1.6.6-28 - aktuální verze mod.
-9. [Otevřete problém zde](https://github.com/ghzserg/zmod/issues).
+7. Spusťte [TAR_CONFIG](/cs/Zmod/#tar_config) pro sběr souborů protokolů.
+8. Odešlete **jeden** příspěvek s vaším popisem a generovaným souborem `config-1.6.6-28.tar.gz`, kde 1.6.6-28 je aktuální verze modu.
+9. [Založte hlášení zde](https://github.com/ghzserg/zmod/issues).
 
 Pokud nelze provést `TAR_CONFIG`:
 
@@ -26,36 +26,38 @@ chroot /data/.mod/.zmod/
 /usr/data/zmod/zmod/.shell/tar_config.sh
 ```
 
-AD5X:
+AD5X/C5/C5Pro:
 
 ```
 chroot /usr/data/.mod/.zmod/
 /usr/data/zmod/zmod/.shell/tar_config.sh
 ```
 
-## Proč vás žádám, abyste vytvořili lístky — vysvětlení jednoduše
+**[Vytvořit tiket](https://github.com/ghzserg/zmod/issues)**
+
+## Proč vás žádám o tikety — jednoduše vysvětleno
 
 Představte si, že vaše tiskárna je auto.
 
-A já jsem automechanik v obrovské dílně, kterou opravuji *stovky* různých vozů každý den.
+A já jsem automechanik v obrovské dílně, kde každý den opravuji *stovky* různých vozů.
 
-Vjíždíte a křičíte:
+Přijedete a křičíte:
 
-> **„Moje auto se nepohybuje!"**
+> **„Moje auto nejede!“**
 
 A musím začít se základní otázkou:
 
-> **„Dobře — jaké je značky, modelu a roku vaše auto?"**
+> **„Dobře — jaká je značka, model a ročník vašeho auta?“**
 
-### Proč je to důležité — rozklad
+### Proč je důležité to rozebrat
 
-Naši „flotilu" tvoří **přes 100 jedinečných konfigurací**. Jen podle hlavních kategorií:
+Naši „flotilu“ tvoří **přes 100 jedinečných konfigurací**. Jen podle hlavních kategorií:
 
-- **3 různé modely tiskáren**:
+- **5 různých modelů tiskáren**:
 
-  FF5M, FF5M Pro, AD5X
+  FF5M, FF5M Pro, AD5X, C5, C5Pro
 
-- **3 verze „motoru" Klipperu**:
+- **3 verze „motoru“ (Klipperu)**:
 
   11, 12, 13
 
@@ -63,15 +65,13 @@ Naši „flotilu" tvoří **přes 100 jedinečných konfigurací**. Jen podle hl
 
   ARM a MIPS
 
-- **Možnosti zobrazení („vnitřní vybavení")**:
+- **Možnosti obrazovky („interiér“)**:
 
-    - Původní obrazovka
-
-      - GuppyScreen
-
-      - HelixScreen
-
-      - Bez obrazovky (headless)
+    - Nativní obrazovka
+    - GuppyScreen
+    - HelixScreen
+    - Rivet
+    - Bez obrazovky (headless)
 
 - **Primární uživatelská rozhraní**:
 
@@ -79,21 +79,21 @@ Naši „flotilu" tvoří **přes 100 jedinečných konfigurací**. Jen podle hl
 
 - **Metody zahájení tisku**:
 
-  Přes původní obrazovku, Guppy, OrcaSlicer (pomocí protokolu FF, protokolu Klipper, atd.)
+  Přes nativní obrazovku, GuppyScreen, HelixScreen, Rivet, OrcaSlicer (protokol FF, protokol Klipper atd.)
 
-- **Volitelné „funkce" (pluginy)**:
+- **Volitelné „doplňky“ (pluginy)**:
 
   `nopoop`, `recommend`, `bambufy`, `g28_tenz`, `timelapse`, `notify` a další
 
 - **Senzory a periferní zařízení**:
 
-  přítomnost vlákna, pohyb vlákna, IFS, atd.
+  přítomnost filamentu, pohyb filamentu, IFS atd.
 
-Navíc někteří uživatelé **sami upravují hardware**, instalují zastaralý firmware nebo následují radu z fór nebo modelů AI, které **nikdy neviděly jejich konkrétní tiskárnu**.
+Navíc někteří uživatelé **sami upravují hardware**, instalují zastaralý firmware nebo se řídí radami z fór či od modelů AI, které **nikdy neviděly jejich konkrétní tiskárnu**.
 
 ### Výsledek
 
-Když napíšete jen **„nefunguje"**, strávím **hodiny** jen pokoušením se identifikovat:
+Když napíšete jen **„nefunguje“**, strávím **hodiny** zjišťováním:
 
 - Který model máte
 
@@ -112,18 +112,18 @@ To je **neefektivní**, **zpomaluje pomoc** a **frustruje všechny**.
 Abyste mi pomohli **přeskočit hádání a začít opravovat**, postupujte prosím podle tohoto kontrolního seznamu:
 
 ### 1. **Aktualizujte na nejnovější verzi**
-> Postupujte podle [oficiálního průvodce aktualizací](Setup.md#updating-the-mod).
+> Postupujte podle [oficiálního průvodce aktualizací](/cs/Setup/#aktualizace-modu).
 
 ### 2. **Popište problém jasně a konkrétně**
 > ❌ Špatně: _„Nefunguje to.“_
 
 > ✅ Dobře:
 
-> _„Po aktualizaci Z-Mod na v.X.Y.Z, při spuštění tisku z tovární obrazovky:
+> _„Po aktualizaci Z-Mod na v.X.Y.Z při spuštění tisku z nativní obrazovky:
 
 > — podložka se nahřeje,
 
-> — extruder se NENAHŘEJE (obrazovka ukazuje 0°C),
+> — extruder se NENAHŘEJE (obrazovka ukazuje 0 °C),
 
 > — tisk se přeruší po ~2 minutách.“_
 
@@ -139,7 +139,7 @@ Abyste mi pomohli **přeskočit hádání a začít opravovat**, postupujte pros
 
 > 2. **Odpojte tiskárnu od sítě** → Počkejte 10 sekund
 
-> 3. Znovu ji zapněte
+> 3. Znovu tiskárnu zapněte
 
 > 4. **Reprodukujte problém** (spusťte tisk, stiskněte tlačítko — vyvolejte chybu)
 
@@ -167,7 +167,7 @@ Přestanete křičet:
 
 > **„Moje auto nejede!“**
 
-A místo toho dodáte:
+A místo toho přivezete:
 
 > 🚗 **Vaše přesné vozidlo**,
 
@@ -181,4 +181,6 @@ Pak mohu začít **opravovat — okamžitě, ne spekulovat**.
 
 Děkuji za pochopení a respekt k času ostatních.
 
-Toto není byrokracie — je to **jediný způsob**, jak učinit podporu **rychlou a efektivní**.
+Toto není byrokracie — je to **jediný způsob**, jak udělat podporu **rychlou a efektivní**.
+
+**[Vytvořit tiket](https://github.com/ghzserg/zmod/issues)**

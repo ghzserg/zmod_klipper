@@ -67,7 +67,7 @@ PID_CALIBRATE HEATER=extruder TARGET={temperature}
 ### ZSHAPER
 
 Input shaper calibration.
-Results are stored in:
+Results are stored on the "Configuration" tab -> `mod_data`:
 
 - `calibration_data_x.png`
 - `calibration_data_y.png`
@@ -91,6 +91,9 @@ CoreXY belt frequency analysis using a half-axis test.
 
 ---
 ### KAMP
+
+!!! note "Fast KAMP"
+    KAMP is enabled automatically and works without slow object exclusion. For 3MF the KAMP data is available instantly, for G-code — after the file is scanned.
 
 Adaptive bed mesh calibration with nozzle cleaning.
 Parameters:
@@ -117,6 +120,7 @@ Parameters:
 - `EXTRUDER_TEMP` — extruder temperature (default: `230`)
 - `BED_TEMP` — bed temperature (default: `80`)
 - `PROFILE` — mesh profile name (default: `auto`)
+- `SAVE` — automatically save the bed mesh (default: `1`)
 
 **Usage in Orca:**
 ```gcode
@@ -135,6 +139,6 @@ When the mesh calibration is performed, the starting zero is calibrated.
 
 ### LOAD_ZOFFSET_NATIVE 
 
-Move the z-offset from the native screen to screenless mode
+Move the z-offset from the native screen to screenless mode. _Not required for Creator 5 / Creator 5 Pro._
 
 [How Z-Offset Works on Your Printer](/SetupCalibrations/#how-z-offset-works-on-your-printer)

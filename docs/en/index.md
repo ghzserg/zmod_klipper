@@ -5,18 +5,18 @@ hide:
 
 # FF5M / FF5M Pro / AD5X / Creator 5 / Creator 5 Pro Z-Mod
 
-<img width="698" height="291" alt="zmod logo" src="https://github.com/user-attachments/assets/5e26413b-c9a2-49f2-b9b8-5ecde709c521" />
+<img width="660" height="263" alt="Logo" src="../../images/2befbddc-c055-4006-9864-90ab3b182512.png" />
 
 [Z-Mod LINK is available at this link ->](https://zmod.link/link/)
-
-[Fundraising announced for Creator 5 Pro to launch Z-Mod on this printer ->>>](https://github.com/ghzserg/zmod/discussions/554)
 
 ### **Z-Mod for FlashForge AD5M/AD5M PRO/AD5X/Creator 5/Creator 5 Pro: Full Control Over Your Printer**
 
 Congratulations on your FlashForge printer purchase! The stock firmware is great for getting started, but if you want to unlock your device’s full potential, Z-Mod is a powerful and free solution that transforms your printer from “user-friendly” to “professional-grade”.
 
 ### What is Z-Mod?
-Z-Mod is a custom firmware modification installed *on top of* the stock software. It does **not** replace the original firmware — instead, it extends it, adding a vast number of features familiar from advanced printers, all while preserving the benefits and ease of use of the native interface.
+Z-Mod is a custom firmware modification installed *on top of* the stock software. It does **not** replace the original firmware — instead, it extends it, adding a vast number of features familiar from advanced printers, all while preserving the benefits and ease of use of the native interface. If you want even more, [welcome to the documentation](/SetupCalibrations/) with lots of settings.
+
+*Z-Mod: Qui non legit, non intrat*
 
 > **Why "Z-Mod"?** The author has been known by the nickname [zserg](https://zserg.ru/) for over 20 years. When it came time to name the mod, the answer was obvious: take the first letter of the nickname and add "mod". No hidden meaning, no symbolism — it really is exactly as simple as it looks.
 
@@ -30,7 +30,7 @@ Here’s what you gain by installing Z-Mod:
 - **Fluidd / Mainsail**: Intuitive web interfaces showing live print stats, temperatures, fan speed control, axis movement, and full console access.
 - **Octo/Klipper-style file upload**: Seamless integration with Orca Slicer and other slicers for direct G-code file transfers.
 - **Access to the printer's web interface via the Internet** cloud service [zmod.link](https://zmod.link)
-- **Notification in Telegram and 100+ other services** [notify plugin](https://github.com/ghzserg/notify/)
+- **Notification in Telegram and 100+ other services** [notify plugin](https://github.com/ghzserg/notify/) or Telegram only with lower memory usage: [Telegram Notify plugin](https://github.com/mlengle/telegram_notify/blob/main/Readme.md)
 
 #### 2. Advanced Calibration & Bed Leveling
 **Stock firmware**: Basic automatic bed leveling (ABL).
@@ -46,7 +46,7 @@ Here’s what you gain by installing Z-Mod:
 **Stock firmware**: Basic filament-runout detection. No firmware or file integrity checks → print hangs possible.
 **Z-Mod**:
 
-- **Nozzle Collision Detection**: Uses strain gauges to detect nozzle collisions with the print or bed — and automatically pauses to prevent damage.
+- **Nozzle Collision Detection**: Uses load cells to detect nozzle collisions with the print or bed — and automatically pauses to prevent damage.
 - **Power-loss Recovery**: Remembers the last print position and resumes after power is restored.
 - **Firmware Integrity Check**: Validates both stock firmware and Z-Mod files to prevent corruption.
 - **G-code File Integrity Check**: Verifies MD5 checksums during file transfer.
@@ -75,6 +75,7 @@ Here’s what you gain by installing Z-Mod:
 - **Stock LCD Disable**: Frees up RAM (critical on AD5M with only 128 MB).
 - **GuppyScreen**: Enhanced replacement UI for the printer’s display.
 - **HelixScreen**: Enhanced replacement UI for the printer’s display.
+- **Rivet**: Lightweight replacement UI for the AD5M / AD5M Pro display.
 - **Log Viewing**: Full system logs for diagnostics.
 - **Firmware Retraction**: Adjust retraction parameters on-the-fly, no reslicing needed.
 - **Full ROOT Access**: Full system control always available.
@@ -102,7 +103,7 @@ Z-Mod doesn’t *replace* the stock firmware — it enhances it, giving you the 
     
     If you don’t know what this is, don’t understand why a Klipper web interface is needed, or are simply satisfied with the stock firmware, do NOT install this modification. For everyone else – **please read the entire instructions carefully!**
     
-    After installing the mod, if you don’t want to delve into details – just print as usual. No additional configuration or changes are required. If you decide to explore further – proceed by reading the [documentation](https://ghzserg.github.io/).
+    After installing the mod, if you don’t want to delve into details – just print as usual. No additional configuration or changes are required. If you decide to explore further – proceed by reading the [documentation](/SetupCalibrations/).
 
 ## Before start
 
@@ -123,9 +124,9 @@ These features are ported to the stock firmware:
 ### Compatibility
 Compatible with clean firmware versions:
 
-- FF5M/FF5MPro: v2.7.5 or higher (2.7.5, 2.7.6, 2.7.7, 2.7.8, 2.7.9, 3.1.3, 3.1.4, 3.1.5, 3.1.9, **3.2.3**, 3.2.4, 3.2.5, 3.2.6, 3.2.7, 5.0.3, 5.1.7, 5.1.9)
-- [AD5X](/AD5X/): only (1.0.2, 1.0.7, 1.0.8, 1.0.9, 1.1.1, 1.1.6, **1.1.7**, 1.1.9, 1.2.0, 1.2.1, 1.2.2, 1.2.3, 3.0.3, 3.0.9, 3.1.0, 3.1.5, 3.1.6) _any IFS version_
-- Creator 5/Creator 5 Pro **only** (1.9.5, 1.9.6, 1.9.7, 1.9.8, 1.9.9).
+- FF5M/FF5MPro: v2.7.5 or higher (2.7.5, 2.7.6, 2.7.7, 2.7.8, 2.7.9, 3.1.3, 3.1.4, 3.1.5, 3.1.9, **3.2.3**, 3.2.4, 3.2.5, 3.2.6, 3.2.7, 5.0.3, 5.1.7, 5.1.8, 5.1.9)
+- [AD5X](/AD5X/): only (1.0.2, 1.0.7, 1.0.8, 1.0.9, 1.1.1, 1.1.6, **1.1.7**, 1.1.9, 1.2.0, 1.2.1, 1.2.2, 1.2.3, 3.0.3, 3.0.9, 3.1.0, 3.1.5, 3.1.6, 3.1.7, 3.1.8) _any IFS version_
+- [Creator 5/Creator 5 Pro](/C5PRO/) **only** (1.9.9, 2.0.0).
 
 Native firmware files are located [here](/Native_FW/).
 
@@ -143,7 +144,7 @@ Native firmware files are located [here](/Native_FW/).
 
 ## Plugins
 
-Z-Mod support [Plugins](/Plugin/)
+Z-Mod supports [Plugins](/Plugin/)
 
 ## Credits
 

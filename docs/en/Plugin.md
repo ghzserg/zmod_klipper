@@ -6,20 +6,25 @@ Plugins included with Z-Mod:
 
 1. [Recommend](https://github.com/ghzserg/recommend) - Settings recommended for immediate use after installing the mod.
 2. [G28_tenz](https://github.com/ghzserg/g28_tenz) – Z-axis parking using load cells
-2. [Nopoop](https://github.com/ghzserg/nopoop) - Maximum waste reduction by ninjamida
-3. [TimeLapse](https://github.com/ghzserg/timelapse) - Moonraker Timelapse
-4. [Notify](https://github.com/ghzserg/notify) - Receive notifications in Telegram and over 100 other different services
+3. [Nopoop](https://github.com/ghzserg/nopoop) - Maximum waste reduction by ninjamida
+4. [TimeLapse](https://github.com/ghzserg/timelapse) - Moonraker Timelapse
+5. [Notify](https://github.com/ghzserg/notify) - Receive notifications in Telegram and more than 100 other services
 
 External plugins not developed by the Z-Mod author.
 
 1. [Bambufy](https://github.com/function3d/bambufy/blob/master/README_ru.md) - Compatible with Bambu Studio, improves feed tower control, provides accurate time and material consumption estimates, reduces waste, supports Mainsail, quick color changes, and advanced printing features. CANNOT BE USED WITH THE NATIVE SCREEN.
-2. [lessWaste](https://github.com/Hrybmo/lessWaste/blob/master/README_ru.md) - a fork of BamBufy
+2. [lessWaste](https://github.com/Hrybmo/lessWaste/blob/master/README_ru.md) - a fork of Bambufy
 3. [Dryer](https://github.com/pantata/dryer) - Drying filament via heated bed
 4. [IFS Jacker](https://github.com/ninjamida/ifs_jacker_plugin) - Plugin to support the [IFS Jacker hardware mod](https://github.com/ninjamida/ifs-jacker), for auto-detection of available channel count and Klipper integration for fans / LEDs / sensors connected via an IFS Jacker
 5. [HelixScreen](https://github.com/prestonbrown/helixscreen) - an alternative screen implementation
 6. [QuickSwap](https://github.com/ninjamida/quickswap-5x) - Plugin for faster color changing on AD5X
+7. [Flook32](https://github.com/ghzserg/flook32_plugin) - Plugin for connecting the [Flook32](https://github.com/schreider/flook32) dryer [En](https://github.com/ghzserg/flook32)
+8. [Print Handy](https://github.com/catduckgnaf/print-handy) - Bambu Handy for every printer: paste a model link in Discord, Telegram or Matrix and it slices, matches your Spoolman spools, asks before printing, watches the camera for spaghetti and roasts your model.
+9. ~~Zmod AFC Lite~~ - removed and replaced by built-in [AFC](/Global/#afc) support.
+10. [Telegram Notify](https://github.com/mlengle/telegram_notify/blob/main/Readme.md) - Telegram print notifications without the Apprise library: start, finish, error, pause, progress, camera snapshot and Z-Mod messages. Saves about 5 MB of Moonraker memory compared to notify. Do not enable together with notify.
+11. [Rivet](https://github.com/lDOCI/rivet) - an alternative screen for the AD5M / AD5M Pro
 
-To enable the repository of external plugins, run the command `ENABLE_EXTRA_PLUGINS`.
+To enable the repository of external plugins, run the command `PLUGINS`.
 
 ---
 
@@ -35,6 +40,27 @@ ENABLE_PLUGIN name=g28_tenz
 ```gcode
 DISABLE_PLUGIN name=g28_tenz
 ```
+
+---
+
+## PLUGINS
+
+Displays the plugin management menu.
+
+<img width="849" height="838" alt="{9D0BE78C-816B-4F22-B3F1-8FC678AD8977}" src="../../images/a23b06e2-abe3-4ff0-93c7-079d2d057e1b.png" />
+
+In this menu you can enable, disable and completely remove additional plugins.
+
+- Left column (activation): click to enable or disable the plugin.
+    - Green button — the plugin is active.
+    - Gray button — the plugin is disabled.
+- Right column (updates): enables or disables automatic updates via Moonraker.
+    - UPDATE: ON — updates are enabled.
+    - UPDATE: OFF — updates are disabled.
+
+**How to completely remove a plugin:**
+
+If you no longer need a plugin, make both of its buttons gray (disable the plugin itself and its updates), press SAVE (MOONRAKER RESTART), and then reboot the printer. The system will automatically delete its folder from `mod_data/plugins/`.
 
 ---
 ## Installing Classic Klipper Plugins with Python Modules

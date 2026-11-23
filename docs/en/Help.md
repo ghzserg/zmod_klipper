@@ -2,14 +2,14 @@
 
 Open the Telegram bot [@zmod_help_bot](http://t.me/zmod_help_bot) and ask it your question. It knows all the documentation.
 
-1. [Update Z-Mod and all plugins to the latest version](/Setup/#updating-the-mod)
+1. [Update Z-Mod and all plugins to the latest version](/Setup/#updating-the-mod) via Fluidd -> Settings -> Software Updates
 2. Clearly describe the issue: provide screenshots, photos, and a detailed textual explanation.
 3. Run [CLEAR_EMMC](/System/#clear_emmc) to clear previous logs.
 4. **Power off the printer completely.**
 5. Power the printer back on.
 6. Reproduce the issue.
 7. Run [TAR_CONFIG](/Zmod/#tar_config) to collect log files.
-8. Submit **one** post with your description and the generated `config-1.6.6-28.tar.gz` file. 1.6.6-28 - current version mod.
+8. Submit **one** post with your description and the generated `config-1.6.6-28.tar.gz` file, where 1.6.6-28 is the current version of the mod.
 9. [Open the issue here](https://github.com/ghzserg/zmod/issues).
 
 If it is impossible to execute `TAR_CONFIG`:
@@ -26,12 +26,14 @@ chroot /data/.mod/.zmod/
 /usr/data/zmod/zmod/.shell/tar_config.sh
 ```
 
-AD5X:
+AD5X/C5/C5Pro:
 
 ```
 chroot /usr/data/.mod/.zmod/
 /usr/data/zmod/zmod/.shell/tar_config.sh
 ```
+
+**[Create a ticket](https://github.com/ghzserg/zmod/issues)**
 
 ## Why I Ask You to Create Tickets — Explained Simply
 
@@ -51,9 +53,9 @@ And I have to start with the most basic question:
 
 Our “fleet” includes **over 100 unique configurations**. Just by major categories:
 
-- **3 different printer models**:
+- **5 different printer models**:
 
-  FF5M, FF5M Pro, AD5X
+  FF5M, FF5M Pro, AD5X, C5, C5Pro
 
 - **3 Klipper “engine” versions**:
 
@@ -66,12 +68,10 @@ Our “fleet” includes **over 100 unique configurations**. Just by major categ
 - **Display options (“interior trim”)**:
 
     - Stock screen
-
-      - GuppyScreen
-
-      - HelixScreen
-
-      - Headless (no screen)
+    - GuppyScreen
+    - HelixScreen
+    - Rivet
+    - Headless (no screen)
 
 - **Primary UIs**:
 
@@ -184,3 +184,5 @@ Then I can start **fixing — immediately, not speculating**.
 Thank you for your understanding and respect for others’ time.
 
 This is not bureaucracy — it’s the **only way** to make support **fast and effective**.
+
+**[Create a ticket](https://github.com/ghzserg/zmod/issues)**

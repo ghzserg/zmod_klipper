@@ -2,43 +2,43 @@
 
 Ein Makro ist ein kleines Programm in der Klipper/Gcode-Sprache.
 
-Es kann aufgerufen werden durch:
+Es kann aufgerufen werden:
 
-- Aus der GCODE-Datei
-- Von der Fluidd/Mainsail-Konsole (drücken Sie den englischen Buchstaben "C" in Fluidd)
+- aus der G-Code-Datei
+- über die Fluidd/Mainsail-Konsole (drücken Sie in Fluidd die lateinische Taste „C“)
 
 !!! info "Hinweis"
     *Der Wert in Klammern ist der Standardwert.*
 
 ---
 
-!!! Tipp
+!!! tip "Tipp"
     [Druckerkalibrierung für Anfänger](/de/SetupCalibrations/#drucker-kalibrierung-für-einsteiger)
 
 ---
 
 ### BED_LEVEL_SCREWS_TUNE
 
-Bettnivellierungsschrauben ([manuell](https://www.klipper3d.org/Manual_Level.html#adjusting-bed-leveling-screws-using-the-bed-probe))
+Ausrichtung des Bettes mit den Schrauben ([Anleitung](https://www.klipper3d.org/Manual_Level.html#adjusting-bed-leveling-screws-using-the-bed-probe))
 
 - `EXTRUDER_TEMP` - Extrudertemperatur `(Standard: 240)`
-- `BED_TEMP` - Tischtemperatur `(Standard: 80)`
+- `BED_TEMP` - Betttemperatur `(Standard: 80)`
 
-Das Gerät misst den Abstand zwischen Düse und Bettschrauben, gibt Einstellhinweise, speichert die Temperaturen, um ein erneutes Aufheizen zu vermeiden, und wartet auf die Bestätigung des Benutzers. Nach Abschluss des Vorgangs müssen die Temperaturen manuell zurückgesetzt werden.
+Der Drucker misst den Abstand zwischen Düse und Bettschrauben, gibt Einstellhinweise, speichert die Temperaturen, um ein erneutes Aufheizen zu vermeiden, und wartet auf die Bestätigung des Benutzers. Nach Abschluss des Vorgangs müssen die Temperaturen manuell zurückgesetzt werden.
 
 ---
 
 ### LOAD_CELL_TARE
 
-Gewicht der Wägezellen zurücksetzen. Wird während der Bettkalibrierung aufgerufen
+Gewicht der Wägezellen zurücksetzen. Wird während der Bettkalibrierung aufgerufen.
 
 ---
 
 ### PID_TUNE_BED
 
-Kalibrierung der Tabelle PID
+Kalibrierung des Bett-PID
 
-- `TEMPERATUR` — BED Temperatur (default: `80`)
+- `TEMPERATURE` — Betttemperatur (Standard: `80`)
 
 Nach der Kalibrierung wird `SAVE_CONFIG` aufgerufen, siehe auch [NEW_SAVE_CONFIG](/de/Main/#new_save_config)
 
@@ -51,12 +51,12 @@ PID_CALIBRATE HEATER=heater_bed TARGET={Temperatur}
 
 ### PID_TUNE_EXTRUDER
 
-Kalibrierung der Extruder-PID
+Kalibrierung des Extruder-PID
 
-- `TEMPERATUR` – Extrudertemperatur (Standard: `245`)
-- `KÜHLER` – Lüfterdrehzahl (0–100, Standard: `100`)
+- `TEMPERATURE` – Extrudertemperatur (Standard: `245`)
+- `COOLER` – Lüfterdrehzahl (0–100, Standard: `100`)
 
-Kalibrieren Sie den PID auf die Temperatur, bei der Sie drucken, und auf die Gebläsestufe, die Sie verwenden.
+Kalibrieren Sie den PID auf die Temperatur, bei der Sie drucken, und mit der Lüfterdrehzahl, die Sie verwenden.
 
 Nach der Kalibrierung `SAVE_CONFIG` aufrufen, siehe auch [NEW_SAVE_CONFIG](/de/Main/#new_save_config)
 
@@ -69,25 +69,25 @@ PID_CALIBRATE HEATER=extruder TARGET={Temperatur}
 
 ### ZSHAPER
 
-Kalibrierung des Input Shaper(Ressonanzmessung).
+Kalibrierung des Input Shapers (Resonanzmessung).
 
-Die Ergebnisse werden gespeichert in `Maschine` -> `mod_data`:
+Die Ergebnisse werden auf der Registerkarte `Konfiguration` -> `mod_data` gespeichert:
 
 - `calibration_data_x.png`
 - `calibration_data_y.png`
 - CSV-Dateien
 
-Lesen Sie über [fix_scv](/de/Global/#fix_scv)
+Lesen Sie mehr über [FIX_SCV](/de/Global/#fix_scv)
 
-[Graphische Software](https://github.com/theycallmek/Klipper-Input-Shaping-Assistant/releases)
+[Programm zur Auswertung der Grafiken](https://github.com/theycallmek/Klipper-Input-Shaping-Assistant/releases)
 
 ---
 
 ### BELTS_SHAPER_CALIBRATION
 
-Führt einen speziellen Halbachsentest durch, um die Frequenzprofile der einzelnen Bänder auf CoreXY-Druckern zu analysieren und zu vergleichen
+Führt einen speziellen Test entlang der Diagonalen durch, um die Frequenzprofile der einzelnen Riemen bei CoreXY-Druckern zu analysieren und zu vergleichen.
 
-- `SPEKTROGRAMM` — `0` = Spektrogramm deaktivieren, `1` = aktivieren (Standard: `1`)
+- `SPECTROGRAM` — `0` = Spektrogramm deaktivieren, `1` = aktivieren (Standard: `1`)
 
 **Anforderungen:**
 
@@ -98,18 +98,21 @@ Führt einen speziellen Halbachsentest durch, um die Frequenzprofile der einzeln
 
 ### KAMP
 
+!!! note "Schnelles KAMP"
+    KAMP wird automatisch aktiviert und funktioniert ohne den langsamen Objektausschluss. Bei 3MF stehen die KAMP-Daten sofort zur Verfügung, bei G-Code nach dem Scannen der Datei.
+
 Adaptive Bettnetzkalibrierung mit Düsenreinigung.
 Parameter:
 
 - `EXTRUDER_TEMP` – Extrudertemperatur (Standard: `240`)
 - `BED_TEMP` – Betttemperatur (Standard: `80`)
 
-Fügen Sie die erste Zeile in Orca hinzu
+Fügen Sie in Orca als erste Zeile hinzu:
 ```
 KAMP EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single]
 ```
 
-**Empfohlen:** Verwenden Sie [START_PRINT](/de/Main/#start_print) mit `SAVE_ZMOD_DATA PRINT_LEVELING=1 USE_KAMP=1` und `SAVE_ZMOD_DATA CLEAR=LINE_PURGE`, um die Spülbereiche zu nutzen.
+**Empfohlen:** Verwenden Sie [START_PRINT](/de/Main/#start_print) mit `SAVE_ZMOD_DATA PRINT_LEVELING=1 USE_KAMP=1` und `SAVE_ZMOD_DATA CLEAR=LINE_PURGE`, damit die Reinigung im gemessenen Bereich erfolgt.
 
 [Optionen zur Bettnivellierung](/de/FAQ/#welche-optionen-stehen-für-die-bettnivellierung-zur-verfügung)
 
@@ -123,8 +126,9 @@ Parameter:
 - `EXTRUDER_TEMP` – Extrudertemperatur (Standard: `230`)
 - `BED_TEMP` – Betttemperatur (Standard: `80`)
 - `PROFILE` – Name des Netzprofils (Standard: `auto`)
+- `SAVE` – Bettnetz automatisch speichern (Standard: `1`)
 
-Fügen Sie die erste Zeile in Orca ein
+Fügen Sie in Orca als erste Zeile ein:
 ```
 AUTO_FULL_BED_LEVEL EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single]
 M190 S[bed_temperature_initial_layer_single]
@@ -133,7 +137,7 @@ M104 S[nozzle_temperature_initial_layer] T{single_extruder_multi_material ? 0 : 
 
 **Empfohlen:** Verwenden Sie [START_PRINT](/de/Main/#start_print) mit `SAVE_ZMOD_DATA PRINT_LEVELING=1`.
 
-Bei der Durchführung der Netzkalibrierung wird der Startnullpunkt kalibriert.
+Bei der Bettnetzkalibrierung wird auch der Nullpunkt kalibriert.
 
 [Optionen zur Bettnivellierung](/de/FAQ/#welche-optionen-stehen-für-die-bettnivellierung-zur-verfügung)
 
@@ -141,6 +145,6 @@ Bei der Durchführung der Netzkalibrierung wird der Startnullpunkt kalibriert.
 
 ### LOAD_ZOFFSET_NATIVE
 
-Übertragen der Z-Offset-Einstellungen vom nativen Bildschirm in den No-Screen-Modus
+Übertragen der Z-Offset-Einstellungen vom nativen Bildschirm in den Modus ohne nativen Bildschirm. _Für Creator 5 / Creator 5 Pro nicht erforderlich._
 
 [Wie funktioniert Z-Offset auf Ihrem Drucker](/de/SetupCalibrations/#wie-funktioniert-z-offset-auf-ihrem-drucker)
