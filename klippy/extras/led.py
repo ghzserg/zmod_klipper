@@ -134,9 +134,13 @@ class PrinterPWMLED:
     def update_leds(self, led_state, print_time):
         mcu = self.pins[0][1].get_mcu()
         min_sched_time = mcu.min_schedule_time()
+        eventtime = self.printer.get_reactor().monotonic()
+        min_print_time = mcu.estimated_print_time(eventtime) + min_sched_time
         if print_time is None:
-            eventtime = self.printer.get_reactor().monotonic()
-            print_time = mcu.estimated_print_time(eventtime) + min_sched_time
+            print_time = min_print_time
+        elif not mcu.is_fileoutput():
+            # После задержки хоста не отправлять команду LED в прошлое
+            print_time = max(print_time, min_print_time)
         print_time = max(print_time, self.last_print_time + min_sched_time)
         color = led_state[0]
         for idx, mcu_pin in self.pins:

@@ -35,8 +35,10 @@ class ReactorCompletion:
         if self.result is self.sentinel:
             wait = greenlet.getcurrent()
             self.waiting.append(wait)
-            self.reactor.pause(waketime)
-            self.waiting.remove(wait)
+            try:
+                self.reactor.pause(waketime)
+            finally:
+                self.waiting.remove(wait)
             if self.result is self.sentinel:
                 return waketime_result
         return self.result

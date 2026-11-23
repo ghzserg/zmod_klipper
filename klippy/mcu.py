@@ -110,6 +110,7 @@ class CommandQueryWrapper:
 class CommandWrapper:
     def __init__(self, conn_helper, msgformat, cmd_queue=None):
         self._serial = serial = conn_helper.get_serial()
+        self._error = conn_helper.get_mcu().get_printer().command_error
         msgparser = serial.get_msgparser()
         self._cmd = msgparser.lookup_command(msgformat)
         if cmd_queue is None:
@@ -124,7 +125,11 @@ class CommandWrapper:
         self._serial.raw_send(cmd, minclock, reqclock, self._cmd_queue)
     def send_wait_ack(self, data=(), minclock=0, reqclock=0):
         cmd = self._cmd.encode(data)
-        self._serial.raw_send_wait_ack(cmd, minclock, reqclock, self._cmd_queue)
+        try:
+            self._serial.raw_send_wait_ack(cmd, minclock, reqclock,
+                                           self._cmd_queue)
+        except serialhdl.error as e:
+            raise self._error(str(e))
     def get_command_tag(self):
         return self._msgtag
 
@@ -637,12 +642,17 @@ class MCU_adc:
         if self._callback is not None:
             self._callback([(last_read_time, last_value)])
     def _handle_analog_in_state(self, params):
-        values = self._unpack_from(params['values'])
+        # Extract adc values and their sample time
         next_clock = self._mcu.clock32_to_clock64(params['next_clock'])
         ctpt = self._mcu.clock_to_print_time
-        num = len(values)
+        raw_values = params['values']
+        BYTES_PER_SAMPLE = 2
+        num = len(raw_values) // BYTES_PER_SAMPLE
         samples = [(ctpt(next_clock - (num - i)*self._report_clock),
-                    values[i] * self._inv_max_adc) for i in range(num)]
+                    (self._unpack_from(raw_values, i*BYTES_PER_SAMPLE)[0]
+                     * self._inv_max_adc))
+                   for i in range(num)]
+        # Report the data
         self._last_state = samples[-1]
         if self._callback is not None:
             self._callback(samples)
@@ -689,6 +699,13 @@ class MCURestartHelper:
         raise error("Attempt MCU '%s' restart failed" % (self._name,))
     def check_restart_on_crc_mismatch(self):
         self._check_restart("CRC mismatch")
+    def check_restart_on_shutdown(self):
+        # Восстанавливать только при новом запуске Klippy и не повторять
+        # попытку после FIRMWARE_RESTART или обычного RESTART.
+        start_reason = self._printer.get_start_args().get("start_reason")
+        if (start_reason == 'startup' and self._restart_method == 'command'
+            and self._reset_cmd is not None):
+            self._check_restart("MCU остался в shutdown при запуске Klippy")
     def check_restart_on_send_config(self):
         if self._restart_method == 'rpi_usb':
             # Only configure mcu after usb power reset
@@ -836,7 +853,9 @@ class MCUConnectHelper:
             % (self._name, message_count, version, build_versions),
             "MCU '%s' config: %s" % (self._name, " ".join(
                 ["%s=%s" % (k, v)
-                 for k, v in msgparser.get_constants().items()]))]
+                 for k, v in msgparser.get_constants().items()])),
+            "MCU '%s' kconfig: %s" % (self._name, repr(msgparser.get_kconfig()))
+        ]
         return "\n".join(log_info)
     def _attach_file(self):
         # In a debugging mode.  Open debug output file and read data dictionary
@@ -903,6 +922,7 @@ class MCUConnectHelper:
                      self._name, eventtime)
         self._printer.invoke_shutdown("Lost communication with MCU '%s'" % (
             self._name,))
+        self._serial.abort_wait_acks()
     def is_shutdown(self):
         return self._is_shutdown
     def get_shutdown_msg(self):
@@ -946,6 +966,7 @@ class MCUStatsHelper:
         self._get_status_info['mcu_version'] = version
         self._get_status_info['mcu_build_versions'] = build_versions
         self._get_status_info['mcu_constants'] = msgparser.get_constants()
+        self._get_status_info['mcu_kconfig'] = msgparser.get_kconfig()
         self._serial.register_response(self._handle_mcu_stats, 'stats')
     def _ready(self):
         if self._mcu.is_fileoutput():
@@ -1030,7 +1051,7 @@ class MCUConfigHelper:
                     "Pin '%s' is not a valid pin name on mcu '%s'"
                     % (enum_value, self._name))
             raise
-    def _send_get_config(self):
+    def _send_get_config(self, restart_on_shutdown=False):
         get_config_cmd = self._mcu.lookup_query_command(
             "get_config",
             "config is_config=%c crc=%u is_shutdown=%c move_count=%hu")
@@ -1038,16 +1059,21 @@ class MCUConfigHelper:
             return { 'is_config': 0, 'move_count': 500, 'crc': 0 }
         config_params = get_config_cmd.send()
         if self._conn_helper.is_shutdown():
+            if restart_on_shutdown:
+                # Сообщение об аварии могло прийти раньше ответа get_config.
+                self._conn_helper.get_restart_helper().check_restart_on_shutdown()
             raise error("MCU '%s' error during config: %s" % (
                 self._name, self._conn_helper.get_shutdown_msg()))
         if config_params['is_shutdown']:
+            if restart_on_shutdown:
+                self._conn_helper.get_restart_helper().check_restart_on_shutdown()
             raise error("Can not update MCU '%s' config as it is shutdown" % (
                 self._name,))
         return config_params
     def _connect(self):
         # Finalize the config and check if a restart is needed
         restart_helper = self._conn_helper.get_restart_helper()
-        config_params = self._send_get_config()
+        config_params = self._send_get_config(restart_on_shutdown=True)
         if not config_params['is_config']:
             # Not configured - sending full config will be required
             restart_helper.check_restart_on_send_config()

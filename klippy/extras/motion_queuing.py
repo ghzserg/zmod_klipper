@@ -18,7 +18,8 @@ STEPCOMPRESS_FLUSH_TIME = 0.050
 SDS_CHECK_TIME = 0.001 # step+dir+step filter in stepcompress.c
 
 DRIP_SEGMENT_TIME = 0.050
-DRIP_TIME = 0.100
+# Дополнительный запас при хоминге и пробировании на случай задержек Linux
+DRIP_TIME = 0.300
 
 class PrinterMotionQueuing:
     def __init__(self, config):

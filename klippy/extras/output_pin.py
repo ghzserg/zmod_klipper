@@ -37,6 +37,11 @@ class GCodeRequestQueue:
             while pos + 1 < len(rqueue) and rqueue[pos + 1][0] <= next_time:
                 pos += 1
             req_pt, req_val = rqueue[pos]
+            if not self.mcu.is_fileoutput():
+                # После задержки хоста переносить просроченные команды вперёд
+                systime = self.printer.get_reactor().monotonic()
+                next_time = max(next_time, min_sched_time
+                                + self.mcu.estimated_print_time(systime))
             # Invoke callback for the request
             ret = self.callback(next_time, req_val)
             if ret is not None:
@@ -72,6 +77,11 @@ class GCodeRequestQueue:
             print_time = self.mcu.estimated_print_time(systime + min_sched_time)
         while 1:
             next_time = max(print_time, self.next_min_flush_time)
+            if not self.mcu.is_fileoutput():
+                # Защитить и автоматические вентиляторы от устаревшего времени
+                systime = self.printer.get_reactor().monotonic()
+                next_time = max(next_time, min_sched_time
+                                + self.mcu.estimated_print_time(systime))
             # Invoke callback for the request
             action, next_min_time = "normal", 0.
             ret = self.callback(next_time, value)

@@ -316,11 +316,13 @@ class ProbeParameterHelper:
 
 # Helper to track multiple probe attempts in a single command
 class SampleAveragingHelper:
-    def __init__(self, config, param_helper, start_session_cb):
+    def __init__(self, config, param_helper, start_session_cb,
+                 nozzle_probe = False):
         self.printer = config.get_printer()
         self.z_offset = config.getfloat('z_offset')
         self.param_helper = param_helper
         self.start_session_cb = start_session_cb
+        self.nozzle_probe = nozzle_probe
         # Session state
         self.hw_probe_session = None
         self.results = []
@@ -362,10 +364,11 @@ class SampleAveragingHelper:
             if "Timeout during endstop homing" in reason:
                 reason += HINT_TIMEOUT
             raise self.printer.command_error(reason)
-        # Allow axis_twist_compensation to update results
-        results = [epos]
-        self.printer.send_event("probe:update_results", results)
-        epos = results[0]
+        if not self.nozzle_probe:
+            # Allow axis_twist_compensation to update results
+            results = [epos]
+            self.printer.send_event("probe:update_results", results)
+            epos = results[0]
         # Report results
         if gcmd.get_command() != "G28":
             gcode = self.printer.lookup_object('gcode')
