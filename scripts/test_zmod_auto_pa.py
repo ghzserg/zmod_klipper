@@ -49,6 +49,7 @@ class TestAutoPA(unittest.TestCase):
             enabled = types.SimpleNamespace(sensor_enabled=True)
             disabled = types.SimpleNamespace(sensor_enabled=False)
             obj = pa.ZModPA.__new__(pa.ZModPA)
+            obj.ru = False
             obj.printer = types.SimpleNamespace(lookup_objects=lambda kind:
                 [('sensor a', types.SimpleNamespace(runout_helper=enabled)),
                  ('sensor b', types.SimpleNamespace(runout_helper=disabled))]
@@ -68,6 +69,7 @@ class TestAutoPA(unittest.TestCase):
 
     def test_dated_directories(self):
         obj = pa.ZModPA.__new__(pa.ZModPA)
+        obj.ru = False
         with tempfile.TemporaryDirectory() as root:
             obj.baseline_dir = root
             with patch.object(pa.time, 'strftime', return_value='20261127_213000'):
@@ -81,6 +83,7 @@ class TestAutoPA(unittest.TestCase):
 
     def test_archive(self):
         obj = pa.ZModPA.__new__(pa.ZModPA)
+        obj.ru = False
         messages = []
         gcmd = types.SimpleNamespace(respond_info=messages.append, error=ValueError)
         with tempfile.TemporaryDirectory() as root:
@@ -137,9 +140,11 @@ class TestAutoPA(unittest.TestCase):
 
     def test_empty_without_confirm(self):
         obj = pa.ZModPA.__new__(pa.ZModPA)
+        obj.ru = False
         obj.reactor = types.SimpleNamespace(monotonic=lambda: 0.)
         obj.baseline_dir = '/nonexistent'
-        obj.printer = types.SimpleNamespace(lookup_object=lambda name, default=None:
+        obj.printer = types.SimpleNamespace(get_start_args=lambda: {'config_file': '/nonexistent/printer.cfg'},
+            lookup_object=lambda name, default=None:
             (_ for _ in ()).throw(RuntimeError('Reached hardware checks'))
             if name == 'toolhead' else default)
         params = []
@@ -155,8 +160,27 @@ class TestAutoPA(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Run TEST_PA_EMPTY first'):
                 obj.cmd_ZMOD_AUTO_PA(gcmd)
 
+    def test_language(self):
+        obj = pa.ZModPA.__new__(pa.ZModPA)
+        with tempfile.TemporaryDirectory() as root:
+            printer = types.SimpleNamespace(get_start_args=lambda:
+                {'config_file': str(pathlib.Path(root, 'printer.cfg'))})
+            folder = pathlib.Path(root, 'mod_data')
+            folder.mkdir()
+            lang = folder / 'lang.cfg'
+            self.assertFalse(pa.is_russian(printer))
+            for value, russian in (('ru', True), ('en', False), ('de', False)):
+                lang.write_text('[zmod]\nlanguage = ' + value + '\n')
+                obj.ru = pa.is_russian(printer)
+                self.assertEqual(obj.ru, russian)
+                self.assertEqual(obj.tr('English', 'Русский'),
+                                 'Русский' if russian else 'English')
+            lang.write_text('broken config')
+            self.assertFalse(pa.is_russian(printer))
+
     def test_no_sensors(self):
         obj = pa.ZModPA.__new__(pa.ZModPA)
+        obj.ru = False
         obj.printer = types.SimpleNamespace(lookup_objects=lambda kind: [])
         with obj.suspend_filament_sensors():
             pass

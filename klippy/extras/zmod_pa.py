@@ -1,6 +1,7 @@
 # Диагностический сбор StallGuard для подбора Pressure Advance.
 #
 # This file may be distributed under the terms of the GNU GPLv3 license.
+import configparser
 import csv
 import json
 import logging
@@ -53,9 +54,21 @@ def nominal_phases(trapq, start, end, fast, strokes):
     return phases, windows
 
 
+def is_russian(printer):
+    lang = configparser.ConfigParser()
+    try:
+        lang.read(os.path.join(os.path.dirname(
+            printer.get_start_args()['config_file']), 'mod_data', 'lang.cfg'),
+            encoding='utf-8')
+        return lang.get('zmod', 'language', fallback='en') == 'ru'
+    except (OSError, UnicodeError, configparser.Error):
+        return False
+
+
 class ZModPA:
     def __init__(self, config):
         self.printer = config.get_printer()
+        self.ru = is_russian(self.printer)
         self.reactor = self.printer.get_reactor()
         self.gcode = self.printer.lookup_object('gcode')
         self.sg_token = 0
@@ -66,17 +79,20 @@ class ZModPA:
         self.log_dir = config.get('log_dir', self.baseline_dir)
         self.model = config.get('model', 'AD5M')
         if self.model not in ('AD5M', 'AD5M Pro'):
-            raise config.error('Auto PA is experimental on AD5M / AD5M Pro only')
+            raise config.error(self.tr('Auto PA is experimental on AD5M / AD5M Pro only', 'Экспериментальная Auto PA доступна только для AD5M / AD5M Pro'))
         self.gcode.register_command('ZMOD_AUTO_PA', self.cmd_ZMOD_AUTO_PA,
-                                    desc='Experimental automatic PA calibration')
+                                    desc=self.tr('Experimental automatic PA calibration', 'Экспериментальная автоматическая калибровка PA'))
         self.gcode.register_command('ZMOD_AUTO_PA_EMPTY',
                                     self.cmd_ZMOD_AUTO_PA_EMPTY,
-                                    desc='Calibrate the empty extruder')
+                                    desc=self.tr('Calibrate the empty extruder', 'Калибровка пустого экструдера'))
         self.gcode.register_command('ZMOD_TEST_PA', self.cmd_ZMOD_TEST_PA,
-                                    desc='Record extruder StallGuard trace')
+                                    desc=self.tr('Record extruder StallGuard trace', 'Запись StallGuard экструдера'))
 
         self.gcode.register_command('ZMOD_TEST_SG', self.cmd_ZMOD_TEST_SG,
-                                    desc='Record unloaded extruder StallGuard')
+                                    desc=self.tr('Record unloaded extruder StallGuard', 'Запись StallGuard пустого экструдера'))
+
+    def tr(self, en, ru):
+        return ru if self.ru else en
 
     def new_run_dir(self, kind, root=None):
         # Как VFA: отдельный каталог каждого запуска, без перезаписи.
@@ -99,7 +115,7 @@ class ZModPA:
     def run_archive(self, gcmd, kind, root=None):
         folder = self.new_run_dir(kind, root)
         archive = folder + '.zip'
-        gcmd.respond_info('Auto PA data: %s' % archive)
+        gcmd.respond_info(self.tr('Auto PA data: %s', 'Auto PA: данные будут сохранены в %s') % archive)
         try:
             yield folder
         finally:
@@ -121,12 +137,12 @@ class ZModPA:
                         if os.path.exists(pending):
                             os.unlink(pending)
                     shutil.rmtree(folder)
-                    gcmd.respond_info('Auto PA archive: %s' % archive)
+                    gcmd.respond_info(self.tr('Auto PA archive: %s', 'Auto PA: архив %s') % archive)
             except Exception:
                 # Если архивация не удалась, исходные файлы не удаляем.
                 logging.exception('Auto PA archive failed: %s', folder)
                 if not failed:
-                    raise gcmd.error('Auto PA archive failed; data: %s' % folder)
+                    raise gcmd.error(self.tr('Auto PA archive failed; data: %s', 'Не удалось создать архив Auto PA. Данные: %s') % folder)
 
     @contextmanager
     def suspend_filament_sensors(self):
@@ -157,13 +173,13 @@ class ZModPA:
                 while proc.poll() is None:
                     now = self.reactor.monotonic()
                     if self.printer.is_shutdown() or now >= deadline:
-                        raise gcmd.error('Auto PA calculation interrupted')
+                        raise gcmd.error(self.tr('Auto PA calculation interrupted', 'Расчёт Auto PA прерван'))
                     self.reactor.pause(now + .1)
                 output.seek(0)
                 result = output.read(65536).decode('utf-8', errors='replace')
                 if proc.returncode:
                     logging.error('Auto PA calculation failed: %s', result)
-                    raise gcmd.error('Auto PA calculation failed; see klippy.log')
+                    raise gcmd.error(self.tr('Auto PA calculation failed; see klippy.log', 'Ошибка расчёта Auto PA. См. klippy.log'))
                 return json.loads(result)
             finally:
                 if proc.poll() is None:
@@ -171,9 +187,11 @@ class ZModPA:
                     proc.wait()
 
     def cmd_ZMOD_AUTO_PA(self, gcmd):
+        self.ru = is_russian(self.printer)
         self.auto_pa(gcmd, False)
 
     def cmd_ZMOD_AUTO_PA_EMPTY(self, gcmd):
+        self.ru = is_russian(self.printer)
         self.auto_pa(gcmd, True)
 
     def auto_pa(self, gcmd, empty):
@@ -185,23 +203,23 @@ class ZModPA:
         if ((stats and stats.get_status(now)['state'] in ('printing', 'paused'))
                 or (sd and sd.is_active())
                 or (pause and pause.get_status(now)['is_paused'])):
-            raise gcmd.error('Auto PA is only allowed outside printing')
+            raise gcmd.error(self.tr('Auto PA is only allowed outside printing', 'Auto PA недоступна во время печати или паузы'))
         if gcmd.get_int('T', 0) != 0:
-            raise gcmd.error('Auto PA supports only T=0 on AD5M')
+            raise gcmd.error(self.tr('Auto PA supports only T=0 on AD5M', 'На AD5M Auto PA поддерживает только T=0'))
         baseline = os.path.join(self.baseline_dir, 'empty.json')
         if not empty and not os.path.isfile(baseline):
-            raise gcmd.error('Run TEST_PA_EMPTY first')
+            raise gcmd.error(self.tr('Run TEST_PA_EMPTY first', 'Сначала выполните TEST_PA_EMPTY без филамента'))
         pa_min = gcmd.get_float('PA_MIN', .01, minval=.01, maxval=.10)
         pa_max = gcmd.get_float('PA_MAX', .10, minval=.02, maxval=.10)
         count = 2 if empty else gcmd.get_int('PA_COUNT', 3, minval=1, maxval=10)
         if not math.isfinite(pa_min+pa_max) or pa_max < pa_min:
-            raise gcmd.error('Invalid PA_MIN or PA_MAX')
+            raise gcmd.error(self.tr('Invalid PA_MIN or PA_MAX', 'Некорректные PA_MIN или PA_MAX'))
         toolhead = printer.lookup_object('toolhead')
         extruder = toolhead.get_extruder()
         tmc = printer.lookup_object('tmc2209 extruder', None)
         if (tmc is None or extruder.get_name() != 'extruder'
                 or extruder.extruder_stepper is None):
-            raise gcmd.error('Auto PA requires a single TMC2209 extruder')
+            raise gcmd.error(self.tr('Auto PA requires a single TMC2209 extruder', 'Для Auto PA требуется один экструдер с TMC2209'))
         driver = tmc.mcu_tmc
         uart = driver.mcu_uart
         mcu = driver.get_mcu()
@@ -214,16 +232,16 @@ class ZModPA:
                     ' clock=%u interval_us=%u',
                     'tmcuart_buffer_status oid=%c token=%hu',
                     'tmcuart_buffer_read oid=%c token=%hu first=%hu'))):
-            raise gcmd.error('Auto PA requires updated MCU and stock 40000 baud')
+            raise gcmd.error(self.tr('Auto PA requires updated MCU and stock 40000 baud', 'Для Auto PA нужна обновлённая прошивка MCU и штатный UART 40000 бод'))
         sensor = printer.lookup_object('filament_switch_sensor e0_sensor', None)
         if sensor is not None:
             present = sensor.get_status(now)['filament_detected']
             if bool(present) == empty:
-                raise gcmd.error('Remove all filament for TEST_PA_EMPTY'
-                                 if empty else 'Load filament before TEST_PA')
+                raise gcmd.error(self.tr('Remove all filament for TEST_PA_EMPTY', 'Полностью выгрузите филамент перед TEST_PA_EMPTY')
+                                 if empty else self.tr('Load filament before TEST_PA', 'Загрузите филамент перед TEST_PA'))
         client = printer.lookup_object('gcode_macro _CLIENT_VARIABLE', None)
         if client is None:
-            raise gcmd.error('Auto PA requires configured Z-Mod parking position')
+            raise gcmd.error(self.tr('Auto PA requires configured Z-Mod parking position', 'Для Auto PA необходимо настроить точку парковки Z-Mod'))
         x, y = (float(client.variables[k]) for k in
                 ('custom_park_x', 'custom_park_y'))
         status = toolhead.get_status(now)
@@ -231,7 +249,7 @@ class ZModPA:
         if not (low[0] <= x <= high[0] and low[1] <= y <= high[1]
                 and high[2] >= 50. and status['max_accel'] >= 1000.
                 and max(x-low[0], high[0]-x) >= 68.):
-            raise gcmd.error('Invalid parking position or motion limits for Auto PA')
+            raise gcmd.error(self.tr('Invalid parking position or motion limits for Auto PA', 'Некорректная точка парковки или ограничения движения для Auto PA'))
         heater = extruder.get_heater()
         heaters = printer.lookup_object('heaters')
         old = extruder.get_status(now)
@@ -240,7 +258,7 @@ class ZModPA:
                               minval=170.)
         if (not math.isfinite(temp) or not max(170., heater.min_extrude_temp)
                 <= temp <= heater.max_temp):
-            raise gcmd.error('Set a valid filament printing temperature')
+            raise gcmd.error(self.tr('Set a valid filament printing temperature', 'Укажите допустимую температуру печати филамента'))
         os.makedirs(self.baseline_dir, exist_ok=True)
         saved = None
         self.run_fit(gcmd, ['--check'])
@@ -248,9 +266,9 @@ class ZModPA:
             try:
                 checked = self.run_fit(gcmd, [baseline])
             except printer.command_error:
-                raise gcmd.error('Repeat TEST_PA_EMPTY: invalid baseline; see klippy.log')
+                raise gcmd.error(self.tr('Repeat TEST_PA_EMPTY: invalid baseline; see klippy.log', 'Повторите TEST_PA_EMPTY: пустая база повреждена. См. klippy.log'))
             if not checked['valid']:
-                raise gcmd.error('Repeat TEST_PA_EMPTY: inconsistent baseline')
+                raise gcmd.error(self.tr('Repeat TEST_PA_EMPTY: inconsistent baseline', 'Повторите TEST_PA_EMPTY: пустая база недостоверна'))
             saved = checked['settings']
 
         estep = extruder.extruder_stepper
@@ -274,12 +292,12 @@ class ZModPA:
             with self.suspend_filament_sensors() as sensors:
                 self.gcode.run_script_from_command('SAVE_GCODE_STATE NAME=_ZMOD_AUTO_PA')
                 try:
-                    gcmd.respond_info('Experimental Auto PA: clear the bed and '
-                                      'keep the purge area unobstructed')
+                    gcmd.respond_info(self.tr('Experimental Auto PA: clear the bed and '
+                                      'keep the purge area unobstructed', 'Экспериментальная Auto PA: освободите стол и зону продувки'))
                     if toolhead.get_status(reactor.monotonic())['homed_axes'] != 'xyz':
                         self.gcode.run_script_from_command('G28')
                     if toolhead.get_status(reactor.monotonic())['homed_axes'] != 'xyz':
-                        raise gcmd.error('Homing did not complete')
+                        raise gcmd.error(self.tr('Homing did not complete', 'Не удалось выполнить парковку в ноль (G28)'))
                     # Макрос homing может изменить состояние датчиков.
                     for helper, _ in sensors:
                         helper.sensor_enabled = False
@@ -304,7 +322,7 @@ class ZModPA:
                             'GCONF', 'CHOPCONF', 'PWMCONF', 'COOLCONF',
                             'TPOWERDOWN', 'TPWMTHRS', 'TCOOLTHRS', 'IHOLD_IRUN')}}
                     if saved is not None and fingerprint != saved:
-                        raise gcmd.error('Driver settings changed; repeat TEST_PA_EMPTY')
+                        raise gcmd.error(self.tr('Driver settings changed; repeat TEST_PA_EMPTY', 'Настройки драйвера изменились. Повторите TEST_PA_EMPTY'))
                     for i in range(count):
                         params = {'CONFIRM': '1', 'MCU': '1', 'FAST': '8',
                                   'ACCEL': '1000', 'POLL_MS': '4',
@@ -334,18 +352,19 @@ class ZModPA:
                             printer.invoke_shutdown('Auto PA settings restore failed')
                             raise
             if printer.is_shutdown():
-                raise gcmd.error('Auto PA interrupted')
+                raise gcmd.error(self.tr('Auto PA interrupted', 'Калибровка Auto PA прервана'))
             if empty:
                 name = os.path.join(folder, 'empty.json')
                 settings = os.path.join(folder, 'settings.json')
                 with open(settings, 'w') as f:
                     json.dump(fingerprint, f)
                 result = self.run_fit(gcmd, ['--prepare', name, settings] + paths)
+                result['language'] = 'ru' if self.ru else 'en'
                 with open(os.path.join(folder, 'result.json'), 'w') as f:
                     json.dump(result, f, indent=2)
                 if not result['valid']:
-                    raise gcmd.error('Empty extruder traces inconsistent; '
-                                     'previous baseline retained')
+                    raise gcmd.error(self.tr('Empty extruder traces inconsistent; '
+                                     'previous baseline retained', 'Пустая характеристика недостоверна. Предыдущая база сохранена'))
                 # Архив предыдущих калибровок остаётся в датированных каталогах.
                 with tempfile.NamedTemporaryFile(dir=self.baseline_dir, suffix='.json',
                                                  delete=False) as tmp:
@@ -356,7 +375,7 @@ class ZModPA:
                 finally:
                     if os.path.exists(pending):
                         os.unlink(pending)
-                gcmd.respond_info('Empty extruder calibration saved: %s' % baseline)
+                gcmd.respond_info(self.tr('Empty extruder calibration saved: %s', 'Калибровка пустого экструдера сохранена: %s') % baseline)
                 return
             result = self.run_fit(gcmd, [baseline] + paths)
             result['valid'] = (result['valid'] and
@@ -375,16 +394,17 @@ class ZModPA:
             except OSError:
                 pass
             result.update(model=self.model, algorithm='sg250-v1',
+                          language='ru' if self.ru else 'en',
                           zmod_version=zmod_version,
                           klipper_version=printer.get_start_args().get('software_version'),
                           pa_min=pa_min, pa_max=pa_max, settings=fingerprint)
             # Отчёт содержит только измерения калибровки, без общего конфига и логов.
             with open(os.path.join(folder, 'result.json'), 'w') as f:
                 json.dump(result, f, indent=2)
-            gcmd.respond_info('Experimental Auto PA: raw %.3f, corrected %.4f, '
-                              'gain %.2f%%, %s; NOT applied\nReport: %s' %
+            gcmd.respond_info(self.tr('Experimental Auto PA: raw %.3f, corrected %.4f, '
+                              'gain %.2f%%, %s; NOT applied\nReport: %s', 'Auto PA: исходный PA %.3f, скорректированный %.4f, улучшение %.2f%%, %s. PA не применён\nАрхив: %s') %
                               (result['raw_pa'], result['pa'], result['gain'],
-                               'candidate' if result['valid'] else 'unreliable/out of range',
+                               self.tr('candidate', 'достоверный результат') if result['valid'] else self.tr('unreliable/out of range', 'недостоверно или вне диапазона'),
                                folder + '.zip'))
 
     @contextmanager
@@ -400,7 +420,7 @@ class ZModPA:
                 try:
                     while active and not printer.is_shutdown():
                         if len(rows) >= 5000:
-                            raise gcmd.error('SG sample limit reached')
+                            raise gcmd.error(self.tr('SG sample limit reached', 'Достигнут лимит отсчётов SG'))
                         query_start = reactor.monotonic()
                         result = driver.get_register_raw('SG_RESULT')
                         query_end = reactor.monotonic()
@@ -431,14 +451,14 @@ class ZModPA:
                 or stepper.get_mcu() is not mcu
                 or any(mcu.try_lookup_command(fmt) is None
                        for fmt in (start_fmt, status_fmt, read_fmt))):
-            raise gcmd.error('SG MCU mode requires updated buffer firmware '
-                             'and dedicated TMC UART')
+            raise gcmd.error(self.tr('SG MCU mode requires updated buffer firmware '
+                             'and dedicated TMC UART', 'Для сбора SG на MCU нужна обновлённая прошивка и отдельный UART TMC'))
         baud = uart.requested_baud or 40000
         if poll_ms < (2 if baud >= 80000 else 3 if baud >= 60000 else 4):
-            raise gcmd.error('POLL_MS too short for configured UART baud')
+            raise gcmd.error(self.tr('POLL_MS too short for configured UART baud', 'POLL_MS слишком мал для текущей скорости UART'))
         count = math.ceil((duration + .10) * 1000. / poll_ms)
         if not 1 <= count <= 6000 or count * poll_ms > 12000:
-            raise gcmd.error('SG MCU capture exceeds sample limit')
+            raise gcmd.error(self.tr('SG MCU capture exceeds sample limit', 'Превышен лимит отсчётов SG на MCU'))
         start_cmd = mcu.lookup_query_command(
             start_fmt, 'tmcuart_buffer_started oid=%c token=%hu status=%c'
             ' available=%u', oid=uart.oid, cq=uart.cmd_queue, is_async=True)
@@ -458,11 +478,11 @@ class ZModPA:
                 ack = start_cmd.send([uart.oid, token, driver.addr, count,
                                       clock & 0xffffffff, poll_ms*1000])
                 if ack['token'] != token:
-                    raise gcmd.error('SG MCU token mismatch')
+                    raise gcmd.error(self.tr('SG MCU token mismatch', 'Не совпадает идентификатор захвата SG на MCU'))
                 if ack['status']:
                     # При отказе по памяти или параметрам захват не запущен.
                     uncertain = ack['status'] not in (2, 3)
-                    raise gcmd.error('SG MCU start rejected: %s, available %d bytes'
+                    raise gcmd.error(self.tr('SG MCU start rejected: %s, available %d bytes', 'MCU отклонил запуск SG: %s, доступно %d байт')
                                      % (ack['status'], ack['available']))
                 # До окончания движения данные остаются в RAM головы.
                 yield rows, counts
@@ -470,53 +490,53 @@ class ZModPA:
                 while not printer.is_shutdown():
                     status = status_cmd.send([uart.oid, token])
                     if status['token'] != token or status['status'] > 1:
-                        raise gcmd.error('Invalid SG MCU buffer status')
+                        raise gcmd.error(self.tr('Invalid SG MCU buffer status', 'Некорректное состояние буфера SG на MCU'))
                     if not status['status']:
                         uncertain = False
                         break
                     if reactor.monotonic() >= deadline:
-                        raise gcmd.error('SG MCU buffer timeout')
+                        raise gcmd.error(self.tr('SG MCU buffer timeout', 'Истекло время ожидания буфера SG на MCU'))
                     reactor.pause(reactor.monotonic() + .05)
                 if printer.is_shutdown():
-                    raise gcmd.error('SG MCU capture interrupted')
+                    raise gcmd.error(self.tr('SG MCU capture interrupted', 'Сбор SG на MCU прерван'))
                 if status['total'] != count:
-                    raise gcmd.error('Incomplete SG MCU capture')
+                    raise gcmd.error(self.tr('Incomplete SG MCU capture', 'Неполный сбор SG на MCU'))
                 # История шагов хранится 30 с. Не допускаем слишком долгой выгрузки.
                 deadline = reactor.monotonic() + 15.
                 for first in range(0, count, 7):
                     if printer.is_shutdown() or reactor.monotonic() >= deadline:
-                        raise gcmd.error('SG MCU buffer download interrupted')
+                        raise gcmd.error(self.tr('SG MCU buffer download interrupted', 'Чтение буфера SG на MCU прервано'))
                     reply = read_cmd.send([uart.oid, token, first])
                     raw = reply['data']
                     if (reply['token'] != token or reply['first'] != first
                             or reply['status']
                             or len(raw) != 6 * min(7, count-first)):
-                        raise gcmd.error('Invalid SG MCU buffer packet')
+                        raise gcmd.error(self.tr('Invalid SG MCU buffer packet', 'Некорректный пакет буфера SG на MCU'))
                     for rx, sg in struct.iter_unpack('<IH', raw):
                         counts[0] += 1
                         if sg == 0xffff:
                             counts[1] += 1
                             continue
                         if sg > 1023:
-                            raise gcmd.error('Invalid SG MCU value')
+                            raise gcmd.error(self.tr('Invalid SG MCU value', 'Некорректное значение SG на MCU'))
                         # Время ответа MCU; захват короче половины периода clock32.
                         rx64 = clock + (((rx-clock+0x80000000)
                                          & 0xffffffff)-0x80000000)
                         t = mcu.clock_to_print_time(rx64)
                         if rows and t <= rows[-1][0]:
-                            raise gcmd.error('Non-monotonic SG MCU time')
+                            raise gcmd.error(self.tr('Non-monotonic SG MCU time', 'Нарушен порядок времени отсчётов SG на MCU'))
                         # Индивидуальные TX/end не хранятся в шестибайтной записи.
                         rows.append((t, sg, math.nan, math.nan))
                 if (reactor.monotonic() >= deadline or counts[0] != count
                         or counts[1] != status['errors']):
-                    raise gcmd.error('Incomplete SG MCU buffer download')
+                    raise gcmd.error(self.tr('Incomplete SG MCU buffer download', 'Буфер SG на MCU прочитан не полностью'))
                 base = mcu.clock_to_print_time(clock)
                 qmin = 1000. * (mcu.clock_to_print_time(
                     clock + status['query_min']) - base)
                 qmax = 1000. * (mcu.clock_to_print_time(
                     clock + status['query_max']) - base)
-                gcmd.respond_info('SG MCU: %d bytes available before buffer, '
-                                  'query %.3f..%.3f ms, %d errors' %
+                gcmd.respond_info(self.tr('SG MCU: %d bytes available before buffer, '
+                                  'query %.3f..%.3f ms, %d errors', 'SG MCU: до выделения буфера доступно %d байт, запрос %.3f..%.3f мс, ошибок %d') %
                                   (ack['available'], qmin, qmax, counts[1]))
             except Exception:
                 # Не восстанавливаем регистры поверх неизвестного захвата.
@@ -525,23 +545,24 @@ class ZModPA:
                 raise
 
     def cmd_ZMOD_TEST_SG(self, gcmd):
+        self.ru = is_russian(self.printer)
         with self.run_archive(gcmd, 'sg', self.log_dir) as folder:
             self.test_sg(gcmd, folder)
 
     def test_sg(self, gcmd, folder):
         # Только пустой экструдер. Защиту штатной экструзии не изменяем.
         if gcmd.get_int('CONFIRM', 0) != 1:
-            raise gcmd.error('Remove filament completely, cool hotend, '
-                             'enable extruder motor, then use CONFIRM=1')
+            raise gcmd.error(self.tr('Remove filament completely, cool hotend, '
+                             'enable extruder motor, then use CONFIRM=1', 'Полностью выгрузите филамент, остудите сопло, включите мотор экструдера и укажите CONFIRM=1'))
         try:
             speeds = [float(v) for v in gcmd.get(
                 'SPEEDS', '1,2,3,4,5,6,8,10,12,15,18,20').split(',')]
         except ValueError:
-            raise gcmd.error('Invalid SPEEDS')
+            raise gcmd.error(self.tr('Invalid SPEEDS', 'Некорректный SPEEDS'))
         if (not 2 <= len(speeds) <= 16 or len(set(speeds)) != len(speeds)
                 or any(not math.isfinite(v) or not 1. <= v <= 20.
                        for v in speeds)):
-            raise gcmd.error('SPEEDS requires 2-16 distinct values in 1-20 mm/s')
+            raise gcmd.error(self.tr('SPEEDS requires 2-16 distinct values in 1-20 mm/s', 'SPEEDS: укажите 2–16 различных скоростей от 1 до 20 мм/с'))
         mcu_mode = gcmd.get_int('MCU', 0, minval=0, maxval=1)
         poll_ms = gcmd.get_int('POLL_MS', 4 if mcu_mode else 2,
                               minval=2, maxval=5 if mcu_mode else 20)
@@ -555,35 +576,35 @@ class ZModPA:
         if ((stats and stats.get_status(now)['state'] in ('printing', 'paused'))
                 or (sd and sd.is_active())
                 or (pause and pause.get_status(now)['is_paused'])):
-            raise gcmd.error('SG test is only allowed outside printing')
+            raise gcmd.error(self.tr('SG test is only allowed outside printing', 'Тест SG недоступен во время печати или паузы'))
         toolhead = printer.lookup_object('toolhead')
         extruder = toolhead.get_extruder()
         tmc = printer.lookup_object('tmc2209 extruder', None)
         if (tmc is None or extruder.get_name() != 'extruder'
                 or extruder.extruder_stepper is None):
-            raise gcmd.error('SG test requires one TMC2209 extruder')
+            raise gcmd.error(self.tr('SG test requires one TMC2209 extruder', 'Для теста SG требуется один экструдер с TMC2209'))
         driver = tmc.mcu_tmc
         mcu = driver.get_mcu()
         if mcu.is_fileoutput():
-            raise gcmd.error('SG test requires a real MCU')
+            raise gcmd.error(self.tr('SG test requires a real MCU', 'Для теста SG требуется реальный MCU'))
         stepper = extruder.extruder_stepper.stepper
         uart = driver.mcu_uart
         toolhead.wait_moves()
         toolhead.flush_step_generation()
         if stepper.get_trapq() is not extruder.get_trapq():
-            raise gcmd.error('Extruder is not attached to its motion queue')
+            raise gcmd.error(self.tr('Extruder is not attached to its motion queue', 'Экструдер не подключён к своей очереди движений'))
         enable = printer.lookup_object('stepper_enable').lookup_enable(
             stepper.get_name())
         if not enable.is_motor_enabled():
-            raise gcmd.error('Extruder motor must already be enabled')
+            raise gcmd.error(self.tr('Extruder motor must already be enabled', 'Мотор экструдера должен быть включён'))
         heater = extruder.get_status(reactor.monotonic())
         if heater['target'] or heater['temperature'] > 60.:
-            raise gcmd.error('Turn off hotend and cool below 60 C')
+            raise gcmd.error(self.tr('Turn off hotend and cool below 60 C', 'Выключите нагрев и остудите сопло ниже 60 °C'))
         accel = min(400., extruder.max_e_accel)
         if max(speeds) > extruder.max_e_velocity:
-            raise gcmd.error('SPEEDS exceeds configured extruder velocity limit')
+            raise gcmd.error(self.tr('SPEEDS exceeds configured extruder velocity limit', 'SPEEDS превышает ограничение скорости экструдера'))
         if max(speeds) * (.8 + max(speeds)/accel) > extruder.max_e_dist:
-            raise gcmd.error('SG move exceeds configured extrude-only distance')
+            raise gcmd.error(self.tr('SG move exceeds configured extrude-only distance', 'Движение SG превышает допустимую длину экструзии'))
         force = printer.lookup_object('force_move')
         step_dist = stepper.get_step_dist()
         old_pos = stepper.get_commanded_position()
@@ -606,7 +627,7 @@ class ZModPA:
                              'run_current', 'hold_current', 'electrical_period',
                              'poll_ms', 'e_accel', 'source', 'uart_baud',
                              'burst_total', 'burst_errors'))
-            gcmd.respond_info('SG trace: %s' % out.name)
+            gcmd.respond_info(self.tr('SG trace: %s', 'Запись SG: %s') % out.name)
             try:
                 for field, value in settings.items():
                     fields.set_field(field, value)
@@ -617,11 +638,11 @@ class ZModPA:
                     order = speeds if repeat % 2 == 0 else speeds[::-1]
                     for speed in order:
                         if printer.is_shutdown():
-                            raise gcmd.error('SG test interrupted')
+                            raise gcmd.error(self.tr('SG test interrupted', 'Тест SG прерван'))
                         heater = extruder.get_status(reactor.monotonic())
                         if (heater['target'] or heater['temperature'] > 60.
                                 or not enable.is_motor_enabled()):
-                            raise gcmd.error('SG test conditions changed')
+                            raise gcmd.error(self.tr('SG test conditions changed', 'Условия теста SG изменились'))
                         toolhead.dwell(.35 if mcu_mode else .15)
                         start = toolhead.get_last_move_time()
                         duration = .8 + 2*speed/accel + .45
@@ -639,13 +660,13 @@ class ZModPA:
                                 printer.invoke_shutdown('SG diagnostic move failed')
                                 raise
                         if printer.is_shutdown():
-                            raise gcmd.error('SG test interrupted')
+                            raise gcmd.error(self.tr('SG test interrupted', 'Тест SG прерван'))
                         if (stepper.get_stepper_kinematics() is not old_sk
                                 or stepper.get_trapq() is not extruder.get_trapq()
                                 or abs(stepper.get_commanded_position()
                                        - old_pos) > 1.e-6):
                             printer.invoke_shutdown('SG extruder state changed')
-                            raise gcmd.error('SG extruder state changed')
+                            raise gcmd.error(self.tr('SG extruder state changed', 'Состояние экструдера изменилось во время теста SG'))
                         # Границы разгона берём из истории force_move.
                         try:
                             phases, windows = nominal_phases(
@@ -657,7 +678,7 @@ class ZModPA:
                         _, _, begin, c0, c1, finish = cruise
                         if mcu_mode and (not rows or rows[0][0] > begin
                                          or rows[-1][0] < finish):
-                            raise gcmd.error('SG buffer does not cover motion')
+                            raise gcmd.error(self.tr('SG buffer does not cover motion', 'Буфер SG не покрывает всё движение'))
                         find = stepper.get_past_mcu_position
                         temp_end = extruder.get_status(
                             reactor.monotonic())['temperature']
@@ -689,9 +710,9 @@ class ZModPA:
                             count += 1
                         out.flush()
                         if not count:
-                            raise gcmd.error('No StallGuard samples during motion')
-                        gcmd.respond_info('SG %.1f mm/s: %d samples, '
-                                          'MCU reads %d, invalid %d' %
+                            raise gcmd.error(self.tr('No StallGuard samples during motion', 'Нет отсчётов StallGuard во время движения'))
+                        gcmd.respond_info(self.tr('SG %.1f mm/s: %d samples, '
+                                          'MCU reads %d, invalid %d', 'SG %.1f мм/с: отсчётов %d, чтений MCU %d, ошибок %d') %
                                           (speed, count, *burst_counts))
                         run += 1
             finally:
@@ -706,17 +727,18 @@ class ZModPA:
                         logging.exception('SG test restore failed')
                         printer.invoke_shutdown('SG test restore failed')
                         raise
-            gcmd.respond_info('SG trace complete: %s' % out.name)
+            gcmd.respond_info(self.tr('SG trace complete: %s', 'Запись SG завершена: %s') % out.name)
 
     def cmd_ZMOD_TEST_PA(self, gcmd):
+        self.ru = is_russian(self.printer)
         with self.run_archive(gcmd, 'test_pa', self.log_dir) as folder:
             self.test_pa(gcmd, folder)
 
     def test_pa(self, gcmd, folder):
         # Температуру и безопасную физическую позицию задаёт оператор.
         if gcmd.get_int('CONFIRM', 0) != 1:
-            raise gcmd.error('Park the hot nozzle over a safe purge area, '
-                             'enable motors, then use CONFIRM=1')
+            raise gcmd.error(self.tr('Park the hot nozzle over a safe purge area, '
+                             'enable motors, then use CONFIRM=1', 'Припаркуйте нагретое сопло над зоной продувки, включите моторы и укажите CONFIRM=1'))
         fast = gcmd.get_float('FAST', 5., minval=2., maxval=10.4)
         strokes = gcmd.get_int('STROKES', 6, minval=2, maxval=6)
         accel = gcmd.get_float('ACCEL', 1000., minval=500., maxval=5000.)
@@ -727,12 +749,12 @@ class ZModPA:
             advances = [float(v) for v in gcmd.get(
                 'ADVANCES', '0,0.02,0.04,0.06,0.08').split(',')]
         except ValueError:
-            raise gcmd.error('Invalid ADVANCES')
+            raise gcmd.error(self.tr('Invalid ADVANCES', 'Некорректный ADVANCES'))
         if (not math.isfinite(fast) or not math.isfinite(accel)
                 or not 2 <= len(advances) <= 8
                 or any(not math.isfinite(v) or not 0 <= v <= .10
                        for v in advances)):
-            raise gcmd.error('Invalid FAST, ACCEL or ADVANCES')
+            raise gcmd.error(self.tr('Invalid FAST, ACCEL or ADVANCES', 'Некорректные FAST, ACCEL или ADVANCES'))
 
         printer, reactor = self.printer, self.reactor
         now = reactor.monotonic()
@@ -742,21 +764,21 @@ class ZModPA:
         if ((stats and stats.get_status(now)['state'] in ('printing', 'paused'))
                 or (sd and sd.is_active())
                 or (pause and pause.get_status(now)['is_paused'])):
-            raise gcmd.error('PA test is only allowed outside printing')
+            raise gcmd.error(self.tr('PA test is only allowed outside printing', 'Тест PA недоступен во время печати или паузы'))
         toolhead = printer.lookup_object('toolhead')
         extruder = toolhead.get_extruder()
         tmc = printer.lookup_object('tmc2209 extruder', None)
         if (tmc is None or extruder.get_name() != 'extruder'
                 or len(toolhead.get_position()) != 4
                 or extruder.extruder_stepper is None):
-            raise gcmd.error('PA test requires one TMC2209 extruder')
+            raise gcmd.error(self.tr('PA test requires one TMC2209 extruder', 'Для теста PA требуется один экструдер с TMC2209'))
         driver = tmc.mcu_tmc
         mcu = driver.get_mcu()
         if mcu.is_fileoutput():
-            raise gcmd.error('PA test requires a real MCU')
+            raise gcmd.error(self.tr('PA test requires a real MCU', 'Для теста PA требуется реальный MCU'))
         estep = extruder.extruder_stepper
         if estep.stepper.get_trapq() is not extruder.get_trapq():
-            raise gcmd.error('Extruder is not attached to its motion queue')
+            raise gcmd.error(self.tr('Extruder is not attached to its motion queue', 'Экструдер не подключён к своей очереди движений'))
 
         toolhead.wait_moves()
         toolhead.flush_step_generation()
@@ -767,8 +789,8 @@ class ZModPA:
         if (status['homed_axes'] != 'xyz' or pos[2] < 20.
                 or not heater['can_extrude'] or heater['temperature'] < 170.
                 or abs(heater['temperature'] - heater['target']) > 10.):
-            raise gcmd.error('Home XYZ, lower bed to Z >= 20 and stabilize '
-                             'hotend at the filament printing temperature')
+            raise gcmd.error(self.tr('Home XYZ, lower bed to Z >= 20 and stabilize '
+                             'hotend at the filament printing temperature', 'Выполните G28, опустите стол до Z >= 20 и стабилизируйте температуру сопла'))
         steppers = [s for s in toolhead.get_kinematics().get_steppers()
                     if s.is_active_axis('x') or s.is_active_axis('y')]
         enable = printer.lookup_object('stepper_enable')
@@ -777,7 +799,7 @@ class ZModPA:
                        for s in steppers)
                 or any(not enable.lookup_enable(s.get_name()).is_motor_enabled()
                        for s in steppers + [estep.stepper])):
-            raise gcmd.error('XY and extruder motors must already be enabled')
+            raise gcmd.error(self.tr('XY and extruder motors must already be enabled', 'Моторы XY и экструдера должны быть включены'))
         # Виртуальный ход только вдоль X, без изменения физического положения.
         ratio = .4
         segments = [(1., .4)] + [(fast, .5), (1., .4)] * strokes
@@ -785,13 +807,13 @@ class ZModPA:
         left = pos[0] - status['axis_minimum'][0] - 1.
         right = status['axis_maximum'][0] - pos[0] - 1.
         if max(left, right) < travel:
-            raise gcmd.error('Not enough virtual X travel: %.1f mm' % travel)
+            raise gcmd.error(self.tr('Not enough virtual X travel: %.1f mm', 'Недостаточный виртуальный ход X: %.1f мм') % travel)
         direction = 1. if right >= left else -1.
         if fast / ratio > status['max_velocity']:
-            raise gcmd.error('FAST exceeds the configured velocity limit')
+            raise gcmd.error(self.tr('FAST exceeds the configured velocity limit', 'FAST превышает ограничение скорости'))
 
         if accel > status['max_accel']:
-            raise gcmd.error('ACCEL exceeds the current toolhead limit')
+            raise gcmd.error(self.tr('ACCEL exceeds the current toolhead limit', 'ACCEL превышает текущее ограничение ускорения'))
         # Сохраняем регистры и не меняем ток двигателя.
         fields = driver.get_fields()
         settings = {'en_spreadcycle': 0, 'tpwmthrs': 0,
@@ -820,7 +842,7 @@ class ZModPA:
                              'xy_accel', 'poll_ms', 'smooth_time',
                              'electrical_period', 'source', 'uart_baud',
                              'burst_total', 'burst_errors'))
-            gcmd.respond_info('PA trace: %s' % out.name)
+            gcmd.respond_info(self.tr('PA trace: %s', 'Запись PA: %s') % out.name)
             self.gcode.run_script_from_command('SAVE_GCODE_STATE NAME=_ZMOD_PA')
             try:
                 for field, value in settings.items():
@@ -835,12 +857,12 @@ class ZModPA:
 
                 for run, advance in enumerate(advances):
                     if printer.is_shutdown():
-                        raise gcmd.error('PA test interrupted')
+                        raise gcmd.error(self.tr('PA test interrupted', 'Тест PA прерван'))
                     run_heater = extruder.get_status(reactor.monotonic())
                     if (not run_heater['can_extrude'] or abs(
                             run_heater['temperature'] - heater['target']) > 10.
                             or run_heater['target'] != heater['target']):
-                        raise gcmd.error('Hotend temperature changed')
+                        raise gcmd.error(self.tr('Hotend temperature changed', 'Температура сопла изменилась'))
                     estep._set_pressure_advance(advance, smooth)
                     # Захват начинается за 100 мс до первого движения.
                     toolhead.dwell(.35 if mcu_mode else .15)
@@ -860,10 +882,10 @@ class ZModPA:
                         toolhead.dwell(.10)
                         toolhead.wait_moves()
                     if printer.is_shutdown():
-                        raise gcmd.error('PA test interrupted')
+                        raise gcmd.error(self.tr('PA test interrupted', 'Тест PA прерван'))
                     if mcu_mode and (not rows or rows[0][0] > start
                                      or rows[-1][0] < end):
-                        raise gcmd.error('SG buffer does not cover PA motion')
+                        raise gcmd.error(self.tr('SG buffer does not cover PA motion', 'Буфер SG не покрывает всё движение PA'))
                     find = extruder.find_past_position
                     # Считываем историю после завершения движения, вне опроса UART.
                     try:
@@ -909,17 +931,17 @@ class ZModPA:
                                          *burst_counts))
                     out.flush()
                     if not valid:
-                        raise gcmd.error('No StallGuard samples during motion')
+                        raise gcmd.error(self.tr('No StallGuard samples during motion', 'Нет отсчётов StallGuard во время движения'))
                     hz = ((len(valid)-1) / (valid[-1][0]-valid[0][0])
                           if len(valid) > 1 and valid[-1][0] > valid[0][0]
                           else 0.)
-                    gcmd.respond_info('PA %.3f: %d samples, %.1f Hz, '
-                                      'MCU reads %d, invalid %d' %
+                    gcmd.respond_info(self.tr('PA %.3f: %d samples, %.1f Hz, '
+                                      'MCU reads %d, invalid %d', 'PA %.3f: отсчётов %d, %.1f Гц, чтений MCU %d, ошибок %d') %
                                       (advance, len(valid), hz, *burst_counts))
                     # Сброс виртуальной X только после завершения движений.
                     toolhead.flush_step_generation()
                     if [s.get_mcu_position() for s in steppers] != xy_steps:
-                        raise gcmd.error('XY steps changed during PA test')
+                        raise gcmd.error(self.tr('XY steps changed during PA test', 'Шаги XY изменились во время теста PA'))
                     p = toolhead.get_position()
                     p[:2] = pos[:2]
                     toolhead.set_position(p)
@@ -935,7 +957,7 @@ class ZModPA:
                                     or any(not enable.lookup_enable(
                                         s.get_name()).is_motor_enabled()
                                            for s in steppers)):
-                                raise gcmd.error('XY position is uncertain')
+                                raise gcmd.error(self.tr('XY position is uncertain', 'Положение XY не определено'))
                             p = toolhead.get_position()
                             p[:2] = pos[:2]
                             toolhead.set_position(p)
@@ -955,7 +977,7 @@ class ZModPA:
                         logging.exception('PA test restore failed')
                         printer.invoke_shutdown('PA test restore failed')
                         raise
-            gcmd.respond_info('PA trace complete: %s' % out.name)
+            gcmd.respond_info(self.tr('PA trace complete: %s', 'Запись PA завершена: %s') % out.name)
             return out.name
 
 
