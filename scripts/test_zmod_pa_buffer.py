@@ -66,6 +66,7 @@ class TestBuffer(unittest.TestCase):
         printer = types.SimpleNamespace(is_shutdown=lambda: bool(self.shutdown),
                                         invoke_shutdown=self.shutdown.append)
         self.obj = pa.ZModPA.__new__(pa.ZModPA)
+        self.obj.ru = False
         self.obj.printer = printer
         self.obj.reactor = types.SimpleNamespace(monotonic=lambda: 0.)
         self.obj.sg_token = 0
