@@ -5,6 +5,7 @@ import csv
 import logging
 import math
 import os
+import struct
 import tempfile
 import chelper
 
@@ -51,6 +52,7 @@ class ZModPA:
         self.reactor = self.printer.get_reactor()
         self.gcode = self.printer.lookup_object('gcode')
         self.log_dir = config.get('log_dir', '/opt/config/mod_data/log')
+        self.sg_token = 0
         self.gcode.register_command('ZMOD_TEST_PA', self.cmd_ZMOD_TEST_PA,
                                     desc='Record extruder StallGuard trace')
 
@@ -71,7 +73,9 @@ class ZModPA:
                 or any(not math.isfinite(v) or not 1. <= v <= 20.
                        for v in speeds)):
             raise gcmd.error('SPEEDS requires 2-16 distinct values in 1-20 mm/s')
-        poll_ms = gcmd.get_int('POLL_MS', 2, minval=2, maxval=20)
+        mcu_mode = gcmd.get_int('MCU', 0, minval=0, maxval=1)
+        poll_ms = gcmd.get_int('POLL_MS', 4 if mcu_mode else 2,
+                              minval=2, maxval=5 if mcu_mode else 20)
         repeats = gcmd.get_int('REPEATS', 2, minval=1, maxval=3)
 
         printer, reactor = self.printer, self.reactor
@@ -94,6 +98,25 @@ class ZModPA:
         if mcu.is_fileoutput():
             raise gcmd.error('SG test requires a real MCU')
         stepper = extruder.extruder_stepper.stepper
+        uart = driver.mcu_uart
+        burst_start = burst_read = None
+        if mcu_mode:
+            start_fmt = ('tmcuart_burst_start oid=%c token=%u addr=%c count=%c'
+                         ' clock=%u interval_us=%u')
+            read_fmt = 'tmcuart_burst_read oid=%c token=%u index=%c'
+            if (uart.analog_mux is not None or len(uart.instances) != 1
+                    or stepper.get_mcu() is not mcu
+                    or mcu.try_lookup_command(start_fmt) is None
+                    or mcu.try_lookup_command(read_fmt) is None):
+                raise gcmd.error('SG MCU mode needs dedicated TMC UART and '
+                                 'experimental eboard firmware')
+            burst_start = mcu.lookup_query_command(
+                start_fmt, 'tmcuart_burst_started oid=%c token=%u status=%c',
+                oid=uart.oid, cq=uart.cmd_queue, is_async=True)
+            burst_read = mcu.lookup_query_command(
+                read_fmt, 'tmcuart_burst_data oid=%c token=%u status=%c total=%c'
+                ' index=%c data=%*s', oid=uart.oid, cq=uart.cmd_queue,
+                is_async=True)
         toolhead.wait_moves()
         toolhead.flush_step_generation()
         if stepper.get_trapq() is not extruder.get_trapq():
@@ -131,7 +154,8 @@ class ZModPA:
                              'cruise_start', 'cruise_end', 'query_start',
                              'query_ms', 'temperature', 'temperature_end',
                              'run_current', 'hold_current', 'electrical_period',
-                             'poll_ms', 'e_accel'))
+                             'poll_ms', 'e_accel', 'source', 'uart_baud',
+                             'burst_total', 'burst_errors'))
             gcmd.respond_info('SG trace: %s' % out.name)
             try:
                 for field, value in settings.items():
@@ -151,10 +175,70 @@ class ZModPA:
                         toolhead.dwell(.15)
                         start = toolhead.get_last_move_time()
                         rows, errors = [], []
+                        burst_counts = [0, 0]
                         active = True
 
                         def sample(eventtime):
                             try:
+                                if mcu_mode:
+                                    # Опрос ограничен по числу запросов; mutex
+                                    # удерживается до окончания чтения буфера.
+                                    with driver.mutex:
+                                        self.sg_token = (self.sg_token + 1) & 0xffffffff
+                                        token = self.sg_token
+                                        clock = mcu.print_time_to_clock(start + .12)
+                                        response = burst_start.send([
+                                            uart.oid, token, driver.addr, 128,
+                                            clock & 0xffffffff, poll_ms*1000])
+                                        if (response['token'] != token
+                                                or response['status']):
+                                            raise gcmd.error('SG MCU start rejected: %s'
+                                                             % response['status'])
+                                        deadline = reactor.monotonic() + 5.
+                                        while not printer.is_shutdown():
+                                            response = burst_read.send([
+                                                uart.oid, token, 0])
+                                            if response['token'] != token:
+                                                raise gcmd.error('SG MCU token mismatch')
+                                            if response['status'] != 1:
+                                                break
+                                            if reactor.monotonic() >= deadline:
+                                                raise gcmd.error('SG MCU capture timeout')
+                                            reactor.pause(reactor.monotonic() + .05)
+                                        if printer.is_shutdown():
+                                            raise gcmd.error('SG MCU interrupted')
+                                        if response['status'] or response['total'] != 128:
+                                            raise gcmd.error('Incomplete SG MCU capture')
+                                        for index in range(128):
+                                            if index:
+                                                response = burst_read.send([
+                                                    uart.oid, token, index])
+                                            raw = response['data']
+                                            if (response['token'] != token
+                                                    or response['status']
+                                                    or response['total'] != 128
+                                                    or response['index'] != index
+                                                    or len(raw) != 23):
+                                                raise gcmd.error('Invalid SG MCU response')
+                                            tx, rx, end, size, packet = struct.unpack(
+                                                '<IIIB10s', raw)
+                                            burst_counts[0] += 1
+                                            value = uart._decode_read(0x41, packet[:size])
+                                            if value is None:
+                                                burst_counts[1] += 1
+                                                continue
+                                            tx64 = mcu.clock32_to_clock64(tx)
+                                            rx64 = tx64 + ((rx-tx) & 0xffffffff)
+                                            end64 = tx64 + ((end-tx) & 0xffffffff)
+                                            t0 = mcu.clock_to_print_time(tx64)
+                                            t = mcu.clock_to_print_time(rx64)
+                                            t1 = mcu.clock_to_print_time(end64)
+                                            if not 0. < t1-t0 < .02 or not t0 <= t <= t1:
+                                                burst_counts[1] += 1
+                                                continue
+                                            rows.append((t, value & 0x3ff, t0,
+                                                         (t1-t0)*1000.))
+                                    return
                                 while active and not printer.is_shutdown():
                                     if len(rows) >= 1500:
                                         raise gcmd.error('SG sample limit reached')
@@ -171,6 +255,10 @@ class ZModPA:
                                     eventtime = reactor.monotonic()
                             except Exception as exc:
                                 errors.append(exc)
+                                if mcu_mode:
+                                    # Не восстанавливаем регистры поверх
+                                    # неизвестного состояния захвата.
+                                    printer.invoke_shutdown('SG MCU capture failed')
 
                         capture = reactor.register_callback(sample)
                         try:
@@ -230,13 +318,17 @@ class ZModPA:
                                              query_ms, heater['temperature'],
                                              temp_end, current['run_current'],
                                              current['hold_current'], period,
-                                             poll_ms, accel))
+                                             poll_ms, accel,
+                                             'mcu' if mcu_mode else 'host',
+                                             uart.requested_baud or 40000,
+                                             *burst_counts))
                             count += 1
                         out.flush()
                         if not count:
                             raise gcmd.error('No StallGuard samples during motion')
-                        gcmd.respond_info('SG %.1f mm/s: %d samples' %
-                                          (speed, count))
+                        gcmd.respond_info('SG %.1f mm/s: %d samples, '
+                                          'MCU reads %d, invalid %d' %
+                                          (speed, count, *burst_counts))
                         run += 1
             finally:
                 if not printer.is_shutdown():
