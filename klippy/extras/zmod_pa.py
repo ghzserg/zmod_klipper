@@ -54,6 +54,204 @@ class ZModPA:
         self.gcode.register_command('ZMOD_TEST_PA', self.cmd_ZMOD_TEST_PA,
                                     desc='Record extruder StallGuard trace')
 
+        self.gcode.register_command('ZMOD_TEST_SG', self.cmd_ZMOD_TEST_SG,
+                                    desc='Record unloaded extruder StallGuard')
+
+    def cmd_ZMOD_TEST_SG(self, gcmd):
+        # Только пустой экструдер. Защиту штатной экструзии не изменяем.
+        if gcmd.get_int('CONFIRM', 0) != 1:
+            raise gcmd.error('Remove filament completely, cool hotend, '
+                             'enable extruder motor, then use CONFIRM=1')
+        try:
+            speeds = [float(v) for v in gcmd.get(
+                'SPEEDS', '1,2,3,4,5,6,8,10,12,15,18,20').split(',')]
+        except ValueError:
+            raise gcmd.error('Invalid SPEEDS')
+        if (not 2 <= len(speeds) <= 16 or len(set(speeds)) != len(speeds)
+                or any(not math.isfinite(v) or not 1. <= v <= 20.
+                       for v in speeds)):
+            raise gcmd.error('SPEEDS requires 2-16 distinct values in 1-20 mm/s')
+        poll_ms = gcmd.get_int('POLL_MS', 2, minval=2, maxval=20)
+        repeats = gcmd.get_int('REPEATS', 2, minval=1, maxval=3)
+
+        printer, reactor = self.printer, self.reactor
+        now = reactor.monotonic()
+        stats = printer.lookup_object('print_stats', None)
+        sd = printer.lookup_object('virtual_sdcard', None)
+        pause = printer.lookup_object('pause_resume', None)
+        if ((stats and stats.get_status(now)['state'] in ('printing', 'paused'))
+                or (sd and sd.is_active())
+                or (pause and pause.get_status(now)['is_paused'])):
+            raise gcmd.error('SG test is only allowed outside printing')
+        toolhead = printer.lookup_object('toolhead')
+        extruder = toolhead.get_extruder()
+        tmc = printer.lookup_object('tmc2209 extruder', None)
+        if (tmc is None or extruder.get_name() != 'extruder'
+                or extruder.extruder_stepper is None):
+            raise gcmd.error('SG test requires one TMC2209 extruder')
+        driver = tmc.mcu_tmc
+        mcu = driver.get_mcu()
+        if mcu.is_fileoutput():
+            raise gcmd.error('SG test requires a real MCU')
+        stepper = extruder.extruder_stepper.stepper
+        toolhead.wait_moves()
+        toolhead.flush_step_generation()
+        if stepper.get_trapq() is not extruder.get_trapq():
+            raise gcmd.error('Extruder is not attached to its motion queue')
+        enable = printer.lookup_object('stepper_enable').lookup_enable(
+            stepper.get_name())
+        if not enable.is_motor_enabled():
+            raise gcmd.error('Extruder motor must already be enabled')
+        heater = extruder.get_status(reactor.monotonic())
+        if heater['target'] or heater['temperature'] > 60.:
+            raise gcmd.error('Turn off hotend and cool below 60 C')
+        accel = min(400., extruder.max_e_accel)
+        if max(speeds) > extruder.max_e_velocity:
+            raise gcmd.error('SPEEDS exceeds configured extruder velocity limit')
+        if max(speeds) * (.8 + max(speeds)/accel) > extruder.max_e_dist:
+            raise gcmd.error('SG move exceeds configured extrude-only distance')
+        force = printer.lookup_object('force_move')
+        step_dist = stepper.get_step_dist()
+        old_pos = stepper.get_commanded_position()
+        old_sk = stepper.get_stepper_kinematics()
+        fields = driver.get_fields()
+        settings = {'en_spreadcycle': 0, 'tpwmthrs': 0,
+                    'tcoolthrs': 0xfffff, 'semin': 0}
+        registers = {fields.lookup_register(f): fields.registers[
+                     fields.lookup_register(f)] for f in settings}
+        period = step_dist * 4 * (256 >> fields.get_field('mres'))
+        current = tmc.get_status(reactor.monotonic())
+        os.makedirs(self.log_dir, exist_ok=True)
+        with tempfile.NamedTemporaryFile(mode='w', newline='',
+                                         prefix='auto_sg_', suffix='.csv',
+                                         dir=self.log_dir, delete=False) as out:
+            writer = csv.writer(out)
+            writer.writerow(('run', 'repeat', 'speed', 't', 'e', 'sg',
+                             'v', 'a', 'v_nom', 'a_nom', 'phase',
+                             'cruise_start', 'cruise_end', 'query_start',
+                             'query_ms', 'temperature', 'temperature_end',
+                             'run_current', 'hold_current', 'electrical_period',
+                             'poll_ms', 'e_accel'))
+            gcmd.respond_info('SG trace: %s' % out.name)
+            try:
+                for field, value in settings.items():
+                    fields.set_field(field, value)
+                for reg in registers:
+                    driver.set_register(reg, fields.registers[reg])
+                run = 0
+                for repeat in range(repeats):
+                    order = speeds if repeat % 2 == 0 else speeds[::-1]
+                    for speed in order:
+                        if printer.is_shutdown():
+                            raise gcmd.error('SG test interrupted')
+                        heater = extruder.get_status(reactor.monotonic())
+                        if (heater['target'] or heater['temperature'] > 60.
+                                or not enable.is_motor_enabled()):
+                            raise gcmd.error('SG test conditions changed')
+                        toolhead.dwell(.15)
+                        start = toolhead.get_last_move_time()
+                        rows, errors = [], []
+                        active = True
+
+                        def sample(eventtime):
+                            try:
+                                while active and not printer.is_shutdown():
+                                    if len(rows) >= 1500:
+                                        raise gcmd.error('SG sample limit reached')
+                                    query_start = reactor.monotonic()
+                                    result = driver.get_register_raw('SG_RESULT')
+                                    query_end = reactor.monotonic()
+                                    rows.append((mcu.estimated_print_time(
+                                        result['#receive_time']),
+                                        result['data'] & 0x3ff,
+                                        mcu.estimated_print_time(query_start),
+                                        (query_end-query_start)*1000.))
+                                    reactor.pause(max(eventtime + poll_ms*.001,
+                                                      query_end))
+                                    eventtime = reactor.monotonic()
+                            except Exception as exc:
+                                errors.append(exc)
+
+                        capture = reactor.register_callback(sample)
+                        try:
+                            # Штатный диагностический ход только мотора E.
+                            force.manual_move(stepper,
+                                              speed * (.8 + speed/accel),
+                                              speed, accel)
+                            end = toolhead.get_last_move_time()
+                            toolhead.dwell(.10)
+                            toolhead.wait_moves()
+                        except Exception:
+                            printer.invoke_shutdown('SG diagnostic move failed')
+                            raise
+                        finally:
+                            active = False
+                            capture.wait()
+                        if printer.is_shutdown():
+                            raise gcmd.error('SG test interrupted')
+                        if (stepper.get_stepper_kinematics() is not old_sk
+                                or stepper.get_trapq() is not extruder.get_trapq()
+                                or abs(stepper.get_commanded_position()
+                                       - old_pos) > 1.e-6):
+                            printer.invoke_shutdown('SG extruder state changed')
+                            raise gcmd.error('SG extruder state changed')
+                        if errors:
+                            raise errors[0]
+                        # Границы разгона берём из истории force_move.
+                        try:
+                            phases, windows = nominal_phases(
+                                force.trapq, start, end, speed, 1)
+                        except ValueError as exc:
+                            raise gcmd.error(str(exc))
+                        cruise = next(w for w in windows.values()
+                                      if w[1] == 'fast')
+                        _, _, begin, c0, c1, finish = cruise
+                        find = stepper.get_past_mcu_position
+                        temp_end = extruder.get_status(
+                            reactor.monotonic())['temperature']
+                        count = 0
+                        for t, sg, query_start, query_ms in rows:
+                            if not begin <= t <= finish:
+                                continue
+                            e = find(t) * step_dist
+                            v0 = (e-find(t-.02)*step_dist)/.02
+                            v1 = (find(t+.02)*step_dist-e)/.02
+                            if t < c0:
+                                label, vn, an = 'accel', (t-begin)*accel, accel
+                            elif t < c1:
+                                label, vn, an = 'fast', speed, 0.
+                            else:
+                                label, vn, an = 'decel', max(
+                                    0., speed-(t-c1)*accel), -accel
+                            writer.writerow((run, repeat, speed, '%.6f' % (t-begin),
+                                             '%.6f' % e, sg, '%.5f' % ((v0+v1)*.5),
+                                             '%.5f' % ((v1-v0)/.02), vn, an, label,
+                                             c0-begin, c1-begin, query_start-begin,
+                                             query_ms, heater['temperature'],
+                                             temp_end, current['run_current'],
+                                             current['hold_current'], period,
+                                             poll_ms, accel))
+                            count += 1
+                        out.flush()
+                        if not count:
+                            raise gcmd.error('No StallGuard samples during motion')
+                        gcmd.respond_info('SG %.1f mm/s: %d samples' %
+                                          (speed, count))
+                        run += 1
+            finally:
+                if not printer.is_shutdown():
+                    try:
+                        toolhead.wait_moves()
+                        toolhead.flush_step_generation()
+                        for reg, value in registers.items():
+                            fields.registers[reg] = value
+                            driver.set_register(reg, value)
+                    except Exception:
+                        logging.exception('SG test restore failed')
+                        printer.invoke_shutdown('SG test restore failed')
+                        raise
+            gcmd.respond_info('SG trace complete: %s' % out.name)
+
     def cmd_ZMOD_TEST_PA(self, gcmd):
         # Температуру и безопасную физическую позицию задаёт оператор.
         if gcmd.get_int('CONFIRM', 0) != 1:
