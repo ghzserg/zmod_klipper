@@ -188,6 +188,9 @@ class ZModPA:
             raise gcmd.error('Auto PA is only allowed outside printing')
         if gcmd.get_int('T', 0) != 0:
             raise gcmd.error('Auto PA supports only T=0 on AD5M')
+        baseline = os.path.join(self.baseline_dir, 'empty.json')
+        if not empty and not os.path.isfile(baseline):
+            raise gcmd.error('Run TEST_PA_EMPTY CONFIRM=1 first')
         if empty and gcmd.get_int('CONFIRM', 0) != 1:
             raise gcmd.error('Remove filament completely and clear the bed, '
                              'then use TEST_PA_EMPTY CONFIRM=1')
@@ -242,21 +245,16 @@ class ZModPA:
                 <= temp <= heater.max_temp):
             raise gcmd.error('Set a valid filament printing temperature')
         os.makedirs(self.baseline_dir, exist_ok=True)
-        baseline = os.path.join(self.baseline_dir, 'empty.zip')
         saved = None
-        if not empty:
-            if not os.path.isfile(baseline):
-                raise gcmd.error('Run TEST_PA_EMPTY CONFIRM=1 first')
-            try:
-                with zipfile.ZipFile(baseline) as z:
-                    if z.getinfo('settings.json').file_size > 16384:
-                        raise ValueError('Invalid baseline settings')
-                    saved = json.loads(z.read('settings.json'))
-            except (OSError, ValueError, KeyError, zipfile.BadZipFile):
-                raise gcmd.error('Repeat TEST_PA_EMPTY: invalid baseline')
         self.run_fit(gcmd, ['--check'])
-        if not empty and not self.run_fit(gcmd, [baseline])['valid']:
-            raise gcmd.error('Repeat TEST_PA_EMPTY: inconsistent baseline')
+        if not empty:
+            try:
+                checked = self.run_fit(gcmd, [baseline])
+            except printer.command_error:
+                raise gcmd.error('Repeat TEST_PA_EMPTY: invalid baseline; see klippy.log')
+            if not checked['valid']:
+                raise gcmd.error('Repeat TEST_PA_EMPTY: inconsistent baseline')
+            saved = checked['settings']
 
         estep = extruder.extruder_stepper
         enable = printer.lookup_object('stepper_enable')
@@ -269,7 +267,7 @@ class ZModPA:
         with self.run_archive(gcmd, 'empty' if empty else 'pa') as folder:
             if not empty:
                 # Сохраняем именно ту базу, с которой рассчитан этот результат.
-                snapshot = os.path.join(folder, 'empty.zip')
+                snapshot = os.path.join(folder, 'empty.json')
                 shutil.copyfile(baseline, snapshot)
                 baseline = snapshot
             paths = []
@@ -341,7 +339,7 @@ class ZModPA:
             if printer.is_shutdown():
                 raise gcmd.error('Auto PA interrupted')
             if empty:
-                name = os.path.join(folder, 'empty.zip')
+                name = os.path.join(folder, 'empty.json')
                 settings = os.path.join(folder, 'settings.json')
                 with open(settings, 'w') as f:
                     json.dump(fingerprint, f)
@@ -352,7 +350,7 @@ class ZModPA:
                     raise gcmd.error('Empty extruder traces inconsistent; '
                                      'previous baseline retained')
                 # Архив предыдущих калибровок остаётся в датированных каталогах.
-                with tempfile.NamedTemporaryFile(dir=self.baseline_dir, suffix='.zip',
+                with tempfile.NamedTemporaryFile(dir=self.baseline_dir, suffix='.json',
                                                  delete=False) as tmp:
                     pending = tmp.name
                 try:

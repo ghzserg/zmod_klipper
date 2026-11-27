@@ -3,8 +3,8 @@
 import csv
 import json
 import math
+import os
 import sys
-import zipfile
 
 ADVANCES = (0., .02, .04, .06, .08)
 COEFFICIENT = 1.7
@@ -88,21 +88,21 @@ def prepare_baseline(path, settings_path, paths):
                   [windows[st] for st in range(2, 7)]]
                  for t, _, sg, windows in (base[2][pa] for pa in ADVANCES)]
                 for base in bases]}
-    with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as z:
-        z.write(settings_path, 'settings.json')
-        z.writestr('baseline.json', json.dumps(data, separators=(',', ':'),
-                                              allow_nan=False))
+    with open(settings_path, encoding='utf-8') as f:
+        data['settings'] = json.load(f)
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, separators=(',', ':'), allow_nan=False)
     return result
 
 
 def read_baseline(path):
     import numpy as np
-    with zipfile.ZipFile(path) as z:
-        if (set(z.namelist()) != {'baseline.json', 'settings.json'}
-                or z.getinfo('baseline.json').file_size > 2_000_000):
-            raise ValueError('Invalid processed baseline; repeat TEST_PA_EMPTY')
-        data = json.loads(z.read('baseline.json'))
-    if data['format'] != 1 or len(data['traces']) != 2:
+    if os.path.getsize(path) > 2_000_000:
+        raise ValueError('Invalid processed baseline; repeat TEST_PA_EMPTY')
+    with open(path, encoding='utf-8') as f:
+        data = json.load(f)
+    if (data['format'] != 1 or len(data['traces']) != 2
+            or not isinstance(data['settings'], dict)):
         raise ValueError('Unsupported Auto PA baseline format')
     signature = tuple(data['signature'])
     temp, null = data['temperature'], data['null_gain']
@@ -130,7 +130,7 @@ def read_baseline(path):
                 raise ValueError('Invalid Auto PA baseline samples')
             groups[pa] = (t, None, sg, dict(zip(range(2, 7), starts)))
         bases.append((signature, temp, groups))
-    return bases, null
+    return bases, null, data['settings']
 
 
 def smooth(x):
@@ -200,9 +200,10 @@ def score(stats, model):
 
 
 def analyze(baseline, paths):
-    bases, null = read_baseline(baseline)
+    bases, null, settings = read_baseline(baseline)
     if not paths:
-        return {'baseline_null_gain': null, 'valid': max(null) < 1.}
+        return {'baseline_null_gain': null, 'valid': max(null) < 1.,
+                'settings': settings}
     all_stats = []
     temps = []
     for path in paths:

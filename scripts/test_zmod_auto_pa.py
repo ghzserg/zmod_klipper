@@ -110,16 +110,18 @@ class TestAutoPA(unittest.TestCase):
         base = (signature, 210., {x: (t, e, sg, starts) for x in fit.ADVANCES})
         with tempfile.TemporaryDirectory() as root:
             settings = pathlib.Path(root, 'settings.json')
-            settings.write_text('{}')
-            path = pathlib.Path(root, 'empty.zip')
+            settings.write_text('{"model":"AD5M"}')
+            path = pathlib.Path(root, 'empty.json')
             trace = pathlib.Path(root, 'trace.csv')
             trace.touch()
             with patch.object(fit, 'load_trace', return_value=base):
                 result = fit.prepare_baseline(path, settings, [trace, trace])
             self.assertTrue(result['valid'])
-            with zipfile.ZipFile(path) as z:
-                self.assertEqual(set(z.namelist()), {'settings.json', 'baseline.json'})
-            bases, null = fit.read_baseline(path)
+            data = json.loads(path.read_text())
+            self.assertEqual(data['settings'], {'model': 'AD5M'})
+            bases, null, saved = fit.read_baseline(path)
+            self.assertEqual(saved, {'model': 'AD5M'})
+            self.assertEqual(fit.analyze(path, [])['settings'], saved)
             self.assertEqual(null, result['baseline_null_gain'])
             for b in bases:
                 self.assertEqual(b[:2], base[:2])
