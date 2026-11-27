@@ -152,15 +152,7 @@ class TestAutoPA(unittest.TestCase):
             obj.cmd_ZMOD_AUTO_PA_EMPTY(gcmd)
         self.assertNotIn('CONFIRM', params)
         with patch.object(pa.os.path, 'isfile', return_value=False):
-            with self.assertRaisesRegex(ValueError, '^Run TEST_PA_EMPTY first
-        obj = pa.ZModPA.__new__(pa.ZModPA)
-        obj.printer = types.SimpleNamespace(lookup_objects=lambda kind: [])
-        with obj.suspend_filament_sensors():
-            pass
-
-if __name__ == '__main__':
-    unittest.main()
-):
+            with self.assertRaisesRegex(ValueError, 'Run TEST_PA_EMPTY first'):
                 obj.cmd_ZMOD_AUTO_PA(gcmd)
 
     def test_no_sensors(self):
