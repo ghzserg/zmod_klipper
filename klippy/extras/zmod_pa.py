@@ -157,6 +157,7 @@ class ZModPA:
                             p[0] += direction * speed * duration / ratio
                             p[3] += speed * duration
                             toolhead.move(p, speed / ratio)
+                        end = toolhead.get_last_move_time()
                         toolhead.wait_moves()
                     finally:
                         active = False
@@ -165,7 +166,6 @@ class ZModPA:
                         raise gcmd.error('PA test interrupted')
                     if errors:
                         raise errors[0]
-                    end = toolhead.get_last_move_time()
                     find = extruder.find_past_position
                     valid = [(t, sg) for t, sg in rows
                              if start <= t <= end]
@@ -186,6 +186,9 @@ class ZModPA:
                     gcmd.respond_info('PA %.3f: %d samples, %.1f Hz' %
                                       (advance, len(valid), hz))
                     # Сброс виртуальной X только после завершения движений.
+                    toolhead.flush_step_generation()
+                    if [s.get_mcu_position() for s in steppers] != xy_steps:
+                        raise gcmd.error('XY steps changed during PA test')
                     p = toolhead.get_position()
                     p[:2] = pos[:2]
                     toolhead.set_position(p)
