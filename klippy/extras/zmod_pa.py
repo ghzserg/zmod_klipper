@@ -77,18 +77,18 @@ class ZModPA:
     @contextmanager
     def suspend_filament_sensors(self):
         # Не изменяем конфигурацию и восстанавливаем даже при исключении.
-        changed = []
+        saved = []
         try:
             for kind in ('filament_switch_sensor', 'filament_motion_sensor'):
                 for _, sensor in self.printer.lookup_objects(kind):
                     helper = sensor.runout_helper
+                    saved.append((helper, helper.sensor_enabled))
                     if helper.sensor_enabled:
-                        changed.append(helper)
                         helper.sensor_enabled = False
-            yield
+            yield saved
         finally:
-            for helper in changed:
-                helper.sensor_enabled = True
+            for helper, enabled in saved:
+                helper.sensor_enabled = enabled
 
     def run_fit(self, gcmd, args):
         # NumPy загружается только в дочернем процессе, не в reactor Klipper.
@@ -184,7 +184,8 @@ class ZModPA:
         old_target = old['target']
         temp = gcmd.get_float('TEMP', 210. if empty else old_target,
                               minval=170.)
-        if not math.isfinite(temp) or temp > heater.max_temp:
+        if (not math.isfinite(temp) or not max(170., heater.min_extrude_temp)
+                <= temp <= heater.max_temp):
             raise gcmd.error('Set a valid filament printing temperature')
         os.makedirs(self.log_dir, exist_ok=True)
         os.makedirs(self.baseline_dir, exist_ok=True)
@@ -216,7 +217,7 @@ class ZModPA:
         orders = ('0,0.02,0.04,0.06,0.08', '0.08,0.06,0.04,0.02,0',
                   '0.04,0,0.08,0.02,0.06')
         gmove = printer.lookup_object('gcode_move')
-        with self.suspend_filament_sensors():
+        with self.suspend_filament_sensors() as sensors:
             self.gcode.run_script_from_command('SAVE_GCODE_STATE NAME=_ZMOD_AUTO_PA')
             try:
                 gcmd.respond_info('Experimental Auto PA: clear the bed and '
@@ -225,6 +226,9 @@ class ZModPA:
                     self.gcode.run_script_from_command('G28')
                 if toolhead.get_status(reactor.monotonic())['homed_axes'] != 'xyz':
                     raise gcmd.error('Homing did not complete')
+                # Макрос homing может изменить состояние датчиков.
+                for helper, _ in sensors:
+                    helper.sensor_enabled = False
                 # Физическая парковка без пользовательского G-code offset.
                 z = max(50., toolhead.get_position()[2])
                 toolhead.manual_move([None, None, z], 10.)
@@ -299,7 +303,21 @@ class ZModPA:
         result = self.run_fit(gcmd, [baseline] + paths)
         result['valid'] = (result['valid'] and
                            pa_min <= result['pa'] <= pa_max)
+        zmod_version = None
+        try:
+            with open('/tmp/version.txt', encoding='utf-8') as f:
+                for line in f.read(8192).splitlines():
+                    key, _, value = line.partition('=')
+                    if key.strip() == 'ZMOD_VERSION':
+                        value = value.strip().strip('"').strip("'")
+                        if (0 < len(value) <= 80 and all(
+                                c.isalnum() or c in '.-+_' for c in value)):
+                            zmod_version = value
+                        break
+        except OSError:
+            pass
         result.update(model=self.model, algorithm='sg250-v1',
+                      zmod_version=zmod_version,
                       klipper_version=printer.get_start_args().get('software_version'),
                       pa_min=pa_min, pa_max=pa_max, settings=fingerprint)
         # Отчёт содержит только измерения калибровки, без общего конфига и логов.

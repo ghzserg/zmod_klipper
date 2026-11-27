@@ -53,6 +53,8 @@ class TestAutoPA(unittest.TestCase):
                 with obj.suspend_filament_sensors():
                     self.assertFalse(enabled.sensor_enabled)
                     self.assertFalse(disabled.sensor_enabled)
+                    # Даже если сторонний макрос изменил состояние датчика.
+                    disabled.sensor_enabled = True
                     if failure:
                         raise RuntimeError('test')
             except RuntimeError:
