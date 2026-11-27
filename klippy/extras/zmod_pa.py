@@ -6,10 +6,12 @@ import json
 import logging
 import math
 import os
+import shutil
 import struct
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 from contextlib import contextmanager
 import chelper
@@ -56,10 +58,12 @@ class ZModPA:
         self.printer = config.get_printer()
         self.reactor = self.printer.get_reactor()
         self.gcode = self.printer.lookup_object('gcode')
-        self.log_dir = config.get('log_dir', '/opt/config/mod_data/log')
         self.sg_token = 0
-        self.baseline_dir = config.get('baseline_dir',
-                                       '/opt/config/mod_data/auto_pa')
+        root = os.path.join(os.path.dirname(
+            self.printer.get_start_args()['config_file']), 'mod_data', 'auto_pa')
+        self.baseline_dir = config.get('baseline_dir', root)
+        # Старый параметр диагностики оставлен для тестовых конфигураций.
+        self.log_dir = config.get('log_dir', self.baseline_dir)
         self.model = config.get('model', 'AD5M')
         if self.model not in ('AD5M', 'AD5M Pro'):
             raise config.error('Auto PA is experimental on AD5M / AD5M Pro only')
@@ -73,6 +77,21 @@ class ZModPA:
 
         self.gcode.register_command('ZMOD_TEST_SG', self.cmd_ZMOD_TEST_SG,
                                     desc='Record unloaded extruder StallGuard')
+
+    def new_run_dir(self, kind, root=None):
+        # Как VFA: отдельный каталог каждого запуска, без перезаписи.
+        root = self.baseline_dir if root is None else root
+        os.makedirs(root, exist_ok=True)
+        name = time.strftime('%Y%m%d_%H%M%S') + '_' + kind
+        index = 0
+        while True:
+            folder = os.path.join(root, name if not index else
+                                  '%s_%d' % (name, index))
+            try:
+                os.mkdir(folder)
+                return folder
+            except FileExistsError:
+                index += 1
 
     @contextmanager
     def suspend_filament_sensors(self):
@@ -187,7 +206,6 @@ class ZModPA:
         if (not math.isfinite(temp) or not max(170., heater.min_extrude_temp)
                 <= temp <= heater.max_temp):
             raise gcmd.error('Set a valid filament printing temperature')
-        os.makedirs(self.log_dir, exist_ok=True)
         os.makedirs(self.baseline_dir, exist_ok=True)
         baseline = os.path.join(self.baseline_dir, 'empty.zip')
         saved = None
@@ -213,6 +231,13 @@ class ZModPA:
         current = tmc.current_helper
         old_hold = current.req_hold_current
         old_regs = {k: fields.registers[k] for k in ('CHOPCONF', 'IHOLD_IRUN')}
+        folder = self.new_run_dir('empty' if empty else 'pa')
+        if not empty:
+            # Сохраняем именно ту базу, с которой рассчитан этот результат.
+            snapshot = os.path.join(folder, 'empty.zip')
+            shutil.copyfile(baseline, snapshot)
+            baseline = snapshot
+        gcmd.respond_info('Auto PA data: %s' % folder)
         paths = []
         orders = ('0,0.02,0.04,0.06,0.08', '0.08,0.06,0.04,0.02,0',
                   '0.04,0,0.08,0.02,0.06')
@@ -257,7 +282,7 @@ class ZModPA:
                               'ADVANCES': orders[i % len(orders)]}
                     cmd = self.gcode.create_gcode_command('ZMOD_TEST_PA',
                                                          'ZMOD_TEST_PA', params)
-                    paths.append(self.cmd_ZMOD_TEST_PA(cmd))
+                    paths.append(self.cmd_ZMOD_TEST_PA(cmd, folder))
             finally:
                 if not printer.is_shutdown():
                     try:
@@ -282,23 +307,28 @@ class ZModPA:
         if printer.is_shutdown():
             raise gcmd.error('Auto PA interrupted')
         if empty:
+            name = os.path.join(folder, 'empty.zip')
+            with zipfile.ZipFile(name, 'w', zipfile.ZIP_DEFLATED) as z:
+                for i, path in enumerate(paths, 1):
+                    z.write(path, 'empty_%d.csv' % i)
+                z.writestr('settings.json', json.dumps(fingerprint))
+            result = self.run_fit(gcmd, [name])
+            with open(os.path.join(folder, 'result.json'), 'w') as f:
+                json.dump(result, f, indent=2)
+            if not result['valid']:
+                raise gcmd.error('Empty extruder traces inconsistent; '
+                                 'previous baseline retained')
+            # Архив предыдущих калибровок остаётся в датированных каталогах.
             with tempfile.NamedTemporaryFile(dir=self.baseline_dir, suffix='.zip',
                                              delete=False) as tmp:
-                name = tmp.name
+                pending = tmp.name
             try:
-                with zipfile.ZipFile(name, 'w', zipfile.ZIP_DEFLATED) as z:
-                    for i, path in enumerate(paths, 1):
-                        z.write(path, 'empty_%d.csv' % i)
-                    z.writestr('settings.json', json.dumps(fingerprint))
-                result = self.run_fit(gcmd, [name])
-                if not result['valid']:
-                    raise gcmd.error('Empty extruder traces inconsistent; '
-                                     'previous baseline retained')
-                os.replace(name, baseline)
-                gcmd.respond_info('Empty extruder calibration saved: %s' % baseline)
+                shutil.copyfile(name, pending)
+                os.replace(pending, baseline)
             finally:
-                if os.path.exists(name):
-                    os.unlink(name)
+                if os.path.exists(pending):
+                    os.unlink(pending)
+            gcmd.respond_info('Empty extruder calibration saved: %s' % folder)
             return
         result = self.run_fit(gcmd, [baseline] + paths)
         result['valid'] = (result['valid'] and
@@ -321,9 +351,9 @@ class ZModPA:
                       klipper_version=printer.get_start_args().get('software_version'),
                       pa_min=pa_min, pa_max=pa_max, settings=fingerprint)
         # Отчёт содержит только измерения калибровки, без общего конфига и логов.
-        with tempfile.NamedTemporaryFile(dir=self.log_dir, prefix='auto_pa_report_',
-                                         suffix='.zip', delete=False) as tmp:
-            report = tmp.name
+        with open(os.path.join(folder, 'result.json'), 'w') as f:
+            json.dump(result, f, indent=2)
+        report = os.path.join(folder, 'report.zip')
         try:
             with zipfile.ZipFile(report, 'w', zipfile.ZIP_DEFLATED) as z:
                 z.write(baseline, 'empty.zip')
@@ -543,10 +573,10 @@ class ZModPA:
                      fields.lookup_register(f)] for f in settings}
         period = step_dist * 4 * (256 >> fields.get_field('mres'))
         current = tmc.get_status(reactor.monotonic())
-        os.makedirs(self.log_dir, exist_ok=True)
+        folder = self.new_run_dir('sg', self.log_dir)
         with tempfile.NamedTemporaryFile(mode='w', newline='',
                                          prefix='auto_sg_', suffix='.csv',
-                                         dir=self.log_dir, delete=False) as out:
+                                         dir=folder, delete=False) as out:
             writer = csv.writer(out)
             writer.writerow(('run', 'repeat', 'speed', 't', 'e', 'sg',
                              'v', 'a', 'v_nom', 'a_nom', 'phase',
@@ -657,7 +687,7 @@ class ZModPA:
                         raise
             gcmd.respond_info('SG trace complete: %s' % out.name)
 
-    def cmd_ZMOD_TEST_PA(self, gcmd):
+    def cmd_ZMOD_TEST_PA(self, gcmd, folder=None):
         # Температуру и безопасную физическую позицию задаёт оператор.
         if gcmd.get_int('CONFIRM', 0) != 1:
             raise gcmd.error('Park the hot nozzle over a safe purge area, '
@@ -752,10 +782,11 @@ class ZModPA:
         gmove = printer.lookup_object('gcode_move')
         old_pa, smooth = heater['pressure_advance'], heater['smooth_time']
         old_accel, old_scv = status['max_accel'], status['square_corner_velocity']
-        os.makedirs(self.log_dir, exist_ok=True)
+        if folder is None:
+            folder = self.new_run_dir('test_pa', self.log_dir)
         with tempfile.NamedTemporaryFile(mode='w', newline='',
                                          prefix='auto_pa_', suffix='.csv',
-                                         dir=self.log_dir, delete=False) as out:
+                                         dir=folder, delete=False) as out:
             writer = csv.writer(out)
             writer.writerow(('run', 'advance', 't', 'e', 'sg', 'v', 'a',
                              'v_nom', 'a_nom', 'stroke', 'phase',

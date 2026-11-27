@@ -2,8 +2,10 @@
 import importlib.util
 import pathlib
 import sys
+import tempfile
 import types
 import unittest
+from unittest.mock import patch
 import numpy as np
 
 sys.modules.setdefault('chelper', types.ModuleType('chelper'))
@@ -61,6 +63,19 @@ class TestAutoPA(unittest.TestCase):
                 self.assertTrue(failure)
             self.assertTrue(enabled.sensor_enabled)
             self.assertFalse(disabled.sensor_enabled)
+
+    def test_dated_directories(self):
+        obj = pa.ZModPA.__new__(pa.ZModPA)
+        with tempfile.TemporaryDirectory() as root:
+            obj.baseline_dir = root
+            with patch.object(pa.time, 'strftime', return_value='20261127_213000'):
+                first = pathlib.Path(obj.new_run_dir('empty'))
+                second = pathlib.Path(obj.new_run_dir('empty'))
+                loaded = pathlib.Path(obj.new_run_dir('pa'))
+            self.assertEqual(first.name, '20261127_213000_empty')
+            self.assertEqual(second.name, '20261127_213000_empty_1')
+            self.assertEqual(loaded.name, '20261127_213000_pa')
+            self.assertTrue(all(x.is_dir() for x in (first, second, loaded)))
 
     def test_no_sensors(self):
         obj = pa.ZModPA.__new__(pa.ZModPA)
