@@ -75,8 +75,9 @@ TMC_BAUD_RATE_AVR = 9000
 
 # Code for sending messages on a TMC uart
 class MCU_TMC_uart_bitbang:
-    def __init__(self, rx_pin_params, tx_pin_params, select_pins_desc):
+    def __init__(self, rx_pin_params, tx_pin_params, select_pins_desc, baud=None):
         self.mcu = rx_pin_params['chip']
+        self.requested_baud = baud
         self.mutex = lookup_tmc_uart_mutex(self.mcu)
         self.pullup = rx_pin_params['pullup']
         self.rx_pin = rx_pin_params['pin']
@@ -95,6 +96,12 @@ class MCU_TMC_uart_bitbang:
         mcu_type = self.mcu.get_constants().get("MCU", "")
         if mcu_type.startswith("atmega") or mcu_type.startswith("at90usb"):
             baud = TMC_BAUD_RATE_AVR
+        # Экспериментальная скорость только для явно настроенной шины.
+        if self.requested_baud is not None:
+            if baud == TMC_BAUD_RATE_AVR:
+                raise self.mcu.get_printer().config_error(
+                    "Custom TMC UART baud is not supported on AVR")
+            baud = self.requested_baud
         bit_ticks = self.mcu.seconds_to_clock(1. / baud)
         self.mcu.add_config_cmd(
             "config_tmcuart oid=%d rx_pin=%s pull_up=%d tx_pin=%s bit_time=%d"
@@ -204,11 +211,14 @@ def lookup_tmc_uart_bitbang(config, max_addr):
         raise ppins.error("TMC uart rx and tx pins must be on the same mcu")
     select_pins_desc = config.getlist('select_pins', None)
     addr = config.getint('uart_address', 0, minval=0, maxval=max_addr)
+    baud = config.getint('uart_baud', None, minval=40000, maxval=80000)
     mcu_uart = rx_pin_params.get('class')
     if mcu_uart is None:
         mcu_uart = MCU_TMC_uart_bitbang(rx_pin_params, tx_pin_params,
-                                        select_pins_desc)
+                                        select_pins_desc, baud)
         rx_pin_params['class'] = mcu_uart
+    elif mcu_uart.requested_baud != baud:
+        raise config.error("Shared TMC uarts require identical uart_baud")
     instance_id = mcu_uart.register_instance(rx_pin_params, tx_pin_params,
                                              select_pins_desc, addr)
     return instance_id, addr, mcu_uart
