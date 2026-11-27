@@ -135,6 +135,34 @@ class TestAutoPA(unittest.TestCase):
             processed = fit.statistics(base, [bases[:1]])[0]
             np.testing.assert_array_equal(original, processed)
 
+    def test_empty_without_confirm(self):
+        obj = pa.ZModPA.__new__(pa.ZModPA)
+        obj.reactor = types.SimpleNamespace(monotonic=lambda: 0.)
+        obj.baseline_dir = '/nonexistent'
+        obj.printer = types.SimpleNamespace(lookup_object=lambda name, default=None:
+            (_ for _ in ()).throw(RuntimeError('Reached hardware checks'))
+            if name == 'toolhead' else default)
+        params = []
+        def get_int(key, default, **kwargs):
+            params.append(key)
+            return default
+        gcmd = types.SimpleNamespace(get_int=get_int,
+            get_float=lambda key, default, **kwargs: default, error=ValueError)
+        with self.assertRaisesRegex(RuntimeError, 'Reached hardware checks'):
+            obj.cmd_ZMOD_AUTO_PA_EMPTY(gcmd)
+        self.assertNotIn('CONFIRM', params)
+        with patch.object(pa.os.path, 'isfile', return_value=False):
+            with self.assertRaisesRegex(ValueError, '^Run TEST_PA_EMPTY first
+        obj = pa.ZModPA.__new__(pa.ZModPA)
+        obj.printer = types.SimpleNamespace(lookup_objects=lambda kind: [])
+        with obj.suspend_filament_sensors():
+            pass
+
+if __name__ == '__main__':
+    unittest.main()
+):
+                obj.cmd_ZMOD_AUTO_PA(gcmd)
+
     def test_no_sensors(self):
         obj = pa.ZModPA.__new__(pa.ZModPA)
         obj.printer = types.SimpleNamespace(lookup_objects=lambda kind: [])

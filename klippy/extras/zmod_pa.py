@@ -190,10 +190,7 @@ class ZModPA:
             raise gcmd.error('Auto PA supports only T=0 on AD5M')
         baseline = os.path.join(self.baseline_dir, 'empty.json')
         if not empty and not os.path.isfile(baseline):
-            raise gcmd.error('Run TEST_PA_EMPTY CONFIRM=1 first')
-        if empty and gcmd.get_int('CONFIRM', 0) != 1:
-            raise gcmd.error('Remove filament completely and clear the bed, '
-                             'then use TEST_PA_EMPTY CONFIRM=1')
+            raise gcmd.error('Run TEST_PA_EMPTY first')
         pa_min = gcmd.get_float('PA_MIN', .01, minval=.01, maxval=.10)
         pa_max = gcmd.get_float('PA_MAX', .10, minval=.02, maxval=.10)
         count = 2 if empty else gcmd.get_int('PA_COUNT', 3, minval=1, maxval=10)
