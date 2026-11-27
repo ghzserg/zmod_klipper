@@ -112,13 +112,13 @@ class ZModPA:
         if poll_ms < (2 if baud >= 80000 else 3 if baud >= 60000 else 4):
             raise gcmd.error('POLL_MS too short for configured UART baud')
         count = math.ceil((duration + .10) * 1000. / poll_ms)
-        if not 1 <= count <= 6000:
+        if not 1 <= count <= 6000 or count * poll_ms > 12000:
             raise gcmd.error('SG MCU capture exceeds sample limit')
         start_cmd = mcu.lookup_query_command(
             start_fmt, 'tmcuart_stream_started oid=%c token=%hu status=%c',
             oid=uart.oid, cq=uart.cmd_queue, is_async=True)
         status_cmd = mcu.lookup_query_command(
-            status_fmt, 'tmcuart_stream_status oid=%c token=%hu status=%c total=%hu',
+            status_fmt, 'tmcuart_stream_state oid=%c token=%hu status=%c total=%hu',
             oid=uart.oid, cq=uart.cmd_queue, is_async=True)
         self.sg_token = (self.sg_token + 1) & 0xffff
         token = self.sg_token
