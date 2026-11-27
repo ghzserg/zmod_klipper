@@ -2,11 +2,15 @@
 #
 # This file may be distributed under the terms of the GNU GPLv3 license.
 import csv
+import json
 import logging
 import math
 import os
 import struct
+import subprocess
+import sys
 import tempfile
+import zipfile
 from contextlib import contextmanager
 import chelper
 
@@ -54,11 +58,268 @@ class ZModPA:
         self.gcode = self.printer.lookup_object('gcode')
         self.log_dir = config.get('log_dir', '/opt/config/mod_data/log')
         self.sg_token = 0
+        self.baseline_dir = config.get('baseline_dir',
+                                       '/opt/config/mod_data/auto_pa')
+        self.model = config.get('model', 'AD5M')
+        if self.model not in ('AD5M', 'AD5M Pro'):
+            raise config.error('Auto PA is experimental on AD5M / AD5M Pro only')
+        self.gcode.register_command('ZMOD_AUTO_PA', self.cmd_ZMOD_AUTO_PA,
+                                    desc='Experimental automatic PA calibration')
+        self.gcode.register_command('ZMOD_AUTO_PA_EMPTY',
+                                    self.cmd_ZMOD_AUTO_PA_EMPTY,
+                                    desc='Calibrate the empty extruder')
         self.gcode.register_command('ZMOD_TEST_PA', self.cmd_ZMOD_TEST_PA,
                                     desc='Record extruder StallGuard trace')
 
         self.gcode.register_command('ZMOD_TEST_SG', self.cmd_ZMOD_TEST_SG,
                                     desc='Record unloaded extruder StallGuard')
+
+    @contextmanager
+    def suspend_filament_sensors(self):
+        # Не изменяем конфигурацию и восстанавливаем даже при исключении.
+        changed = []
+        try:
+            for kind in ('filament_switch_sensor', 'filament_motion_sensor'):
+                for _, sensor in self.printer.lookup_objects(kind):
+                    helper = sensor.runout_helper
+                    if helper.sensor_enabled:
+                        changed.append(helper)
+                        helper.sensor_enabled = False
+            yield
+        finally:
+            for helper in changed:
+                helper.sensor_enabled = True
+
+    def run_fit(self, gcmd, args):
+        # NumPy загружается только в дочернем процессе, не в reactor Klipper.
+        script = os.path.join(os.path.dirname(__file__), 'zmod_pa_fit.py')
+        env = dict(os.environ, OPENBLAS_NUM_THREADS='1', OMP_NUM_THREADS='1',
+                   MKL_NUM_THREADS='1')
+        with tempfile.TemporaryFile() as output:
+            proc = subprocess.Popen([sys.executable, script] + args,
+                                    stdout=output, stderr=output, env=env)
+            try:
+                deadline = self.reactor.monotonic() + 180.
+                while proc.poll() is None:
+                    now = self.reactor.monotonic()
+                    if self.printer.is_shutdown() or now >= deadline:
+                        raise gcmd.error('Auto PA calculation interrupted')
+                    self.reactor.pause(now + .1)
+                output.seek(0)
+                result = output.read(65536).decode('utf-8', errors='replace')
+                if proc.returncode:
+                    logging.error('Auto PA calculation failed: %s', result)
+                    raise gcmd.error('Auto PA calculation failed; see klippy.log')
+                return json.loads(result)
+            finally:
+                if proc.poll() is None:
+                    proc.kill()
+                    proc.wait()
+
+    def cmd_ZMOD_AUTO_PA(self, gcmd):
+        self.auto_pa(gcmd, False)
+
+    def cmd_ZMOD_AUTO_PA_EMPTY(self, gcmd):
+        self.auto_pa(gcmd, True)
+
+    def auto_pa(self, gcmd, empty):
+        printer, reactor = self.printer, self.reactor
+        now = reactor.monotonic()
+        stats = printer.lookup_object('print_stats', None)
+        sd = printer.lookup_object('virtual_sdcard', None)
+        pause = printer.lookup_object('pause_resume', None)
+        if ((stats and stats.get_status(now)['state'] in ('printing', 'paused'))
+                or (sd and sd.is_active())
+                or (pause and pause.get_status(now)['is_paused'])):
+            raise gcmd.error('Auto PA is only allowed outside printing')
+        if gcmd.get_int('T', 0) != 0:
+            raise gcmd.error('Auto PA supports only T=0 on AD5M')
+        if empty and gcmd.get_int('CONFIRM', 0) != 1:
+            raise gcmd.error('Remove filament completely and clear the bed, '
+                             'then use TEST_PA_EMPTY CONFIRM=1')
+        pa_min = gcmd.get_float('PA_MIN', .01, minval=.01, maxval=.10)
+        pa_max = gcmd.get_float('PA_MAX', .10, minval=.02, maxval=.10)
+        count = 2 if empty else gcmd.get_int('PA_COUNT', 3, minval=1, maxval=10)
+        if not math.isfinite(pa_min+pa_max) or pa_max < pa_min:
+            raise gcmd.error('Invalid PA_MIN or PA_MAX')
+        toolhead = printer.lookup_object('toolhead')
+        extruder = toolhead.get_extruder()
+        tmc = printer.lookup_object('tmc2209 extruder', None)
+        if (tmc is None or extruder.get_name() != 'extruder'
+                or extruder.extruder_stepper is None):
+            raise gcmd.error('Auto PA requires a single TMC2209 extruder')
+        driver = tmc.mcu_tmc
+        uart = driver.mcu_uart
+        mcu = driver.get_mcu()
+        if ((uart.requested_baud or 40000) != 40000
+                or uart.analog_mux is not None or len(uart.instances) != 1
+                or extruder.extruder_stepper.stepper.get_mcu() is not mcu
+                or mcu.is_fileoutput()
+                or any(mcu.try_lookup_command(fmt) is None for fmt in (
+                    'tmcuart_buffer_start oid=%c token=%hu addr=%c count=%hu'
+                    ' clock=%u interval_us=%u',
+                    'tmcuart_buffer_status oid=%c token=%hu',
+                    'tmcuart_buffer_read oid=%c token=%hu first=%hu'))):
+            raise gcmd.error('Auto PA requires updated MCU and stock 40000 baud')
+        sensor = printer.lookup_object('filament_switch_sensor e0_sensor', None)
+        if sensor is not None:
+            present = sensor.get_status(now)['filament_detected']
+            if bool(present) == empty:
+                raise gcmd.error('Remove all filament for TEST_PA_EMPTY'
+                                 if empty else 'Load filament before TEST_PA')
+        client = printer.lookup_object('gcode_macro _CLIENT_VARIABLE', None)
+        if client is None:
+            raise gcmd.error('Auto PA requires configured Z-Mod parking position')
+        x, y = (float(client.variables[k]) for k in
+                ('custom_park_x', 'custom_park_y'))
+        status = toolhead.get_status(now)
+        low, high = status['axis_minimum'], status['axis_maximum']
+        if not (low[0] <= x <= high[0] and low[1] <= y <= high[1]
+                and high[2] >= 50. and status['max_accel'] >= 1000.
+                and max(x-low[0], high[0]-x) >= 68.):
+            raise gcmd.error('Invalid parking position or motion limits for Auto PA')
+        heater = extruder.get_heater()
+        heaters = printer.lookup_object('heaters')
+        old = extruder.get_status(now)
+        old_target = old['target']
+        temp = gcmd.get_float('TEMP', 210. if empty else old_target,
+                              minval=170.)
+        if not math.isfinite(temp) or temp > heater.max_temp:
+            raise gcmd.error('Set a valid filament printing temperature')
+        os.makedirs(self.log_dir, exist_ok=True)
+        os.makedirs(self.baseline_dir, exist_ok=True)
+        baseline = os.path.join(self.baseline_dir, 'empty.zip')
+        saved = None
+        if not empty:
+            if not os.path.isfile(baseline):
+                raise gcmd.error('Run TEST_PA_EMPTY CONFIRM=1 first')
+            try:
+                with zipfile.ZipFile(baseline) as z:
+                    if z.getinfo('settings.json').file_size > 16384:
+                        raise ValueError('Invalid baseline settings')
+                    saved = json.loads(z.read('settings.json'))
+            except (OSError, ValueError, KeyError, zipfile.BadZipFile):
+                raise gcmd.error('Repeat TEST_PA_EMPTY: invalid baseline')
+        self.run_fit(gcmd, ['--check'])
+        if not empty and not self.run_fit(gcmd, [baseline])['valid']:
+            raise gcmd.error('Repeat TEST_PA_EMPTY: inconsistent baseline')
+
+        estep = extruder.extruder_stepper
+        enable = printer.lookup_object('stepper_enable')
+        ename = estep.stepper.get_name()
+        was_enabled = enable.lookup_enable(ename).is_motor_enabled()
+        fields = driver.get_fields()
+        current = tmc.current_helper
+        old_hold = current.req_hold_current
+        old_regs = {k: fields.registers[k] for k in ('CHOPCONF', 'IHOLD_IRUN')}
+        paths = []
+        orders = ('0,0.02,0.04,0.06,0.08', '0.08,0.06,0.04,0.02,0',
+                  '0.04,0,0.08,0.02,0.06')
+        gmove = printer.lookup_object('gcode_move')
+        with self.suspend_filament_sensors():
+            self.gcode.run_script_from_command('SAVE_GCODE_STATE NAME=_ZMOD_AUTO_PA')
+            try:
+                gcmd.respond_info('Experimental Auto PA: clear the bed and '
+                                  'keep the purge area unobstructed')
+                if toolhead.get_status(reactor.monotonic())['homed_axes'] != 'xyz':
+                    self.gcode.run_script_from_command('G28')
+                if toolhead.get_status(reactor.monotonic())['homed_axes'] != 'xyz':
+                    raise gcmd.error('Homing did not complete')
+                # Физическая парковка без пользовательского G-code offset.
+                z = max(50., toolhead.get_position()[2])
+                toolhead.manual_move([None, None, z], 10.)
+                toolhead.manual_move([x, y, None], 50.)
+                toolhead.wait_moves()
+                motors = [s.get_name() for s in toolhead.get_kinematics().get_steppers()
+                          if s.is_active_axis('x') or s.is_active_axis('y')]
+                enable.set_motors_enable(motors + [ename], True)
+                heaters.set_temperature(heater, temp, wait=True)
+                toolhead.wait_moves()
+                current.set_current(.6, .6, toolhead.get_last_move_time())
+                estep._set_pressure_advance(old['pressure_advance'], .04)
+                toolhead.wait_moves()
+                fingerprint = {
+                    'model': self.model,
+                    'algorithm': 'sg250-v1',
+                    'step_dist': estep.stepper.get_step_dist(),
+                    'registers': {k: fields.registers.get(k) for k in (
+                        'GCONF', 'CHOPCONF', 'PWMCONF', 'COOLCONF',
+                        'TPOWERDOWN', 'TPWMTHRS', 'TCOOLTHRS', 'IHOLD_IRUN')}}
+                if saved is not None and fingerprint != saved:
+                    raise gcmd.error('Driver settings changed; repeat TEST_PA_EMPTY')
+                for i in range(count):
+                    params = {'CONFIRM': '1', 'MCU': '1', 'FAST': '8',
+                              'ACCEL': '1000', 'POLL_MS': '4',
+                              'ADVANCES': orders[i % len(orders)]}
+                    cmd = self.gcode.create_gcode_command('ZMOD_TEST_PA',
+                                                         'ZMOD_TEST_PA', params)
+                    paths.append(self.cmd_ZMOD_TEST_PA(cmd))
+            finally:
+                if not printer.is_shutdown():
+                    try:
+                        toolhead.wait_moves()
+                        estep._set_pressure_advance(old['pressure_advance'],
+                                                    old['smooth_time'])
+                        current.req_hold_current = old_hold
+                        for reg, value in old_regs.items():
+                            fields.registers[reg] = value
+                            driver.set_register(reg, value,
+                                                toolhead.get_last_move_time())
+                        heaters.set_temperature(heater, old_target)
+                        if not was_enabled:
+                            enable.set_motors_enable([ename], False)
+                        gmove.reset_last_position()
+                        self.gcode.run_script_from_command(
+                            'RESTORE_GCODE_STATE NAME=_ZMOD_AUTO_PA MOVE=0')
+                    except Exception:
+                        logging.exception('Auto PA settings restore failed')
+                        printer.invoke_shutdown('Auto PA settings restore failed')
+                        raise
+        if printer.is_shutdown():
+            raise gcmd.error('Auto PA interrupted')
+        if empty:
+            with tempfile.NamedTemporaryFile(dir=self.baseline_dir, suffix='.zip',
+                                             delete=False) as tmp:
+                name = tmp.name
+            try:
+                with zipfile.ZipFile(name, 'w', zipfile.ZIP_DEFLATED) as z:
+                    for i, path in enumerate(paths, 1):
+                        z.write(path, 'empty_%d.csv' % i)
+                    z.writestr('settings.json', json.dumps(fingerprint))
+                result = self.run_fit(gcmd, [name])
+                if not result['valid']:
+                    raise gcmd.error('Empty extruder traces inconsistent; '
+                                     'previous baseline retained')
+                os.replace(name, baseline)
+                gcmd.respond_info('Empty extruder calibration saved: %s' % baseline)
+            finally:
+                if os.path.exists(name):
+                    os.unlink(name)
+            return
+        result = self.run_fit(gcmd, [baseline] + paths)
+        result['valid'] = (result['valid'] and
+                           pa_min <= result['pa'] <= pa_max)
+        result.update(model=self.model, algorithm='sg250-v1',
+                      klipper_version=printer.get_start_args().get('software_version'),
+                      pa_min=pa_min, pa_max=pa_max, settings=fingerprint)
+        # Отчёт содержит только измерения калибровки, без общего конфига и логов.
+        with tempfile.NamedTemporaryFile(dir=self.log_dir, prefix='auto_pa_report_',
+                                         suffix='.zip', delete=False) as tmp:
+            report = tmp.name
+        try:
+            with zipfile.ZipFile(report, 'w', zipfile.ZIP_DEFLATED) as z:
+                z.write(baseline, 'empty.zip')
+                for i, path in enumerate(paths, 1):
+                    z.write(path, 'loaded_%d.csv' % i)
+                z.writestr('result.json', json.dumps(result, indent=2))
+        except Exception:
+            os.unlink(report)
+            raise
+        gcmd.respond_info('Experimental Auto PA: raw %.3f, corrected %.4f, '
+                          'gain %.2f%%, %s; NOT applied\nReport: %s' %
+                          (result['raw_pa'], result['pa'], result['gain'],
+                           'candidate' if result['valid'] else 'unreliable/out of range',
+                           report))
 
     @contextmanager
     def capture_sg(self, gcmd, driver, stepper, start, duration, poll_ms,
@@ -623,6 +884,7 @@ class ZModPA:
                         printer.invoke_shutdown('PA test restore failed')
                         raise
             gcmd.respond_info('PA trace complete: %s' % out.name)
+            return out.name
 
 
 def load_config(config):
