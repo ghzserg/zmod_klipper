@@ -1,0 +1,13 @@
+name: Auto PA buffer host tests
+
+on:
+  push:
+    branches: [auto-pa-test]
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v5
+      - run: python3 -m py_compile klippy/extras/zmod_pa.py
+      - run: python3 scripts/test_zmod_pa_buffer.py

@@ -7,7 +7,6 @@ import math
 import os
 import struct
 import tempfile
-import threading
 from contextlib import contextmanager
 import chelper
 
@@ -97,16 +96,15 @@ class ZModPA:
                 raise errors[0]
             return
 
-        start_fmt = ('tmcuart_stream_start oid=%c token=%hu addr=%c count=%hu'
+        start_fmt = ('tmcuart_buffer_start oid=%c token=%hu addr=%c count=%hu'
                      ' clock=%u interval_us=%u')
-        status_fmt = 'tmcuart_stream_status oid=%c token=%hu'
-        data_fmt = 'tmcuart_stream_data oid=%c token=%hu first=%hu data=%*s'
+        status_fmt = 'tmcuart_buffer_status oid=%c token=%hu'
+        read_fmt = 'tmcuart_buffer_read oid=%c token=%hu first=%hu'
         if (uart.analog_mux is not None or len(uart.instances) != 1
                 or stepper.get_mcu() is not mcu
-                or mcu.try_lookup_command(start_fmt) is None
-                or mcu.try_lookup_command(status_fmt) is None
-                or not mcu.check_valid_response(data_fmt)):
-            raise gcmd.error('SG MCU mode requires updated stream firmware '
+                or any(mcu.try_lookup_command(fmt) is None
+                       for fmt in (start_fmt, status_fmt, read_fmt))):
+            raise gcmd.error('SG MCU mode requires updated buffer firmware '
                              'and dedicated TMC UART')
         baud = uart.requested_baud or 40000
         if poll_ms < (2 if baud >= 80000 else 3 if baud >= 60000 else 4):
@@ -115,85 +113,89 @@ class ZModPA:
         if not 1 <= count <= 6000 or count * poll_ms > 12000:
             raise gcmd.error('SG MCU capture exceeds sample limit')
         start_cmd = mcu.lookup_query_command(
-            start_fmt, 'tmcuart_stream_started oid=%c token=%hu status=%c',
-            oid=uart.oid, cq=uart.cmd_queue, is_async=True)
+            start_fmt, 'tmcuart_buffer_started oid=%c token=%hu status=%c'
+            ' available=%u', oid=uart.oid, cq=uart.cmd_queue, is_async=True)
         status_cmd = mcu.lookup_query_command(
-            status_fmt, 'tmcuart_stream_state oid=%c token=%hu status=%c total=%hu',
+            status_fmt, 'tmcuart_buffer_state oid=%c token=%hu status=%c'
+            ' total=%hu errors=%hu query_min=%u query_max=%u',
             oid=uart.oid, cq=uart.cmd_queue, is_async=True)
+        read_cmd = mcu.lookup_query_command(
+            read_fmt, 'tmcuart_buffer_data oid=%c token=%hu first=%hu status=%c'
+            ' data=%*s', oid=uart.oid, cq=uart.cmd_queue, is_async=True)
         self.sg_token = (self.sg_token + 1) & 0xffff
         token = self.sg_token
-        packets, overflow = [], []
-        lock = threading.Lock()
-
-        def receive(params):
-            # Вызывается из потока serial; тяжёлую обработку делаем позже.
-            if params['token'] == token:
-                with lock:
-                    if len(packets) < (count + 1)//2:
-                        packets.append((params['first'], params['data']))
-                    else:
-                        overflow[:] = [True]
-
         with driver.mutex:
-            response = mcu.register_serial_response(receive, data_fmt, uart.oid)
+            uncertain = True
             try:
                 clock = mcu.print_time_to_clock(start - .10)
                 ack = start_cmd.send([uart.oid, token, driver.addr, count,
                                       clock & 0xffffffff, poll_ms*1000])
-                if ack['token'] != token or ack['status']:
-                    raise gcmd.error('SG MCU stream start rejected: %s'
-                                     % ack['status'])
-                # Движение ставим в очередь только после подтверждения запуска.
+                if ack['token'] != token:
+                    raise gcmd.error('SG MCU token mismatch')
+                if ack['status']:
+                    # При отказе по памяти или параметрам захват не запущен.
+                    uncertain = ack['status'] not in (2, 3)
+                    raise gcmd.error('SG MCU start rejected: %s, available %d bytes'
+                                     % (ack['status'], ack['available']))
+                # До окончания движения данные остаются в RAM головы.
                 yield rows, counts
-                deadline = reactor.monotonic() + duration + 3.
+                deadline = reactor.monotonic() + 3.
                 while not printer.is_shutdown():
                     status = status_cmd.send([uart.oid, token])
                     if status['token'] != token or status['status'] > 1:
-                        raise gcmd.error('Invalid SG MCU stream status')
+                        raise gcmd.error('Invalid SG MCU buffer status')
                     if not status['status']:
+                        uncertain = False
                         break
                     if reactor.monotonic() >= deadline:
-                        raise gcmd.error('SG MCU stream timeout')
+                        raise gcmd.error('SG MCU buffer timeout')
                     reactor.pause(reactor.monotonic() + .05)
                 if printer.is_shutdown():
-                    raise gcmd.error('SG MCU stream interrupted')
+                    raise gcmd.error('SG MCU capture interrupted')
                 if status['total'] != count:
-                    raise gcmd.error('Incomplete SG MCU stream')
-                with lock:
-                    batches = list(packets)
-                    lost = bool(overflow)
-                for first, raw in batches:
-                    if (first != counts[0] or len(raw) not in (23, 46)):
-                        raise gcmd.error('Missing or duplicate SG MCU packet')
-                    for tx, rx, end, size, packet in struct.iter_unpack(
-                            '<IIIB10s', raw):
+                    raise gcmd.error('Incomplete SG MCU capture')
+                # История шагов хранится 30 с. Не допускаем слишком долгой выгрузки.
+                deadline = reactor.monotonic() + 15.
+                for first in range(0, count, 7):
+                    if printer.is_shutdown() or reactor.monotonic() >= deadline:
+                        raise gcmd.error('SG MCU buffer download interrupted')
+                    reply = read_cmd.send([uart.oid, token, first])
+                    raw = reply['data']
+                    if (reply['token'] != token or reply['first'] != first
+                            or reply['status']
+                            or len(raw) != 6 * min(7, count-first)):
+                        raise gcmd.error('Invalid SG MCU buffer packet')
+                    for rx, sg in struct.iter_unpack('<IH', raw):
                         counts[0] += 1
-                        value = uart._decode_read(0x41, packet[:size])
-                        if size != 10 or value is None:
+                        if sg == 0xffff:
                             counts[1] += 1
                             continue
-                        # Захват короче периода переполнения clock32.
-                        tx64 = clock + (((tx-clock+0x80000000)
+                        if sg > 1023:
+                            raise gcmd.error('Invalid SG MCU value')
+                        # Время ответа MCU; захват короче половины периода clock32.
+                        rx64 = clock + (((rx-clock+0x80000000)
                                          & 0xffffffff)-0x80000000)
-                        rx64 = tx64 + ((rx-tx) & 0xffffffff)
-                        end64 = tx64 + ((end-tx) & 0xffffffff)
-                        t0 = mcu.clock_to_print_time(tx64)
                         t = mcu.clock_to_print_time(rx64)
-                        t1 = mcu.clock_to_print_time(end64)
-                        if (not 0. < t1-t0 < .02 or not t0 <= t <= t1
-                                or (rows and t <= rows[-1][0])):
-                            counts[1] += 1
-                            continue
-                        rows.append((t, value & 0x3ff, t0, (t1-t0)*1000.))
-                if lost or counts[0] != count:
-                    raise gcmd.error('Incomplete SG MCU packet sequence')
+                        if rows and t <= rows[-1][0]:
+                            raise gcmd.error('Non-monotonic SG MCU time')
+                        # Индивидуальные TX/end не хранятся в шестибайтной записи.
+                        rows.append((t, sg, math.nan, math.nan))
+                if (reactor.monotonic() >= deadline or counts[0] != count
+                        or counts[1] != status['errors']):
+                    raise gcmd.error('Incomplete SG MCU buffer download')
+                base = mcu.clock_to_print_time(clock)
+                qmin = 1000. * (mcu.clock_to_print_time(
+                    clock + status['query_min']) - base)
+                qmax = 1000. * (mcu.clock_to_print_time(
+                    clock + status['query_max']) - base)
+                gcmd.respond_info('SG MCU: %d bytes available before buffer, '
+                                  'query %.3f..%.3f ms, %d errors' %
+                                  (ack['available'], qmin, qmax, counts[1]))
             except Exception:
-                # При неизвестном состоянии захвата запрещаем восстановление
-                # регистров поверх ещё занятой шины.
-                printer.invoke_shutdown('SG MCU stream failed')
+                # Не восстанавливаем регистры поверх неизвестного захвата.
+                if uncertain and not printer.is_shutdown():
+                    printer.invoke_shutdown('SG MCU buffer capture failed')
                 raise
-            finally:
-                response.unregister()
 
     def cmd_ZMOD_TEST_SG(self, gcmd):
         # Только пустой экструдер. Защиту штатной экструзии не изменяем.
@@ -325,7 +327,7 @@ class ZModPA:
                         _, _, begin, c0, c1, finish = cruise
                         if mcu_mode and (not rows or rows[0][0] > begin
                                          or rows[-1][0] < finish):
-                            raise gcmd.error('SG stream does not cover motion')
+                            raise gcmd.error('SG buffer does not cover motion')
                         find = stepper.get_past_mcu_position
                         temp_end = extruder.get_status(
                             reactor.monotonic())['temperature']
@@ -528,7 +530,7 @@ class ZModPA:
                         raise gcmd.error('PA test interrupted')
                     if mcu_mode and (not rows or rows[0][0] > start
                                      or rows[-1][0] < end):
-                        raise gcmd.error('SG stream does not cover PA motion')
+                        raise gcmd.error('SG buffer does not cover PA motion')
                     find = extruder.find_past_position
                     # Считываем историю после завершения движения, вне опроса UART.
                     try:
