@@ -45,7 +45,44 @@ def load(paths):
     return traces
 
 
-def blocks(traces, guard=.05, delay=0.):
+def load_baseline(paths, reference):
+    # Калибровка только для того же двигателя и того же тока.
+    keys = ('run_current', 'hold_current', 'electrical_period')
+    required = set(keys + ('speed', 'sg', 'phase', 't',
+                           'cruise_start', 'cruise_end', 'repeat'))
+    groups = {}
+    for path in paths:
+        if zipfile.is_zipfile(path):
+            with zipfile.ZipFile(path) as z:
+                parts = [z.read(n) for n in z.namelist()
+                         if n.lower().endswith('.csv')]
+        else:
+            parts = [path.read_bytes()]
+        for part in parts:
+            d = np.atleast_1d(np.genfromtxt(io.BytesIO(part), delimiter=',',
+                                          names=True, dtype=None, encoding='utf-8'))
+            if not len(d) or not required.issubset(d.dtype.names or ()):
+                raise ValueError('Expected ZMOD_TEST_SG CSV format')
+            if any(not np.allclose(d[k], reference[k][0], rtol=1.e-5,
+                                   atol=1.e-6) for k in keys):
+                continue
+            m = ((d['phase'] == 'fast') & (d['t']-d['cruise_start'] >= .1)
+                 & (d['cruise_end']-d['t'] >= .1))
+            for speed in np.unique(d['speed'][m]):
+                for repeat in np.unique(d['repeat'][m & (d['speed'] == speed)]):
+                    sg = d['sg'][m & (d['speed'] == speed) & (d['repeat'] == repeat)]
+                    if len(sg) >= 20 and np.all(np.isfinite(sg)):
+                        groups.setdefault(float(speed), []).append(np.median(sg))
+    speeds = np.array(sorted(k for k, v in groups.items() if len(v) >= 2))
+    if len(speeds) < 4 or speeds[0] > reference['fast'][0] or speeds[-1] < reference['fast'][0]:
+        raise ValueError('Insufficient matching unloaded SG calibration')
+    levels = np.array([np.median(groups[k]) for k in speeds])
+    print('Unloaded SG curve: ' + ', '.join('%.1f:%.1f' % (v, sg)
+                                          for v, sg in zip(speeds, levels)))
+    return speeds, levels
+
+
+def blocks(traces, guard=.05, delay=0., baseline=None):
     result = []
     for name, data in traces:
         for run in np.unique(data['run']):
@@ -72,7 +109,15 @@ def blocks(traces, guard=.05, delay=0.):
             m = ((g['phase'] == 'fast') & (g['stroke'] > 1)
                  & (t-g['cruise_start'] >= guard)
                  & (g['cruise_end']-t >= .05))
-            bad = np.unique(g['stroke'][(g['stroke'] > 0) & (sg <= 20)])
+            if baseline is None:
+                bad = np.unique(g['stroke'][(g['stroke'] > 0) & (sg <= 20)])
+            else:
+                speeds, levels = baseline
+                m &= (v >= speeds[0]) & (v <= speeds[-1])
+                empty = np.interp(v, speeds, levels)
+                # Эвристика аномально низкого SG, не детектор пропуска шагов.
+                # На переходах и вне диапазона калибровки порог не применяем.
+                bad = np.unique(g['stroke'][m & (sg <= .1 * empty)])
             m &= ~np.isin(g['stroke'], bad)
             if m.sum() < 20:
                 continue
@@ -82,10 +127,12 @@ def blocks(traces, guard=.05, delay=0.):
             # ускорения и четыре гармоники электрического периода.
             x = np.column_stack([*(g['stroke'][m] == k for k in
                                    np.unique(g['stroke'][m])),
-                                 dv, dv*dv, a[m],
+                                 *([dv, dv*dv] if baseline is None else []), a[m],
                                  *(fn(k*phase) for k in range(1, 5)
                                    for fn in (np.cos, np.sin))])
-            y = np.column_stack((sg[m], p[m]))
+            # Не подгоняем скоростную кривую повторно по нагруженному мотору.
+            signal = sg[m] if baseline is None else sg[m] - empty[m]
+            y = np.column_stack((signal, p[m]))
             r = y - x @ np.linalg.lstsq(x, y, rcond=None)[0]
             y, p = r[:, 0], r[:, 1:]
             result.append((name, run, float(g['advance'][0]), len(y),
@@ -106,8 +153,8 @@ def fit(rows):
     return TAUS[i], beta[i], gain[i]/yy, i
 
 
-def analyze(traces):
-    rows = blocks(traces)
+def analyze(traces, baseline=None):
+    rows = blocks(traces, baseline=baseline)
     tau, beta, gain, _ = fit(rows)
     print('Samples: %d, runs: %d' % (sum(r[3] for r in rows), len(rows)))
     print('Candidate PA: %.3f; SG coefficient: %.3f; residual gain: %.3f%%'
@@ -136,7 +183,7 @@ def analyze(traces):
     candidates = []
     for guard in (.04, .05, .06):
         for delay in (0., .004, .008):
-            p, _, improvement, _ = fit(blocks(traces, guard, delay))
+            p, _, improvement, _ = fit(blocks(traces, guard, delay, baseline))
             candidates.append(p)
             print('guard %.0f ms, delay %.0f ms: PA %.3f, gain %.3f%%'
                   % (guard*1000., delay*1000., p, improvement*100.))
@@ -158,9 +205,13 @@ def main():
     parser = argparse.ArgumentParser(description='Offline experimental Auto PA')
     parser.add_argument('paths', nargs='+', type=Path,
                         help='CSV/ZIP traces of one filament and equal settings')
+    parser.add_argument('--baseline', nargs='+', type=Path,
+                        help='Unloaded ZMOD_TEST_SG CSV/ZIP, matching current')
     args = parser.parse_args()
     try:
-        return 0 if analyze(load(args.paths)) else 1
+        traces = load(args.paths)
+        baseline = load_baseline(args.baseline, traces[0][1]) if args.baseline else None
+        return 0 if analyze(traces, baseline) else 1
     except (ValueError, OSError, np.linalg.LinAlgError) as exc:
         print('ERROR: %s' % exc, file=sys.stderr)
         return 2
