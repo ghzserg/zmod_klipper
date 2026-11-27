@@ -1,6 +1,8 @@
 # Проверки математики и восстановления датчиков без принтера.
 import importlib.util
 import pathlib
+import json
+import zipfile
 import sys
 import tempfile
 import types
@@ -76,6 +78,60 @@ class TestAutoPA(unittest.TestCase):
             self.assertEqual(second.name, '20261127_213000_empty_1')
             self.assertEqual(loaded.name, '20261127_213000_pa')
             self.assertTrue(all(x.is_dir() for x in (first, second, loaded)))
+
+    def test_archive(self):
+        obj = pa.ZModPA.__new__(pa.ZModPA)
+        messages = []
+        gcmd = types.SimpleNamespace(respond_info=messages.append, error=ValueError)
+        with tempfile.TemporaryDirectory() as root:
+            obj.baseline_dir = root
+            with patch.object(pa.time, 'strftime', return_value='20261127_213000'):
+                for fail in (False, True):
+                    try:
+                        with obj.run_archive(gcmd, 'pa') as folder:
+                            pathlib.Path(folder, 'trace.csv').write_text('sample')
+                            if fail:
+                                raise RuntimeError('test failure')
+                    except RuntimeError:
+                        self.assertTrue(fail)
+                    self.assertFalse(pathlib.Path(folder).exists())
+                    with zipfile.ZipFile(folder + '.zip') as z:
+                        self.assertEqual(z.namelist(), ['trace.csv'])
+                        self.assertEqual(z.read('trace.csv'), b'sample')
+            self.assertEqual(sorted(x.name for x in pathlib.Path(root).iterdir()),
+                             ['20261127_213000_pa.zip', '20261127_213000_pa_1.zip'])
+
+    def test_processed_baseline(self):
+        t = 34567. + np.arange(1475)*.004
+        e = t*t
+        sg = (np.arange(len(t)) % 89 + 130).astype(float)
+        starts = dict(zip(range(2, 7), t[[200, 400, 600, 800, 1000]]))
+        signature = (.6, .6, .08692, 8., 1000., 4., .04, 40000.)
+        base = (signature, 210., {x: (t, e, sg, starts) for x in fit.ADVANCES})
+        with tempfile.TemporaryDirectory() as root:
+            settings = pathlib.Path(root, 'settings.json')
+            settings.write_text('{}')
+            path = pathlib.Path(root, 'empty.zip')
+            trace = pathlib.Path(root, 'trace.csv')
+            trace.touch()
+            with patch.object(fit, 'load_trace', return_value=base):
+                result = fit.prepare_baseline(path, settings, [trace, trace])
+            self.assertTrue(result['valid'])
+            with zipfile.ZipFile(path) as z:
+                self.assertEqual(set(z.namelist()), {'settings.json', 'baseline.json'})
+            bases, null = fit.read_baseline(path)
+            self.assertEqual(null, result['baseline_null_gain'])
+            for b in bases:
+                self.assertEqual(b[:2], base[:2])
+                for x in fit.ADVANCES:
+                    bt, be, bs, bw = b[2][x]
+                    self.assertIsNone(be)
+                    np.testing.assert_array_equal(bt, t)
+                    np.testing.assert_array_equal(bs, sg)
+                    self.assertEqual(bw, starts)
+            original = fit.statistics(base, [[base]])[0]
+            processed = fit.statistics(base, [bases[:1]])[0]
+            np.testing.assert_array_equal(original, processed)
 
     def test_no_sensors(self):
         obj = pa.ZModPA.__new__(pa.ZModPA)

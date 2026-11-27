@@ -1,7 +1,6 @@
 # Расчёт Auto PA на стороне Linux, вне процесса Klipper.
 # This file may be distributed under the terms of the GNU GPLv3 license.
 import csv
-import io
 import json
 import math
 import sys
@@ -68,17 +67,70 @@ def load_trace(stream):
     return signature, temperatures[0], result
 
 
+def prepare_baseline(path, settings_path, paths):
+    if len(paths) != 2:
+        raise ValueError('Two empty extruder traces required')
+    bases = []
+    for name in paths:
+        with open(name, encoding='utf-8') as f:
+            bases.append(load_trace(f))
+    if bases[0][:2] != bases[1][:2]:
+        raise ValueError('Incompatible empty extruder traces')
+    null = [fit(statistics(bases[i], [[bases[1-i]]]))['gain'] for i in (0, 1)]
+    result = {'baseline_null_gain': null, 'valid': max(null) < 1.}
+    if not result['valid']:
+        return result
+    # Для интерполяции нужны только t, SG и границы разгона.
+    # Не округляем время и не усредняем независимые записи.
+    data = {'format': 1, 'signature': bases[0][0], 'temperature': bases[0][1],
+            'null_gain': null, 'traces': [
+                [[t.tolist(), sg.astype(int).tolist(),
+                  [windows[st] for st in range(2, 7)]]
+                 for t, _, sg, windows in (base[2][pa] for pa in ADVANCES)]
+                for base in bases]}
+    with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as z:
+        z.write(settings_path, 'settings.json')
+        z.writestr('baseline.json', json.dumps(data, separators=(',', ':'),
+                                              allow_nan=False))
+    return result
+
+
 def read_baseline(path):
+    import numpy as np
     with zipfile.ZipFile(path) as z:
-        if set(z.namelist()) - {'empty_1.csv', 'empty_2.csv', 'settings.json'}:
-            raise ValueError('Invalid empty extruder archive')
-        out = []
-        for name in ('empty_1.csv', 'empty_2.csv'):
-            if z.getinfo(name).file_size > 4_000_000:
-                raise ValueError('Auto PA trace too large')
-            with z.open(name) as f:
-                out.append(load_trace(io.TextIOWrapper(f, encoding='utf-8')))
-        return out
+        if (set(z.namelist()) != {'baseline.json', 'settings.json'}
+                or z.getinfo('baseline.json').file_size > 2_000_000):
+            raise ValueError('Invalid processed baseline; repeat TEST_PA_EMPTY')
+        data = json.loads(z.read('baseline.json'))
+    if data['format'] != 1 or len(data['traces']) != 2:
+        raise ValueError('Unsupported Auto PA baseline format')
+    signature = tuple(data['signature'])
+    temp, null = data['temperature'], data['null_gain']
+    if (len(signature) != 8 or signature[3:] != (8., 1000., 4., .04, 40000.)
+            or not all(math.isfinite(x) for x in signature + (temp,))
+            or any(abs(x-.6) > .04 for x in signature[:2])
+            or signature[2] <= 0. or len(null) != 2
+            or not all(math.isfinite(x) and 0. <= x < 1. for x in null)):
+        raise ValueError('Invalid Auto PA baseline metadata')
+    bases = []
+    for trace in data['traces']:
+        if len(trace) != len(ADVANCES):
+            raise ValueError('Incomplete Auto PA baseline')
+        groups = {}
+        for pa, (t, sg, starts) in zip(ADVANCES, trace):
+            t, sg = np.asarray(t, dtype=float), np.asarray(sg, dtype=float)
+            if (t.ndim != 1 or sg.shape != t.shape or not 1200 <= len(t) <= 2000
+                    or not np.all(np.isfinite(t)) or not np.all(np.isfinite(sg))
+                    or np.any(sg < 0.) or np.any(sg > 1023.)
+                    or np.any(sg != np.floor(sg))
+                    or np.any(np.diff(t) < .0035) or np.any(np.diff(t) > .0045)
+                    or len(starts) != 5 or not all(
+                        math.isfinite(b) and t[0] < b-.1 < b+.1 < t[-1]
+                        for b in starts)):
+                raise ValueError('Invalid Auto PA baseline samples')
+            groups[pa] = (t, None, sg, dict(zip(range(2, 7), starts)))
+        bases.append((signature, temp, groups))
+    return bases, null
 
 
 def smooth(x):
@@ -148,10 +200,7 @@ def score(stats, model):
 
 
 def analyze(baseline, paths):
-    bases = read_baseline(baseline)
-    if bases[0][0] != bases[1][0] or bases[0][1] != bases[1][1]:
-        raise ValueError('Incompatible empty extruder traces')
-    null = [fit(statistics(bases[i], [[bases[1-i]]]))['gain'] for i in (0, 1)]
+    bases, null = read_baseline(baseline)
     if not paths:
         return {'baseline_null_gain': null, 'valid': max(null) < 1.}
     all_stats = []
@@ -191,5 +240,8 @@ if __name__ == '__main__':
     if sys.argv[1:] == ['--check']:
         import numpy
         print(json.dumps({'numpy': numpy.__version__}))
+    elif sys.argv[1] == '--prepare':
+        print(json.dumps(prepare_baseline(sys.argv[2], sys.argv[3], sys.argv[4:]),
+                         allow_nan=False))
     else:
         print(json.dumps(analyze(sys.argv[1], sys.argv[2:]), allow_nan=False))

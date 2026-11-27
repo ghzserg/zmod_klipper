@@ -87,11 +87,46 @@ class ZModPA:
         while True:
             folder = os.path.join(root, name if not index else
                                   '%s_%d' % (name, index))
+            if not os.path.exists(folder + '.zip'):
+                try:
+                    os.mkdir(folder)
+                    return folder
+                except FileExistsError:
+                    pass
+            index += 1
+
+    @contextmanager
+    def run_archive(self, gcmd, kind, root=None):
+        folder = self.new_run_dir(kind, root)
+        archive = folder + '.zip'
+        gcmd.respond_info('Auto PA data: %s' % archive)
+        try:
+            yield folder
+        finally:
+            failed = sys.exc_info()[0] is not None
             try:
-                os.mkdir(folder)
-                return folder
-            except FileExistsError:
-                index += 1
+                if not os.listdir(folder):
+                    os.rmdir(folder)
+                else:
+                    # Даже при ошибке сохраняем уже записанные данные.
+                    with tempfile.NamedTemporaryFile(dir=os.path.dirname(folder),
+                                                     suffix='.tmp', delete=False) as tmp:
+                        pending = tmp.name
+                    try:
+                        with zipfile.ZipFile(pending, 'w', zipfile.ZIP_DEFLATED) as z:
+                            for name in sorted(os.listdir(folder)):
+                                z.write(os.path.join(folder, name), name)
+                        os.replace(pending, archive)
+                    finally:
+                        if os.path.exists(pending):
+                            os.unlink(pending)
+                    shutil.rmtree(folder)
+                    gcmd.respond_info('Auto PA archive: %s' % archive)
+            except Exception:
+                # Если архивация не удалась, исходные файлы не удаляем.
+                logging.exception('Auto PA archive failed: %s', folder)
+                if not failed:
+                    raise gcmd.error('Auto PA archive failed; data: %s' % folder)
 
     @contextmanager
     def suspend_filament_sensors(self):
@@ -231,143 +266,131 @@ class ZModPA:
         current = tmc.current_helper
         old_hold = current.req_hold_current
         old_regs = {k: fields.registers[k] for k in ('CHOPCONF', 'IHOLD_IRUN')}
-        folder = self.new_run_dir('empty' if empty else 'pa')
-        if not empty:
-            # Сохраняем именно ту базу, с которой рассчитан этот результат.
-            snapshot = os.path.join(folder, 'empty.zip')
-            shutil.copyfile(baseline, snapshot)
-            baseline = snapshot
-        gcmd.respond_info('Auto PA data: %s' % folder)
-        paths = []
-        orders = ('0,0.02,0.04,0.06,0.08', '0.08,0.06,0.04,0.02,0',
-                  '0.04,0,0.08,0.02,0.06')
-        gmove = printer.lookup_object('gcode_move')
-        with self.suspend_filament_sensors() as sensors:
-            self.gcode.run_script_from_command('SAVE_GCODE_STATE NAME=_ZMOD_AUTO_PA')
+        with self.run_archive(gcmd, 'empty' if empty else 'pa') as folder:
+            if not empty:
+                # Сохраняем именно ту базу, с которой рассчитан этот результат.
+                snapshot = os.path.join(folder, 'empty.zip')
+                shutil.copyfile(baseline, snapshot)
+                baseline = snapshot
+            paths = []
+            orders = ('0,0.02,0.04,0.06,0.08', '0.08,0.06,0.04,0.02,0',
+                      '0.04,0,0.08,0.02,0.06')
+            gmove = printer.lookup_object('gcode_move')
+            with self.suspend_filament_sensors() as sensors:
+                self.gcode.run_script_from_command('SAVE_GCODE_STATE NAME=_ZMOD_AUTO_PA')
+                try:
+                    gcmd.respond_info('Experimental Auto PA: clear the bed and '
+                                      'keep the purge area unobstructed')
+                    if toolhead.get_status(reactor.monotonic())['homed_axes'] != 'xyz':
+                        self.gcode.run_script_from_command('G28')
+                    if toolhead.get_status(reactor.monotonic())['homed_axes'] != 'xyz':
+                        raise gcmd.error('Homing did not complete')
+                    # Макрос homing может изменить состояние датчиков.
+                    for helper, _ in sensors:
+                        helper.sensor_enabled = False
+                    # Физическая парковка без пользовательского G-code offset.
+                    z = max(50., toolhead.get_position()[2])
+                    toolhead.manual_move([None, None, z], 10.)
+                    toolhead.manual_move([x, y, None], 50.)
+                    toolhead.wait_moves()
+                    motors = [s.get_name() for s in toolhead.get_kinematics().get_steppers()
+                              if s.is_active_axis('x') or s.is_active_axis('y')]
+                    enable.set_motors_enable(motors + [ename], True)
+                    heaters.set_temperature(heater, temp, wait=True)
+                    toolhead.wait_moves()
+                    current.set_current(.6, .6, toolhead.get_last_move_time())
+                    estep._set_pressure_advance(old['pressure_advance'], .04)
+                    toolhead.wait_moves()
+                    fingerprint = {
+                        'model': self.model,
+                        'algorithm': 'sg250-v1',
+                        'step_dist': estep.stepper.get_step_dist(),
+                        'registers': {k: fields.registers.get(k) for k in (
+                            'GCONF', 'CHOPCONF', 'PWMCONF', 'COOLCONF',
+                            'TPOWERDOWN', 'TPWMTHRS', 'TCOOLTHRS', 'IHOLD_IRUN')}}
+                    if saved is not None and fingerprint != saved:
+                        raise gcmd.error('Driver settings changed; repeat TEST_PA_EMPTY')
+                    for i in range(count):
+                        params = {'CONFIRM': '1', 'MCU': '1', 'FAST': '8',
+                                  'ACCEL': '1000', 'POLL_MS': '4',
+                                  'ADVANCES': orders[i % len(orders)]}
+                        cmd = self.gcode.create_gcode_command('ZMOD_TEST_PA',
+                                                             'ZMOD_TEST_PA', params)
+                        paths.append(self.test_pa(cmd, folder))
+                finally:
+                    if not printer.is_shutdown():
+                        try:
+                            toolhead.wait_moves()
+                            estep._set_pressure_advance(old['pressure_advance'],
+                                                        old['smooth_time'])
+                            current.req_hold_current = old_hold
+                            for reg, value in old_regs.items():
+                                fields.registers[reg] = value
+                                driver.set_register(reg, value,
+                                                    toolhead.get_last_move_time())
+                            heaters.set_temperature(heater, old_target)
+                            if not was_enabled:
+                                enable.set_motors_enable([ename], False)
+                            gmove.reset_last_position()
+                            self.gcode.run_script_from_command(
+                                'RESTORE_GCODE_STATE NAME=_ZMOD_AUTO_PA MOVE=0')
+                        except Exception:
+                            logging.exception('Auto PA settings restore failed')
+                            printer.invoke_shutdown('Auto PA settings restore failed')
+                            raise
+            if printer.is_shutdown():
+                raise gcmd.error('Auto PA interrupted')
+            if empty:
+                name = os.path.join(folder, 'empty.zip')
+                settings = os.path.join(folder, 'settings.json')
+                with open(settings, 'w') as f:
+                    json.dump(fingerprint, f)
+                result = self.run_fit(gcmd, ['--prepare', name, settings] + paths)
+                with open(os.path.join(folder, 'result.json'), 'w') as f:
+                    json.dump(result, f, indent=2)
+                if not result['valid']:
+                    raise gcmd.error('Empty extruder traces inconsistent; '
+                                     'previous baseline retained')
+                # Архив предыдущих калибровок остаётся в датированных каталогах.
+                with tempfile.NamedTemporaryFile(dir=self.baseline_dir, suffix='.zip',
+                                                 delete=False) as tmp:
+                    pending = tmp.name
+                try:
+                    shutil.copyfile(name, pending)
+                    os.replace(pending, baseline)
+                finally:
+                    if os.path.exists(pending):
+                        os.unlink(pending)
+                gcmd.respond_info('Empty extruder calibration saved: %s' % baseline)
+                return
+            result = self.run_fit(gcmd, [baseline] + paths)
+            result['valid'] = (result['valid'] and
+                               pa_min <= result['pa'] <= pa_max)
+            zmod_version = None
             try:
-                gcmd.respond_info('Experimental Auto PA: clear the bed and '
-                                  'keep the purge area unobstructed')
-                if toolhead.get_status(reactor.monotonic())['homed_axes'] != 'xyz':
-                    self.gcode.run_script_from_command('G28')
-                if toolhead.get_status(reactor.monotonic())['homed_axes'] != 'xyz':
-                    raise gcmd.error('Homing did not complete')
-                # Макрос homing может изменить состояние датчиков.
-                for helper, _ in sensors:
-                    helper.sensor_enabled = False
-                # Физическая парковка без пользовательского G-code offset.
-                z = max(50., toolhead.get_position()[2])
-                toolhead.manual_move([None, None, z], 10.)
-                toolhead.manual_move([x, y, None], 50.)
-                toolhead.wait_moves()
-                motors = [s.get_name() for s in toolhead.get_kinematics().get_steppers()
-                          if s.is_active_axis('x') or s.is_active_axis('y')]
-                enable.set_motors_enable(motors + [ename], True)
-                heaters.set_temperature(heater, temp, wait=True)
-                toolhead.wait_moves()
-                current.set_current(.6, .6, toolhead.get_last_move_time())
-                estep._set_pressure_advance(old['pressure_advance'], .04)
-                toolhead.wait_moves()
-                fingerprint = {
-                    'model': self.model,
-                    'algorithm': 'sg250-v1',
-                    'step_dist': estep.stepper.get_step_dist(),
-                    'registers': {k: fields.registers.get(k) for k in (
-                        'GCONF', 'CHOPCONF', 'PWMCONF', 'COOLCONF',
-                        'TPOWERDOWN', 'TPWMTHRS', 'TCOOLTHRS', 'IHOLD_IRUN')}}
-                if saved is not None and fingerprint != saved:
-                    raise gcmd.error('Driver settings changed; repeat TEST_PA_EMPTY')
-                for i in range(count):
-                    params = {'CONFIRM': '1', 'MCU': '1', 'FAST': '8',
-                              'ACCEL': '1000', 'POLL_MS': '4',
-                              'ADVANCES': orders[i % len(orders)]}
-                    cmd = self.gcode.create_gcode_command('ZMOD_TEST_PA',
-                                                         'ZMOD_TEST_PA', params)
-                    paths.append(self.cmd_ZMOD_TEST_PA(cmd, folder))
-            finally:
-                if not printer.is_shutdown():
-                    try:
-                        toolhead.wait_moves()
-                        estep._set_pressure_advance(old['pressure_advance'],
-                                                    old['smooth_time'])
-                        current.req_hold_current = old_hold
-                        for reg, value in old_regs.items():
-                            fields.registers[reg] = value
-                            driver.set_register(reg, value,
-                                                toolhead.get_last_move_time())
-                        heaters.set_temperature(heater, old_target)
-                        if not was_enabled:
-                            enable.set_motors_enable([ename], False)
-                        gmove.reset_last_position()
-                        self.gcode.run_script_from_command(
-                            'RESTORE_GCODE_STATE NAME=_ZMOD_AUTO_PA MOVE=0')
-                    except Exception:
-                        logging.exception('Auto PA settings restore failed')
-                        printer.invoke_shutdown('Auto PA settings restore failed')
-                        raise
-        if printer.is_shutdown():
-            raise gcmd.error('Auto PA interrupted')
-        if empty:
-            name = os.path.join(folder, 'empty.zip')
-            with zipfile.ZipFile(name, 'w', zipfile.ZIP_DEFLATED) as z:
-                for i, path in enumerate(paths, 1):
-                    z.write(path, 'empty_%d.csv' % i)
-                z.writestr('settings.json', json.dumps(fingerprint))
-            result = self.run_fit(gcmd, [name])
+                with open('/tmp/version.txt', encoding='utf-8') as f:
+                    for line in f.read(8192).splitlines():
+                        key, _, value = line.partition('=')
+                        if key.strip() == 'ZMOD_VERSION':
+                            value = value.strip().strip('"').strip("'")
+                            if (0 < len(value) <= 80 and all(
+                                    c.isalnum() or c in '.-+_' for c in value)):
+                                zmod_version = value
+                            break
+            except OSError:
+                pass
+            result.update(model=self.model, algorithm='sg250-v1',
+                          zmod_version=zmod_version,
+                          klipper_version=printer.get_start_args().get('software_version'),
+                          pa_min=pa_min, pa_max=pa_max, settings=fingerprint)
+            # Отчёт содержит только измерения калибровки, без общего конфига и логов.
             with open(os.path.join(folder, 'result.json'), 'w') as f:
                 json.dump(result, f, indent=2)
-            if not result['valid']:
-                raise gcmd.error('Empty extruder traces inconsistent; '
-                                 'previous baseline retained')
-            # Архив предыдущих калибровок остаётся в датированных каталогах.
-            with tempfile.NamedTemporaryFile(dir=self.baseline_dir, suffix='.zip',
-                                             delete=False) as tmp:
-                pending = tmp.name
-            try:
-                shutil.copyfile(name, pending)
-                os.replace(pending, baseline)
-            finally:
-                if os.path.exists(pending):
-                    os.unlink(pending)
-            gcmd.respond_info('Empty extruder calibration saved: %s' % folder)
-            return
-        result = self.run_fit(gcmd, [baseline] + paths)
-        result['valid'] = (result['valid'] and
-                           pa_min <= result['pa'] <= pa_max)
-        zmod_version = None
-        try:
-            with open('/tmp/version.txt', encoding='utf-8') as f:
-                for line in f.read(8192).splitlines():
-                    key, _, value = line.partition('=')
-                    if key.strip() == 'ZMOD_VERSION':
-                        value = value.strip().strip('"').strip("'")
-                        if (0 < len(value) <= 80 and all(
-                                c.isalnum() or c in '.-+_' for c in value)):
-                            zmod_version = value
-                        break
-        except OSError:
-            pass
-        result.update(model=self.model, algorithm='sg250-v1',
-                      zmod_version=zmod_version,
-                      klipper_version=printer.get_start_args().get('software_version'),
-                      pa_min=pa_min, pa_max=pa_max, settings=fingerprint)
-        # Отчёт содержит только измерения калибровки, без общего конфига и логов.
-        with open(os.path.join(folder, 'result.json'), 'w') as f:
-            json.dump(result, f, indent=2)
-        report = os.path.join(folder, 'report.zip')
-        try:
-            with zipfile.ZipFile(report, 'w', zipfile.ZIP_DEFLATED) as z:
-                z.write(baseline, 'empty.zip')
-                for i, path in enumerate(paths, 1):
-                    z.write(path, 'loaded_%d.csv' % i)
-                z.writestr('result.json', json.dumps(result, indent=2))
-        except Exception:
-            os.unlink(report)
-            raise
-        gcmd.respond_info('Experimental Auto PA: raw %.3f, corrected %.4f, '
-                          'gain %.2f%%, %s; NOT applied\nReport: %s' %
-                          (result['raw_pa'], result['pa'], result['gain'],
-                           'candidate' if result['valid'] else 'unreliable/out of range',
-                           report))
+            gcmd.respond_info('Experimental Auto PA: raw %.3f, corrected %.4f, '
+                              'gain %.2f%%, %s; NOT applied\nReport: %s' %
+                              (result['raw_pa'], result['pa'], result['gain'],
+                               'candidate' if result['valid'] else 'unreliable/out of range',
+                               folder + '.zip'))
 
     @contextmanager
     def capture_sg(self, gcmd, driver, stepper, start, duration, poll_ms,
@@ -507,6 +530,10 @@ class ZModPA:
                 raise
 
     def cmd_ZMOD_TEST_SG(self, gcmd):
+        with self.run_archive(gcmd, 'sg', self.log_dir) as folder:
+            self.test_sg(gcmd, folder)
+
+    def test_sg(self, gcmd, folder):
         # Только пустой экструдер. Защиту штатной экструзии не изменяем.
         if gcmd.get_int('CONFIRM', 0) != 1:
             raise gcmd.error('Remove filament completely, cool hotend, '
@@ -573,7 +600,6 @@ class ZModPA:
                      fields.lookup_register(f)] for f in settings}
         period = step_dist * 4 * (256 >> fields.get_field('mres'))
         current = tmc.get_status(reactor.monotonic())
-        folder = self.new_run_dir('sg', self.log_dir)
         with tempfile.NamedTemporaryFile(mode='w', newline='',
                                          prefix='auto_sg_', suffix='.csv',
                                          dir=folder, delete=False) as out:
@@ -687,7 +713,11 @@ class ZModPA:
                         raise
             gcmd.respond_info('SG trace complete: %s' % out.name)
 
-    def cmd_ZMOD_TEST_PA(self, gcmd, folder=None):
+    def cmd_ZMOD_TEST_PA(self, gcmd):
+        with self.run_archive(gcmd, 'test_pa', self.log_dir) as folder:
+            self.test_pa(gcmd, folder)
+
+    def test_pa(self, gcmd, folder):
         # Температуру и безопасную физическую позицию задаёт оператор.
         if gcmd.get_int('CONFIRM', 0) != 1:
             raise gcmd.error('Park the hot nozzle over a safe purge area, '
@@ -782,8 +812,6 @@ class ZModPA:
         gmove = printer.lookup_object('gcode_move')
         old_pa, smooth = heater['pressure_advance'], heater['smooth_time']
         old_accel, old_scv = status['max_accel'], status['square_corner_velocity']
-        if folder is None:
-            folder = self.new_run_dir('test_pa', self.log_dir)
         with tempfile.NamedTemporaryFile(mode='w', newline='',
                                          prefix='auto_pa_', suffix='.csv',
                                          dir=folder, delete=False) as out:
