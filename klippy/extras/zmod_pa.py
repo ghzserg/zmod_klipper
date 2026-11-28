@@ -187,6 +187,18 @@ class ZModPA:
         self.auto_pa(gcmd, empty, sg_test=profile)
 
     def auto_pa(self, gcmd, empty, sg_test=False):
+        test_current, max_speed = .6, 8
+        if sg_test == 'SWEEP':
+            test_current = gcmd.get_float('CURRENT', .6, minval=.5, maxval=.6)
+            max_speed = gcmd.get_int('MAX_SPEED', 5 if test_current < .6 else 8,
+                                     minval=2, maxval=8)
+            if not math.isfinite(test_current) or (test_current < .6 and max_speed > 5):
+                raise gcmd.error(self.tr('Reduced current requires MAX_SPEED <= 5',
+                                         'При сниженном токе MAX_SPEED не более 5'))
+        elif sg_test and any(k in gcmd.get_command_parameters()
+                             for k in ('CURRENT', 'MAX_SPEED')):
+            raise gcmd.error(self.tr('CURRENT and MAX_SPEED require PROFILE=SWEEP',
+                                     'CURRENT и MAX_SPEED требуют PROFILE=SWEEP'))
         printer, reactor = self.printer, self.reactor
         now = reactor.monotonic()
         stats = printer.lookup_object('print_stats', None)
@@ -333,7 +345,8 @@ class ZModPA:
                 enable.set_motors_enable(motors + [ename], True)
                 heaters.set_temperature(heater, temp, wait=True)
                 toolhead.wait_moves()
-                current.set_current(.6, .6, toolhead.get_last_move_time())
+                current.set_current(test_current, test_current,
+                                    toolhead.get_last_move_time())
                 estep._set_pressure_advance(old['pressure_advance'], .04)
                 toolhead.wait_moves()
                 fingerprint = {
@@ -353,7 +366,8 @@ class ZModPA:
                     step = sg_test in ('STEP', 'BURST')
                     slow = 6. if step else 1.
                     strokes = 4 if burst else 6
-                    speeds = (8.,) if step else (2., 3., 4., 5., 6., 8.)
+                    speeds = (8.,) if step else tuple(
+                        v for v in (2., 3., 4., 5., 6., 8.) if v <= max_speed)
                     sweeps = (speeds,) * 3 if step else (speeds, speeds[::-1])
                     fingerprint['algorithm'] = {
                         'SWEEP': 'sg-speed-v1', 'STEP': 'sg-step-v1',
@@ -361,6 +375,8 @@ class ZModPA:
                     with open(os.path.join(folder, 'settings.json'), 'w') as f:
                         json.dump(dict(fingerprint, empty=empty, temperature=temp,
                                        settle_seconds=60, speeds=speeds,
+                                       requested_current=test_current,
+                                       max_speed=max_speed,
                                        advance=0., slow=slow, strokes=strokes,
                                        repeats=len(sweeps),
                                        recovery_speed=1. if burst else None,
