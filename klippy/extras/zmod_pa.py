@@ -181,9 +181,9 @@ class ZModPA:
         # Явная температура нужна для сравнения пустого и нагруженного тестов.
         gcmd.get_float('TEMP', minval=170.)
         profile = gcmd.get('PROFILE', 'SWEEP').upper()
-        if profile not in ('SWEEP', 'STEP', 'BURST', 'HISTORY', 'HISTORY8', 'DIFF'):
-            raise gcmd.error(self.tr('PROFILE must be SWEEP, STEP, BURST, HISTORY, HISTORY8 or DIFF',
-                                     'PROFILE должен быть SWEEP, STEP, BURST, HISTORY, HISTORY8 или DIFF'))
+        if profile not in ('SWEEP', 'STEP', 'BURST', 'HISTORY', 'HISTORY8', 'DIFF', 'DIFF5'):
+            raise gcmd.error(self.tr('PROFILE must be SWEEP, STEP, BURST, HISTORY, HISTORY8, DIFF or DIFF5',
+                                     'PROFILE должен быть SWEEP, STEP, BURST, HISTORY, HISTORY8, DIFF или DIFF5'))
         self.auto_pa(gcmd, empty, sg_test=profile)
 
     def auto_pa(self, gcmd, empty, sg_test=False):
@@ -364,9 +364,11 @@ class ZModPA:
                     toolhead.wait_moves()
                     burst = sg_test == 'BURST'
                     history = sg_test in ('HISTORY', 'HISTORY8')
-                    differential = sg_test == 'DIFF'
+                    differential = sg_test in ('DIFF', 'DIFF5')
+                    diff_accel = 100. if sg_test == 'DIFF5' else 1000.
                     step = sg_test in ('STEP', 'BURST') or history or differential
-                    slow = 1. if history or differential or not step else 6.
+                    slow = (5. if sg_test == 'DIFF5' else
+                            1. if history or differential or not step else 6.)
                     strokes = 4 if burst or history or differential else 6
                     speeds = (6.,) if sg_test == 'HISTORY' else (8.,) if step else tuple(
                         v for v in (2., 3., 4., 5., 6., 8.) if v <= max_speed)
@@ -384,7 +386,8 @@ class ZModPA:
                         'BURST': 'sg-burst-v1',
                         'HISTORY': 'sg-history-v1',
                         'HISTORY8': 'sg-history8-v1',
-                        'DIFF': 'sg-diff-v1'}[sg_test]
+                        'DIFF': 'sg-diff-v1',
+                        'DIFF5': 'sg-diff5-v1'}[sg_test]
                     with open(os.path.join(folder, 'settings.json'), 'w') as f:
                         json.dump(dict(fingerprint, empty=empty, temperature=temp,
                                        settle_seconds=60, speeds=speeds,
@@ -399,7 +402,7 @@ class ZModPA:
                                        prehistory_seconds=.4 if history else 0.,
                                        interpass_seconds=15 if burst or history or differential else 0,
                                        fast_seconds=.5, slow_seconds=.4,
-                                       xy_accel=1000., poll_ms=4,
+                                       xy_accel=diff_accel, poll_ms=4,
                                        klipper_version=printer.get_start_args().get(
                                            'software_version')), f, indent=2)
                     if differential:
@@ -410,7 +413,8 @@ class ZModPA:
                                     toolhead.wait_moves()
                                     heaters.set_temperature(heater, temp, wait=True)
                                 path = self.test_pa(gcmd, folder, (advance,),
-                                                    fast=8., slow=1., strokes=4)
+                                                    fast=8., slow=slow, strokes=4,
+                                                    accel=diff_accel)
                                 name = 'sg_%d_pa_%03d.csv' % (repeat, round(advance * 1000))
                                 os.rename(path, os.path.join(folder, name))
                                 paths.append(name)
@@ -634,8 +638,8 @@ class ZModPA:
                 raise
 
     def test_pa(self, gcmd, folder, advances, fast=8., slow=1.,
-                strokes=6, recovery=False, prehistory=()):
-        accel, poll_ms = 1000., 4
+                strokes=6, recovery=False, prehistory=(), accel=1000.):
+        poll_ms = 4
         printer, reactor = self.printer, self.reactor
         now = reactor.monotonic()
         stats = printer.lookup_object('print_stats', None)
