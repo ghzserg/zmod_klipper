@@ -181,9 +181,9 @@ class ZModPA:
         # Явная температура нужна для сравнения пустого и нагруженного тестов.
         gcmd.get_float('TEMP', minval=170.)
         profile = gcmd.get('PROFILE', 'SWEEP').upper()
-        if profile not in ('SWEEP', 'STEP'):
-            raise gcmd.error(self.tr('PROFILE must be SWEEP or STEP',
-                                     'PROFILE должен быть SWEEP или STEP'))
+        if profile not in ('SWEEP', 'STEP', 'BURST'):
+            raise gcmd.error(self.tr('PROFILE must be SWEEP, STEP or BURST',
+                                     'PROFILE должен быть SWEEP, STEP или BURST'))
         self.auto_pa(gcmd, empty, sg_test=profile)
 
     def auto_pa(self, gcmd, empty, sg_test=False):
@@ -286,9 +286,10 @@ class ZModPA:
         current = tmc.current_helper
         old_hold = current.req_hold_current
         old_regs = {k: fields.registers[k] for k in ('CHOPCONF', 'IHOLD_IRUN')}
-        kind = ('sg_step_empty' if empty else 'sg_step_loaded') if sg_test == 'STEP' else (
-            ('sg_empty' if empty else 'sg_loaded') if sg_test else (
-                'empty' if empty else 'pa'))
+        kind = 'empty' if empty else 'pa'
+        if sg_test:
+            kind = ('sg' if sg_test == 'SWEEP' else 'sg_' + sg_test.lower())
+            kind += '_empty' if empty else '_loaded'
         with self.run_archive(gcmd, kind) as folder:
             if not sg_test and not empty:
                 # Сохраняем именно ту базу, с которой рассчитан этот результат.
@@ -348,28 +349,41 @@ class ZModPA:
                     # Одинаковая выдержка на целевой температуре для обеих серий.
                     toolhead.dwell(60.)
                     toolhead.wait_moves()
-                    step = sg_test == 'STEP'
+                    burst = sg_test == 'BURST'
+                    step = sg_test in ('STEP', 'BURST')
                     slow = 6. if step else 1.
+                    strokes = 4 if burst else 6
                     speeds = (8.,) if step else (2., 3., 4., 5., 6., 8.)
                     sweeps = (speeds,) * 3 if step else (speeds, speeds[::-1])
-                    fingerprint['algorithm'] = 'sg-step-v1' if step else 'sg-speed-v1'
+                    fingerprint['algorithm'] = {
+                        'SWEEP': 'sg-speed-v1', 'STEP': 'sg-step-v1',
+                        'BURST': 'sg-burst-v1'}[sg_test]
                     with open(os.path.join(folder, 'settings.json'), 'w') as f:
                         json.dump(dict(fingerprint, empty=empty, temperature=temp,
                                        settle_seconds=60, speeds=speeds,
-                                       advance=0., slow=slow, strokes=6,
+                                       advance=0., slow=slow, strokes=strokes,
                                        repeats=len(sweeps),
+                                       recovery_speed=1. if burst else None,
+                                       recovery_seconds=1. if burst else 0.,
+                                       interpass_seconds=15 if burst else 0,
                                        fast_seconds=.5, slow_seconds=.4,
                                        xy_accel=1000., poll_ms=4,
                                        klipper_version=printer.get_start_args().get(
                                            'software_version')), f, indent=2)
                     for repeat, sweep in enumerate(sweeps, 1):
                         for speed in sweep:
+                            if burst and repeat > 1:
+                                # Даём хотэнду восстановить температуру между сериями.
+                                toolhead.dwell(15.)
+                                toolhead.wait_moves()
+                                heaters.set_temperature(heater, temp, wait=True)
                             gcmd.respond_info(self.tr(
                                 'SG sweep %d/%d: %.1f -> %.1f -> %.1f mm/s',
                                 'Замер SG %d/%d: %.1f -> %.1f -> %.1f мм/с')
                                 % (repeat, len(sweeps), slow, speed, slow))
                             path = self.test_pa(gcmd, folder, (0.,),
-                                                fast=speed, slow=slow)
+                                                fast=speed, slow=slow,
+                                                strokes=strokes, recovery=burst)
                             name = 'sg_%d_%g.csv' % (repeat, speed)
                             os.rename(path, os.path.join(folder, name))
                             paths.append(name)
@@ -574,8 +588,9 @@ class ZModPA:
                     printer.invoke_shutdown('SG MCU buffer capture failed')
                 raise
 
-    def test_pa(self, gcmd, folder, advances, fast=8., slow=1.):
-        strokes, accel, poll_ms = 6, 1000., 4
+    def test_pa(self, gcmd, folder, advances, fast=8., slow=1.,
+                strokes=6, recovery=False):
+        accel, poll_ms = 1000., 4
         printer, reactor = self.printer, self.reactor
         now = reactor.monotonic()
         stats = printer.lookup_object('print_stats', None)
@@ -622,7 +637,12 @@ class ZModPA:
             raise gcmd.error(self.tr('XY and extruder motors must already be enabled', 'Моторы XY и экструдера должны быть включены'))
         # Виртуальный ход только вдоль X, без изменения физического положения.
         ratio = .4
-        segments = [(slow, .4)] + [(fast, .5), (slow, .4)] * strokes
+        if recovery:
+            # Снижаем средний расход, сохраняя обе измеряемые скорости.
+            segments = [(1., .4)] + [
+                (slow, .4), (fast, .5), (slow, .4), (1., 1.)] * strokes
+        else:
+            segments = [(slow, .4)] + [(fast, .5), (slow, .4)] * strokes
         travel = sum(v * duration / ratio for v, duration in segments)
         left = pos[0] - status['axis_minimum'][0] - 1.
         right = status['axis_maximum'][0] - pos[0] - 1.
