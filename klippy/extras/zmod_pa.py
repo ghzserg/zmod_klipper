@@ -181,9 +181,9 @@ class ZModPA:
         # Явная температура нужна для сравнения пустого и нагруженного тестов.
         gcmd.get_float('TEMP', minval=170.)
         profile = gcmd.get('PROFILE', 'SWEEP').upper()
-        if profile not in ('SWEEP', 'STEP', 'BURST'):
-            raise gcmd.error(self.tr('PROFILE must be SWEEP, STEP or BURST',
-                                     'PROFILE должен быть SWEEP, STEP или BURST'))
+        if profile not in ('SWEEP', 'STEP', 'BURST', 'HISTORY'):
+            raise gcmd.error(self.tr('PROFILE must be SWEEP, STEP, BURST or HISTORY',
+                                     'PROFILE должен быть SWEEP, STEP, BURST или HISTORY'))
         self.auto_pa(gcmd, empty, sg_test=profile)
 
     def auto_pa(self, gcmd, empty, sg_test=False):
@@ -363,15 +363,19 @@ class ZModPA:
                     toolhead.dwell(60.)
                     toolhead.wait_moves()
                     burst = sg_test == 'BURST'
-                    step = sg_test in ('STEP', 'BURST')
-                    slow = 6. if step else 1.
-                    strokes = 4 if burst else 6
-                    speeds = (8.,) if step else tuple(
+                    history = sg_test == 'HISTORY'
+                    step = sg_test in ('STEP', 'BURST', 'HISTORY')
+                    slow = 1. if history or not step else 6.
+                    strokes = 4 if burst or history else 6
+                    speeds = (6.,) if history else (8.,) if step else tuple(
                         v for v in (2., 3., 4., 5., 6., 8.) if v <= max_speed)
                     sweeps = (speeds,) * 3 if step else (speeds, speeds[::-1])
+                    histories = ((1., 8., 8., 1.), (8., 1., 1., 8.),
+                                 (1., 8., 8., 1.)) if history else ()
                     fingerprint['algorithm'] = {
                         'SWEEP': 'sg-speed-v1', 'STEP': 'sg-step-v1',
-                        'BURST': 'sg-burst-v1'}[sg_test]
+                        'BURST': 'sg-burst-v1',
+                        'HISTORY': 'sg-history-v1'}[sg_test]
                     with open(os.path.join(folder, 'settings.json'), 'w') as f:
                         json.dump(dict(fingerprint, empty=empty, temperature=temp,
                                        settle_seconds=60, speeds=speeds,
@@ -379,16 +383,18 @@ class ZModPA:
                                        max_speed=max_speed,
                                        advance=0., slow=slow, strokes=strokes,
                                        repeats=len(sweeps),
-                                       recovery_speed=1. if burst else None,
-                                       recovery_seconds=1. if burst else 0.,
-                                       interpass_seconds=15 if burst else 0,
+                                       recovery_speed=1. if burst or history else None,
+                                       recovery_seconds=.8 if history else 1. if burst else 0.,
+                                       prehistory=histories,
+                                       prehistory_seconds=.4 if history else 0.,
+                                       interpass_seconds=15 if burst or history else 0,
                                        fast_seconds=.5, slow_seconds=.4,
                                        xy_accel=1000., poll_ms=4,
                                        klipper_version=printer.get_start_args().get(
                                            'software_version')), f, indent=2)
                     for repeat, sweep in enumerate(sweeps, 1):
                         for speed in sweep:
-                            if burst and repeat > 1:
+                            if (burst or history) and repeat > 1:
                                 # Даём хотэнду восстановить температуру между сериями.
                                 toolhead.dwell(15.)
                                 toolhead.wait_moves()
@@ -399,7 +405,8 @@ class ZModPA:
                                 % (repeat, len(sweeps), slow, speed, slow))
                             path = self.test_pa(gcmd, folder, (0.,),
                                                 fast=speed, slow=slow,
-                                                strokes=strokes, recovery=burst)
+                                                strokes=strokes, recovery=burst,
+                                                prehistory=histories[repeat-1] if history else ())
                             name = 'sg_%d_%g.csv' % (repeat, speed)
                             os.rename(path, os.path.join(folder, name))
                             paths.append(name)
@@ -605,7 +612,7 @@ class ZModPA:
                 raise
 
     def test_pa(self, gcmd, folder, advances, fast=8., slow=1.,
-                strokes=6, recovery=False):
+                strokes=6, recovery=False, prehistory=()):
         accel, poll_ms = 1000., 4
         printer, reactor = self.printer, self.reactor
         now = reactor.monotonic()
@@ -653,7 +660,12 @@ class ZModPA:
             raise gcmd.error(self.tr('XY and extruder motors must already be enabled', 'Моторы XY и экструдера должны быть включены'))
         # Виртуальный ход только вдоль X, без изменения физического положения.
         ratio = .4
-        if recovery:
+        if prehistory:
+            # Одна скорость измерения после низкого и высокого расхода.
+            segments = [(1., .4)]
+            for pre in prehistory:
+                segments += [(pre, .4), (fast, .5), (1., .8)]
+        elif recovery:
             # Снижаем средний расход, сохраняя обе измеряемые скорости.
             segments = [(1., .4)] + [
                 (slow, .4), (fast, .5), (slow, .4), (1., 1.)] * strokes
@@ -665,7 +677,7 @@ class ZModPA:
         if max(left, right) < travel:
             raise gcmd.error(self.tr('Not enough virtual X travel: %.1f mm', 'Недостаточный виртуальный ход X: %.1f мм') % travel)
         direction = 1. if right >= left else -1.
-        if fast / ratio > status['max_velocity']:
+        if max(v for v, _ in segments) / ratio > status['max_velocity']:
             raise gcmd.error(self.tr('FAST exceeds the configured velocity limit', 'FAST превышает ограничение скорости'))
 
         if accel > status['max_accel']:
