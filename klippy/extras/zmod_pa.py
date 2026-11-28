@@ -181,9 +181,9 @@ class ZModPA:
         # Явная температура нужна для сравнения пустого и нагруженного тестов.
         gcmd.get_float('TEMP', minval=170.)
         profile = gcmd.get('PROFILE', 'SWEEP').upper()
-        if profile not in ('SWEEP', 'STEP', 'BURST', 'HISTORY', 'HISTORY8'):
-            raise gcmd.error(self.tr('PROFILE must be SWEEP, STEP, BURST, HISTORY or HISTORY8',
-                                     'PROFILE должен быть SWEEP, STEP, BURST, HISTORY или HISTORY8'))
+        if profile not in ('SWEEP', 'STEP', 'BURST', 'HISTORY', 'HISTORY8', 'DIFF'):
+            raise gcmd.error(self.tr('PROFILE must be SWEEP, STEP, BURST, HISTORY, HISTORY8 or DIFF',
+                                     'PROFILE должен быть SWEEP, STEP, BURST, HISTORY, HISTORY8 или DIFF'))
         self.auto_pa(gcmd, empty, sg_test=profile)
 
     def auto_pa(self, gcmd, empty, sg_test=False):
@@ -364,9 +364,10 @@ class ZModPA:
                     toolhead.wait_moves()
                     burst = sg_test == 'BURST'
                     history = sg_test in ('HISTORY', 'HISTORY8')
-                    step = sg_test in ('STEP', 'BURST') or history
-                    slow = 1. if history or not step else 6.
-                    strokes = 4 if burst or history else 6
+                    differential = sg_test == 'DIFF'
+                    step = sg_test in ('STEP', 'BURST') or history or differential
+                    slow = 1. if history or differential or not step else 6.
+                    strokes = 4 if burst or history or differential else 6
                     speeds = (6.,) if sg_test == 'HISTORY' else (8.,) if step else tuple(
                         v for v in (2., 3., 4., 5., 6., 8.) if v <= max_speed)
                     sweeps = (speeds,) * 3 if step else (speeds, speeds[::-1])
@@ -375,28 +376,45 @@ class ZModPA:
                     histories = ((1., pre_high, pre_high, 1.),
                                  (pre_high, 1., 1., pre_high),
                                  (1., pre_high, pre_high, 1.)) if history else ()
+                    # Сбалансированный порядок PA, каждый замер отдельно.
+                    pa_orders = ((0., .04, .08), (.04, .08, 0.),
+                                 (.08, 0., .04)) if differential else ()
                     fingerprint['algorithm'] = {
                         'SWEEP': 'sg-speed-v1', 'STEP': 'sg-step-v1',
                         'BURST': 'sg-burst-v1',
                         'HISTORY': 'sg-history-v1',
-                        'HISTORY8': 'sg-history8-v1'}[sg_test]
+                        'HISTORY8': 'sg-history8-v1',
+                        'DIFF': 'sg-diff-v1'}[sg_test]
                     with open(os.path.join(folder, 'settings.json'), 'w') as f:
                         json.dump(dict(fingerprint, empty=empty, temperature=temp,
                                        settle_seconds=60, speeds=speeds,
                                        requested_current=test_current,
                                        max_speed=max_speed,
-                                       advance=0., slow=slow, strokes=strokes,
+                                       advance=None if differential else 0.,
+                                       pa_orders=pa_orders, slow=slow, strokes=strokes,
                                        repeats=len(sweeps),
                                        recovery_speed=1. if burst or history else None,
                                        recovery_seconds=.8 if history else 1. if burst else 0.,
                                        prehistory=histories,
                                        prehistory_seconds=.4 if history else 0.,
-                                       interpass_seconds=15 if burst or history else 0,
+                                       interpass_seconds=15 if burst or history or differential else 0,
                                        fast_seconds=.5, slow_seconds=.4,
                                        xy_accel=1000., poll_ms=4,
                                        klipper_version=printer.get_start_args().get(
                                            'software_version')), f, indent=2)
-                    for repeat, sweep in enumerate(sweeps, 1):
+                    if differential:
+                        for repeat, order in enumerate(pa_orders, 1):
+                            for advance in order:
+                                if paths:
+                                    toolhead.dwell(15.)
+                                    toolhead.wait_moves()
+                                    heaters.set_temperature(heater, temp, wait=True)
+                                path = self.test_pa(gcmd, folder, (advance,),
+                                                    fast=8., slow=1., strokes=4)
+                                name = 'sg_%d_pa_%03d.csv' % (repeat, round(advance * 1000))
+                                os.rename(path, os.path.join(folder, name))
+                                paths.append(name)
+                    for repeat, sweep in enumerate(() if differential else sweeps, 1):
                         for speed in sweep:
                             if (burst or history) and repeat > 1:
                                 # Даём хотэнду восстановить температуру между сериями.
