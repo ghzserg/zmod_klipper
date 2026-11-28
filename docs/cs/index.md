@@ -80,7 +80,7 @@ Zde je, co získáte instalací Z-Mod:
 - **Firmwarová retrakce**: Upravujte parametry retrakce za chodu, není třeba znovu slicovat.
 - **Plný ROOT přístup**: Vždy je k dispozici plná kontrola nad systémem.
 
-#### 7. Klipper 13
+#### 7. Klipper 14
 **Tovární firmware**: AD5M běží na zastaralém Klipperu v11, který je plný chyb (E0011, E0017, nesprávné vyloučení objektů, porušené SCV, chybné obnovení atd.).
 **Z-Mod**:
 
@@ -124,7 +124,7 @@ Tyto funkce jsou přeneseny do továrního firmwaru:
 ### Kompatibilita
 Kompatibilní s čistými verzemi firmwaru:
 
-- FF5M/FF5MPro: v2.7.5 nebo vyšší (2.7.5, 2.7.6, 2.7.7, 2.7.8, 2.7.9, 3.1.3, 3.1.4, 3.1.5, 3.1.9, **3.2.3**, 3.2.4, 3.2.5, 3.2.6, 3.2.7, 5.0.3, 5.1.7, 5.1.8, 5.1.9)
+- FF5M/FF5MPro: v2.7.5 nebo vyšší (2.7.5, 2.7.6, 2.7.7, 2.7.8, 2.7.9, 3.1.3, 3.1.4, 3.1.5, 3.1.9, **3.2.3**, 3.2.4, 3.2.5, 3.2.6, 3.2.7, 5.0.3, 5.1.7, 5.1.8, 5.1.9, 5.2.0)
 - [AD5X](AD5X.md): pouze (1.0.2, 1.0.7, 1.0.8, 1.0.9, 1.1.1, 1.1.6, **1.1.7**, 1.1.9, 1.2.0, 1.2.1, 1.2.2, 1.2.3, 3.0.3, 3.0.9, 3.1.0, 3.1.5, 3.1.6, 3.1.7, 3.1.8) _verze IFS libovolná_
 - [Creator 5/Creator 5 Pro](C5PRO.md) **pouze** (1.9.9, 2.0.0).
 
