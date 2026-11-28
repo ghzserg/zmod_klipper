@@ -85,6 +85,9 @@ class ZModPA:
                                     self.cmd_ZMOD_AUTO_PA_EMPTY,
                                     desc=self.tr('Calibrate the empty extruder', 'Калибровка пустого экструдера'))
 
+        self.gcode.register_command('ZMOD_TEST_SG', self.cmd_ZMOD_TEST_SG,
+                                    desc=self.tr('Experimental SG speed sweep', 'Экспериментальный замер SG на разных скоростях'))
+
     def tr(self, en, ru):
         return ru if self.ru else en
 
@@ -172,7 +175,14 @@ class ZModPA:
         self.ru = is_russian(self.printer)
         self.auto_pa(gcmd, True)
 
-    def auto_pa(self, gcmd, empty):
+    def cmd_ZMOD_TEST_SG(self, gcmd):
+        self.ru = is_russian(self.printer)
+        empty = bool(gcmd.get_int('EMPTY', minval=0, maxval=1))
+        # Явная температура нужна для сравнения пустого и нагруженного тестов.
+        gcmd.get_float('TEMP', minval=170.)
+        self.auto_pa(gcmd, empty, sg_test=True)
+
+    def auto_pa(self, gcmd, empty, sg_test=False):
         printer, reactor = self.printer, self.reactor
         now = reactor.monotonic()
         stats = printer.lookup_object('print_stats', None)
@@ -185,7 +195,7 @@ class ZModPA:
         if gcmd.get_int('T', 0) != 0:
             raise gcmd.error(self.tr('Auto PA supports only physical extruder T=0', 'Auto PA поддерживает только физический экструдер T=0'))
         baseline = os.path.join(self.baseline_dir, 'empty.json')
-        if not empty and not os.path.isfile(baseline):
+        if not sg_test and not empty and not os.path.isfile(baseline):
             raise gcmd.error(self.tr('Run TEST_PA_EMPTY first', 'Сначала выполните TEST_PA_EMPTY без филамента'))
         pa_min = gcmd.get_float('PA_MIN', .01, minval=.01, maxval=.10)
         pa_max = gcmd.get_float('PA_MAX', .10, minval=.02, maxval=.10)
@@ -253,8 +263,9 @@ class ZModPA:
             raise gcmd.error(self.tr('Set a valid filament printing temperature', 'Укажите допустимую температуру печати филамента'))
         os.makedirs(self.baseline_dir, exist_ok=True)
         saved = None
-        self.run_fit(gcmd, ['--check'])
-        if not empty:
+        if not sg_test:
+            self.run_fit(gcmd, ['--check'])
+        if not sg_test and not empty:
             try:
                 checked = self.run_fit(gcmd, [baseline])
             except printer.command_error:
@@ -271,8 +282,10 @@ class ZModPA:
         current = tmc.current_helper
         old_hold = current.req_hold_current
         old_regs = {k: fields.registers[k] for k in ('CHOPCONF', 'IHOLD_IRUN')}
-        with self.run_archive(gcmd, 'empty' if empty else 'pa') as folder:
-            if not empty:
+        kind = ('sg_empty' if empty else 'sg_loaded') if sg_test else (
+            'empty' if empty else 'pa')
+        with self.run_archive(gcmd, kind) as folder:
+            if not sg_test and not empty:
                 # Сохраняем именно ту базу, с которой рассчитан этот результат.
                 snapshot = os.path.join(folder, 'empty.json')
                 shutil.copyfile(baseline, snapshot)
@@ -326,9 +339,33 @@ class ZModPA:
                         'TPOWERDOWN', 'TPWMTHRS', 'TCOOLTHRS', 'IHOLD_IRUN')}}
                 if saved is not None and fingerprint != saved:
                     raise gcmd.error(self.tr('Driver settings changed; repeat TEST_PA_EMPTY', 'Настройки драйвера изменились. Повторите TEST_PA_EMPTY'))
-                for i in range(count):
-                    paths.append(self.test_pa(gcmd, folder,
-                                              orders[i % len(orders)]))
+                if sg_test:
+                    # Одинаковая выдержка на целевой температуре для обеих серий.
+                    toolhead.dwell(60.)
+                    toolhead.wait_moves()
+                    speeds = (2., 3., 4., 5., 6., 8.)
+                    fingerprint['algorithm'] = 'sg-speed-v1'
+                    with open(os.path.join(folder, 'settings.json'), 'w') as f:
+                        json.dump(dict(fingerprint, empty=empty, temperature=temp,
+                                       settle_seconds=60, speeds=speeds,
+                                       advance=0., slow=1., strokes=6,
+                                       fast_seconds=.5, slow_seconds=.4,
+                                       xy_accel=1000., poll_ms=4,
+                                       klipper_version=printer.get_start_args().get(
+                                           'software_version')), f, indent=2)
+                    for repeat, sweep in enumerate((speeds, speeds[::-1]), 1):
+                        for speed in sweep:
+                            gcmd.respond_info(self.tr(
+                                'SG sweep %d/2: %.1f mm/s',
+                                'Замер SG %d/2: %.1f мм/с') % (repeat, speed))
+                            path = self.test_pa(gcmd, folder, (0.,), fast=speed)
+                            name = 'sg_%d_%g.csv' % (repeat, speed)
+                            os.rename(path, os.path.join(folder, name))
+                            paths.append(name)
+                else:
+                    for i in range(count):
+                        paths.append(self.test_pa(gcmd, folder,
+                                                  orders[i % len(orders)]))
             finally:
                 if not printer.is_shutdown():
                     try:
@@ -361,6 +398,14 @@ class ZModPA:
                         raise
             if printer.is_shutdown():
                 raise gcmd.error(self.tr('Auto PA interrupted', 'Калибровка Auto PA прервана'))
+            if sg_test:
+                with open(os.path.join(folder, 'result.json'), 'w') as f:
+                    json.dump(dict(complete=True, empty=empty, traces=paths,
+                                   algorithm='sg-speed-v1'), f, indent=2)
+                gcmd.respond_info(self.tr(
+                    'SG speed sweep complete; no PA calculated or applied',
+                    'Замер SG завершён; PA не рассчитывался и не применялся'))
+                return
             if empty:
                 name = os.path.join(folder, 'empty.json')
                 settings = os.path.join(folder, 'settings.json')
@@ -518,8 +563,8 @@ class ZModPA:
                     printer.invoke_shutdown('SG MCU buffer capture failed')
                 raise
 
-    def test_pa(self, gcmd, folder, advances):
-        fast, strokes, accel, poll_ms = 8., 6, 1000., 4
+    def test_pa(self, gcmd, folder, advances, fast=8.):
+        strokes, accel, poll_ms = 6, 1000., 4
         printer, reactor = self.printer, self.reactor
         now = reactor.monotonic()
         stats = printer.lookup_object('print_stats', None)
