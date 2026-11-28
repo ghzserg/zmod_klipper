@@ -218,15 +218,12 @@ class ZModPA:
             screen = printer.lookup_object('gcode_macro _SCREEN', None)
             if screen is None or screen.variables.get('screen', True):
                 raise gcmd.error(self.tr('Auto PA on AD5X requires the native screen to be disabled', 'Для Auto PA на AD5X необходимо отключить родной экран'))
-        sensor = printer.lookup_object('filament_switch_sensor ' +
-            ('head_switch_sensor' if ad5x else 'e0_sensor'), None)
-        if ad5x and sensor is None:
-            raise gcmd.error(self.tr('AD5X head filament sensor is unavailable', 'Датчик филамента головы AD5X недоступен'))
-        if sensor is not None:
-            present = sensor.get_status(now)['filament_detected']
-            if bool(present) == empty and not (ad5x and empty):
-                raise gcmd.error(self.tr('Remove all filament for TEST_PA_EMPTY', 'Полностью выгрузите филамент перед TEST_PA_EMPTY')
-                                 if empty else self.tr('Load filament before TEST_PA', 'Загрузите филамент перед TEST_PA'))
+            sensor = printer.lookup_object(
+                'filament_switch_sensor head_switch_sensor', None)
+            if sensor is None:
+                raise gcmd.error(self.tr('AD5X head filament sensor is unavailable', 'Датчик филамента головы AD5X недоступен'))
+            if not empty and not sensor.get_status(now)['filament_detected']:
+                raise gcmd.error(self.tr('Load filament before TEST_PA', 'Загрузите филамент перед TEST_PA'))
         # Запоминаем исходное состояние до G28 и штатной выгрузки.
         sensor_states = {}
         for key in ('runout_sensor', 'runout_sensor2'):
